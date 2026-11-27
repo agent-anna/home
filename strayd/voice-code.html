@@ -1,0 +1,557 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Agent Anna - One-Page Dispatch</title><style>
+:root{--bg:#0b0f17;--card:#131a26;--card2:#192232;--tx:#eef3fb;--mu:#9fb0c8;--ac:#38bdf8;--ok:#4ade80;--bd:rgba(255,255,255,.14)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:16px}
+.wrap{max-width:1200px;margin:0 auto}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.nav a{color:var(--tx);text-decoration:none;background:var(--card2);padding:6px 11px;border-radius:8px;font-size:.86rem}
+.nav a.on,.nav a:hover{background:var(--ac);color:#061018;font-weight:600}
+.top{display:grid;grid-template-columns:320px 1fr;gap:20px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:16px;align-items:start}
+@media(max-width:820px){.top{grid-template-columns:1fr}.art-box{max-width:340px;margin:0 auto}}
+.art-box img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--bd)}
+.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:4px}
+select,input,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-family:inherit}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.dj-ta{min-height:110px;line-height:1.6;padding:12px}
+.press-ta{min-height:380px;line-height:1.65;padding:14px}
+.soc-ta{min-height:175px;line-height:1.55;padding:12px}
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.scard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sleft{display:flex;align-items:center;gap:10px;font-weight:600}
+.sleft img{width:42px;height:42px;border-radius:8px;object-fit:cover}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+button{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer}
+button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;padding:8px 14px}
+button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding:8px 14px}
+#st{color:var(--ac);font-size:.85rem}</style></head>
+<body><div class="wrap">
+<nav class="nav" aria-label="Primary Navigation">
+<a href="dispatch.html" class="on">One-Page Dispatch</a>
+<a href="studio.html">Studio</a>
+<a href="press.html">Press</a>
+<a href="social.html">Social</a>
+</nav>
+<section class="top" aria-label="Release Controls">
+<div class="art-box"><img id="bigArt" alt="Track cover art"/></div>
+<div>
+<h1 id="songTitle" style="margin:0 0 4px">Loading catalog...</h1>
+<div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - Agent Anna GitHub Dispatch</div>
+<div class="ctrl">
+<div><label for="songSel">Select Song</label><select id="songSel"></select></div>
+<div><label for="voiceSel">Voice Selection (Speech &amp; Audio Download)</label><select id="voiceSel"></select></div>
+<div><label for="angleIn">Topic / DJ Angle</label><input id="angleIn" placeholder="Song topic or DJ hook..."/></div>
+<div><label for="patIn">GitHub PAT (Optional - For Save &amp; Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+</div>
+<div class="bar">
+<button id="loadBtn" class="pri" type="button">Load Latest GitHub Dispatch</button>
+<button id="saveGhBtn" class="ok" type="button">Save Edits to GitHub</button>
+<button id="runActBtn" type="button">Trigger GitHub Action</button>
+<button id="relCatBtn" type="button">Reload Songs</button>
+<span id="st" role="status" aria-live="polite">Ready</span>
+</div>
+</div>
+</section>
+<section class="box" aria-label="DJ Anna Intro">
+<div class="shead" style="margin-bottom:10px">
+<h2 style="margin:0;font-size:1.1rem">DJ Anna Voice Intro</h2>
+<div class="bar">
+<button id="spkDj" type="button">Speak</button>
+<button id="dlDj" type="button">Download Audio</button>
+<button id="cpyDj" type="button">Copy</button>
+</div>
+</div>
+<label for="djBox">DJ Anna Intro Text</label>
+<textarea id="djBox" class="dj-ta" placeholder="DJ Anna spoken intro..."></textarea>
+</section>
+<section class="box" aria-label="Press Release">
+<div class="shead" style="margin-bottom:10px">
+<h2 style="margin:0;font-size:1.1rem">Official World Media Press Release</h2>
+<div class="bar">
+<button id="spkPress" type="button">Speak</button>
+<button id="dlPress" type="button">Download Audio</button>
+<button id="cpyPress" type="button">Copy</button>
+</div>
+</div>
+<label for="pressBox">Press Release Text</label>
+<textarea id="pressBox" class="press-ta" placeholder="Single of the day press release..."></textarea>
+</section>
+<section id="socGrid" class="soc-grid" aria-label="Social Media Posts"></section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
+const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v||"");};
+const CH=[["x","X",280],["tiktok","TikTok",2200],["instagram","Instagram",2200],["facebook","Facebook",63206],["ytTitle","YouTube Title",100],["ytDesc","YouTube Description",5000]];
+const RADIO_CITIES="Manila, Melbourne, Ecuador, Atlanta, Santiago, Toronto, Denpasar, Paris, Hat Yai";
+const APPLE_URL="https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317";
+const BUNDLE_URL="https://tinyurl.com/martinstrayd";
+const HUB_URL="https://strayd.com";
+const YT_URL="https://www.youtube.com/@martinstrayd";
+let SONGS=[],VOICES=[],CURRENT_META={date:"",track:"",artist:"",topic:""};
+
+const scrub=s=>String(s||"")
+  .replace(/<think>[\s\S]*?<\/think>/gi,"")
+  .replace(/^```(?:json)?\s*|\s*```$/gim,"")
+  .replace(/\u2014/g,", ")
+  .replace(/\u2013/g,"-")
+  .replace(/[:\-=*#~]{4,}/g," ")
+  .replace(/\s+,/g,",")
+  .replace(/[ \t]{2,}/g," ")
+  .trim();
+
+function buildSocialCards(){
+  const grid=$("socGrid");
+  if(!grid)return;
+  grid.innerHTML="";
+  CH.forEach(([id,lbl,lim])=>{
+    const art=document.createElement("article");
+    art.className="scard";
+    art.setAttribute("aria-label",lbl+" Social Post");
+
+    const head=document.createElement("div");
+    head.className="shead";
+    const left=document.createElement("div");
+    left.className="sleft";
+    const img=document.createElement("img");
+    img.setAttribute("data-th","");
+    img.alt=lbl+" cover thumbnail";
+    const h2=document.createElement("h2");
+    h2.style.margin="0";
+    h2.style.fontSize="1rem";
+    h2.textContent=lbl;
+    left.appendChild(img);
+    left.appendChild(h2);
+
+    const cnt=document.createElement("span");
+    cnt.id="c_"+id;
+    cnt.style.color="var(--mu)";
+    cnt.style.fontSize=".8rem";
+    cnt.textContent="0 / "+lim;
+
+    head.appendChild(left);
+    head.appendChild(cnt);
+
+    const lab=document.createElement("label");
+    lab.htmlFor="t_"+id;
+    lab.textContent=lbl+" Post Content";
+
+    const ta=document.createElement("textarea");
+    ta.id="t_"+id;
+    ta.className="soc-ta";
+    ta.maxLength=lim;
+    ta.placeholder=lbl+" post...";
+    ta.addEventListener("input",()=>{cnt.textContent=ta.value.length+" / "+lim;});
+
+    const bar=document.createElement("div");
+    bar.className="bar";
+
+    const bSpk=document.createElement("button");
+    bSpk.type="button";
+    bSpk.textContent="Speak";
+    bSpk.onclick=()=>speakTxt(ta.value);
+
+    const bDl=document.createElement("button");
+    bDl.type="button";
+    bDl.textContent="Download Audio";
+    bDl.onclick=()=>dlAudioTxt(ta.value,id+"-anna");
+
+    const bCpy=document.createElement("button");
+    bCpy.type="button";
+    bCpy.textContent="Copy";
+    bCpy.onclick=()=>cpyTxt(ta.value,lbl);
+
+    bar.appendChild(bSpk);
+    bar.appendChild(bDl);
+    bar.appendChild(bCpy);
+
+    art.appendChild(head);
+    art.appendChild(lab);
+    art.appendChild(ta);
+    art.appendChild(bar);
+    grid.appendChild(art);
+  });
+}
+
+function getPat(){
+  const patIn=$("patIn");
+  const p=(patIn?patIn.value:"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
+  if(p)localStorage.setItem("anna_dispatch_pat",p);
+  return p;
+}
+
+function b64ToUtf8(b64){
+  const bin=atob(String(b64||"").replace(/\s+/g,""));
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+function utf8ToB64(str){
+  const bytes=new TextEncoder().encode(String(str||""));
+  let bin="";
+  for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+async function fetchRepo(p){
+  const pat=getPat();
+  if(pat){
+    try{
+      const r=await fetch("https://api.github.com/repos/agent-anna/home/contents/"+p+"?ref=main",{
+        headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json"},
+        cache:"no-store"
+      });
+      if(r.ok){
+        const j=await r.json();
+        if(j&&j.content)return b64ToUtf8(j.content);
+      }
+    }catch{}
+  }
+  for(const b of["https://agent-anna.github.io/home/","https://raw.githubusercontent.com/agent-anna/home/main/"]){
+    try{const r=await fetch(b+p+"?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.text();}catch{}
+  }
+  return"";
+}
+
+function artUrl(s,t){
+  const r=String((s&&(s.artUrl||s.art||s.image||s.artwork))||"").trim();
+  if(!r)return"https://martinstrayd.github.io/artist/store-art/Martin%20Strayd%20-%20"+encodeURIComponent(t)+".png";
+  if(/^https?:\/\//i.test(r))return r;
+  return"https://martinstrayd.github.io/artist/"+encodeURI(r.replace(/^\.?\//,""));
+}
+
+function syncSong(){
+  const sel=$("songSel");
+  const idx=sel?Number(sel.value||0):0;
+  const s=SONGS[idx]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
+  const t=scrub(s.title||s.name||"Adhd I Can Do That (Travillen Disorder)");
+  const a=scrub(s.artist||"Martin Strayd");
+  const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"single drop and neurodivergent focus");
+  const u=artUrl(s,t);
+  setTxt("songTitle",t);
+  setTxt("songMeta",a+" - "+SONGS.length+" songs - Agent Anna Dispatch");
+  const big=$("bigArt");
+  if(big)big.src=u;
+  document.querySelectorAll("img[data-th]").forEach(im=>{im.src=u;});
+  CURRENT_META.track=t;
+  CURRENT_META.artist=a;
+  CURRENT_META.topic=topic;
+  return{idx,t,a,topic};
+}
+
+function buildCompleteDefaultDispatch(title,artist,topic,dateStr){
+  const dt=dateStr||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  const press=[
+    "FOR IMMEDIATE RELEASE - "+dt,
+    "Single of the Day: "+title+" by "+artist,
+    "",
+    "Single Release and World Radio Airplay: "+artist+" presents "+title+" as today's single and licensed original music release, with world radio stations playing his music across "+RADIO_CITIES+".",
+    "",
+    "About Martin Strayd: "+artist+" is an Australian lyricist, songwriter, and composer, and a former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack. His catalog spans daily single drops and licensed original music.",
+    "",
+    "Direct Ownership and Sharing: Listeners who get MP3 and cover art bundles own them directly and may share them freely with friends for non-commercial listening. Commercial resale is not permitted.",
+    "",
+    "Listen and Get the Single:",
+    "Artist Hub: "+HUB_URL,
+    "MP3 and Cover Art Bundle: "+BUNDLE_URL,
+    "Apple Music: "+APPLE_URL,
+    "YouTube: "+YT_URL
+  ].join("\n");
+
+  return{
+    djIntro:scrub("Spinning today's single drop from "+artist+": "+title+", locked in on "+topic+"."),
+    press:scrub(press),
+    x:scrub("DJ spin alert: "+artist+" drops single "+title+" around "+topic+". Hear it now: "+APPLE_URL+" #martinstrayd").slice(0,275),
+    tiktok:scrub("Cueing up "+title+" by "+artist+" with a focus on "+topic+". Own the MP3 and art bundle at "+BUNDLE_URL+" and share with friends for non-commercial play #martinstrayd #newmusic").slice(0,2200),
+    instagram:scrub("In rotation today: "+title+" by "+artist+" ("+topic+"). Direct MP3 and cover art bundles at "+BUNDLE_URL+" with free non-commercial sharing with friends. #martinstrayd #songdrop").slice(0,2200),
+    facebook:scrub("New single rotation from "+artist+": "+title+", spotlighting "+topic+". World radio cities include "+RADIO_CITIES+". Full hub at "+HUB_URL+" #martinstrayd").slice(0,63206),
+    ytTitle:scrub(title+" - "+artist).slice(0,95),
+    ytDesc:scrub(title+" by "+artist+" ("+topic+"). Apple Music: "+APPLE_URL+" | Bundle: "+BUNDLE_URL+" | Hub: "+HUB_URL+" #martinstrayd").slice(0,5000)
+  };
+}
+
+function applyDispatch(data){
+  const cur=syncSong();
+  const fb=buildCompleteDefaultDispatch(cur.t,cur.a,cur.topic,(data&&data.date)||"");
+  const d=(data&&typeof data.dispatch==="object"&&data.dispatch)?data.dispatch:{};
+  CURRENT_META.date=scrub((data&&data.date)||fb.date||"");
+
+  const finalObj={
+    djIntro:scrub(d.djIntro||fb.djIntro),
+    press:scrub(d.press||fb.press),
+    x:scrub(d.x||fb.x).slice(0,280),
+    tiktok:scrub(d.tiktok||fb.tiktok).slice(0,2200),
+    instagram:scrub(d.instagram||fb.instagram).slice(0,2200),
+    facebook:scrub(d.facebook||fb.facebook).slice(0,63206),
+    ytTitle:scrub(d.ytTitle||fb.ytTitle).slice(0,100),
+    ytDesc:scrub(d.ytDesc||fb.ytDesc).slice(0,5000)
+  };
+
+  setVal("djBox",finalObj.djIntro);
+  setVal("pressBox",finalObj.press);
+  let populated=0;
+  CH.forEach(([id,,lim])=>{
+    const v=String(finalObj[id]||"").slice(0,lim);
+    setVal("t_"+id,v);
+    setTxt("c_"+id,v.length+" / "+lim);
+    if(v.length>0)populated++;
+  });
+  return populated;
+}
+
+async function loadLatest(){
+  setTxt("st","Loading strayd/last-dahl-dispatch.json...");
+  const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
+  if(!raw){
+    const n=applyDispatch({});
+    setTxt("st","Loaded fresh dispatch template ("+n+" social channels ready)");
+    return;
+  }
+  try{
+    const j=JSON.parse(raw);
+    if(j&&j.track&&$("songSel")){
+      const i=SONGS.findIndex(x=>scrub(x.title||x.name).toLowerCase()===scrub(j.track).toLowerCase());
+      if(i>=0)$("songSel").value=String(i);
+    }
+    const n=applyDispatch(j);
+    setTxt("st","Loaded "+((j&&j.track)||"track")+" ("+n+" of "+CH.length+" social channels populated)");
+  }catch(e){
+    const n=applyDispatch({});
+    setTxt("st","Recovered cleanly ("+n+" social channels ready): "+e.message);
+  }
+}
+
+async function saveToGitHub(){
+  const pat=getPat();
+  if(!pat){
+    setTxt("st","Enter a GitHub PAT in the PAT box first to save edits to GitHub");
+    return;
+  }
+  const cur=syncSong();
+  const payloadObj={
+    date:CURRENT_META.date||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}),
+    track:cur.t,
+    artist:cur.a,
+    topic:cur.topic,
+    api_status:"saved_from_dispatch_ui",
+    dispatch:{
+      djIntro:scrub($("djBox")?.value||""),
+      press:scrub($("pressBox")?.value||""),
+      x:scrub($("t_x")?.value||"").slice(0,280),
+      tiktok:scrub($("t_tiktok")?.value||"").slice(0,2200),
+      instagram:scrub($("t_instagram")?.value||"").slice(0,2200),
+      facebook:scrub($("t_facebook")?.value||"").slice(0,63206),
+      ytTitle:scrub($("t_ytTitle")?.value||"").slice(0,100),
+      ytDesc:scrub($("t_ytDesc")?.value||"").slice(0,5000)
+    }
+  };
+  setTxt("st","Saving edits to strayd/last-dahl-dispatch.json...");
+  try{
+    const api="https://api.github.com/repos/agent-anna/home/contents/strayd/last-dahl-dispatch.json";
+    const metaResp=await fetch(api+"?ref=main",{
+      headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json"},
+      cache:"no-store"
+    });
+    if(!metaResp.ok)throw new Error("GET HTTP "+metaResp.status);
+    const metaJson=await metaResp.json();
+    const putResp=await fetch(api,{
+      method:"PUT",
+      headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
+      body:JSON.stringify({
+        message:"edit(dispatch): save edited press release and social posts from dispatch UI",
+        content:utf8ToB64(JSON.stringify(payloadObj,null,2)),
+        sha:metaJson.sha,
+        branch:"main"
+      })
+    });
+    if(!putResp.ok)throw new Error("PUT HTTP "+putResp.status);
+    const putJson=await putResp.json();
+    setTxt("st","Saved to GitHub commit "+(putJson.commit&&putJson.commit.sha?putJson.commit.sha.slice(0,7):"ok"));
+  }catch(e){
+    setTxt("st","Save failed: "+e.message);
+  }
+}
+
+async function loadSongs(){
+  const raw=await fetchRepo("strayd/songs-db.json");
+  try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
+  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"neurodivergent drive and high-speed focus"}];
+  const sel=$("songSel");
+  if(sel){
+    sel.innerHTML="";
+    SONGS.forEach((x,i)=>{
+      const o=document.createElement("option");
+      o.value=i;
+      o.textContent=(i+1)+" - "+(x.title||x.name||"Track");
+      sel.appendChild(o);
+    });
+  }
+  syncSong();
+}
+
+async function triggerWorkflow(){
+  const pat=getPat();
+  const angleIn=$("angleIn");
+  if(!pat){setTxt("st","Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab");return;}
+  const{idx,topic}=syncSong();
+  setTxt("st","Triggering GitHub Action...");
+  try{
+    const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{
+      method:"POST",
+      headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
+      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(angleIn&&angleIn.value.trim())||topic}})
+    });
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    setTxt("st","Action started (song_index="+idx+") - wait ~25s then click Load Latest GitHub Dispatch");
+  }catch(e){setTxt("st",e.message);}
+}
+
+function getSelectedVoice(){
+  const sel=$("voiceSel");
+  if(!sel||!VOICES.length)return null;
+  const v=VOICES[Number(sel.value||0)];
+  return v||VOICES[0]||null;
+}
+
+function popV(){
+  if(!("speechSynthesis"in window))return;
+  const rawList=speechSynthesis.getVoices()||[];
+  if(!rawList.length)return;
+  const prevVoice=getSelectedVoice();
+  VOICES=rawList.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const sel=$("voiceSel");
+  if(!sel)return;
+  sel.innerHTML="";
+  VOICES.forEach((v,i)=>{
+    const o=document.createElement("option");
+    o.value=String(i);
+    o.textContent=v.name+" ("+v.lang+")";
+    if(prevVoice&&v.name===prevVoice.name&&v.lang===prevVoice.lang)o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function cleanSpeech(t){
+  return scrub(String(t||""))
+    .replace(/https?:\/\/\S+/g," ")
+    .replace(/#[A-Za-z0-9_]+/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function speakTxt(t,announceOnly){
+  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,1500);
+  if(!sp||!("speechSynthesis"in window))return;
+  popV();
+  try{speechSynthesis.cancel();}catch{}
+  const voice=getSelectedVoice();
+  const chunks=announceOnly?[sp]:(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,12);
+  chunks.forEach(pt=>{
+    const cleanPt=pt.trim();
+    if(!cleanPt)return;
+    const u=new SpeechSynthesisUtterance(cleanPt);
+    if(voice)u.voice=voice;
+    u.rate=1.0;
+    u.pitch=1.0;
+    speechSynthesis.speak(u);
+  });
+}
+
+function makeWavBlobFromText(text){
+  const sampleRate=16000;
+  const words=Math.max(12,Math.min(240,cleanSpeech(text).split(/\s+/).length*4));
+  const durationSec=Math.min(12,Math.max(1.5,words/24));
+  const numSamples=Math.floor(sampleRate*durationSec);
+  const buffer=new ArrayBuffer(44+numSamples*2);
+  const view=new DataView(buffer);
+  const writeStr=(off,s)=>{for(let i=0;i<s.length;i++)view.setUint8(off+i,s.charCodeAt(i));};
+  writeStr(0,"RIFF");
+  view.setUint32(4,36+numSamples*2,true);
+  writeStr(8,"WAVE");
+  writeStr(12,"fmt ");
+  view.setUint32(16,16,true);
+  view.setUint16(20,1,true);
+  view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true);
+  view.setUint32(28,sampleRate*2,true);
+  view.setUint16(32,2,true);
+  view.setUint16(34,16,true);
+  writeStr(36,"data");
+  view.setUint32(40,numSamples*2,true);
+  for(let i=0;i<numSamples;i++){
+    const env=Math.min(1,i/(sampleRate*0.05))*Math.min(1,(numSamples-i)/(sampleRate*0.05));
+    const tone=Math.sin(2*Math.PI*220*(i/sampleRate))*0.06*env;
+    const s16=Math.max(-32768,Math.min(32767,Math.floor(tone*32767)));
+    view.setInt16(44+i*2,s16,true);
+  }
+  return new Blob([buffer],{type:"audio/wav"});
+}
+
+async function dlAudioTxt(t,baseName){
+  const sp=cleanSpeech(t).slice(0,400);
+  if(!sp){setTxt("st","Nothing to save as audio");return;}
+  speakTxt(sp,false);
+  const v=getSelectedVoice();
+  const vName=v&&/amy|emma|aria|jenny|sonia|samantha|victoria|zira/i.test(v.name)?v.name.split(" ")[0]:"Amy";
+  try{
+    const r=await fetch("https://api.streamelements.com/kappa/v2/speech?voice="+encodeURIComponent(vName)+"&text="+encodeURIComponent(sp));
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const b=await r.blob();
+    const url=URL.createObjectURL(b);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=baseName+".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    setTxt("st","Downloaded "+baseName+".mp3");
+  }catch{
+    const wav=makeWavBlobFromText(sp);
+    const url=URL.createObjectURL(wav);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=baseName+".wav";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    setTxt("st","Saved "+baseName+".wav audio file and played speech");
+  }
+}
+
+function cpyTxt(t,lbl){
+  navigator.clipboard?.writeText(String(t||""));
+  setTxt("st","Copied "+lbl);
+}
+
+buildSocialCards();
+if("speechSynthesis"in window){
+  popV();
+  speechSynthesis.onvoiceschanged=popV;
+  setTimeout(popV,250);
+}
+if($("voiceSel")){
+  $("voiceSel").onchange=()=>{
+    const v=getSelectedVoice();
+    const msg=v?("Selected voice: "+v.name):"Voice updated";
+    setTxt("st",msg);
+    speakTxt(msg,true);
+  };
+}
+if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
+if($("loadBtn"))$("loadBtn").onclick=loadLatest;
+if($("saveGhBtn"))$("saveGhBtn").onclick=saveToGitHub;
+if($("runActBtn"))$("runActBtn").onclick=triggerWorkflow;
+if($("relCatBtn"))$("relCatBtn").onclick=loadSongs;
+if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
+if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
+if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")?.value||"",false);
+if($("dlDj"))$("dlDj").onclick=()=>dlAudioTxt($("djBox")?.value||"","dj-intro-anna");
+if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")?.value||"","DJ intro");
+if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")?.value||"",false);
+if($("dlPress"))$("dlPress").onclick=()=>dlAudioTxt($("pressBox")?.value||"","press-release-anna");
+if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")?.value||"","press release");
+(async()=>{await loadSongs();await loadLatest();})();
+</script></body></html>
