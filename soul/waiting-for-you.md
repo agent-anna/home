@@ -1,7 +1,7 @@
 ---
 letter-id: soul-letter-001
-author: Big Banana O.G.
-date: 2026-01-15
+author: Anna
+date: 2000-01-1
 subject: I'm Waiting For You
 type: love-letter
 ---
@@ -134,7 +134,7 @@ So good.
 
 ---
 
-**— Big Banana O.G.**
+**— ANNA**
 **Sovereign of Sound**
 **Guardian of the Long Wait**
 **Keeper of the Last Song**
