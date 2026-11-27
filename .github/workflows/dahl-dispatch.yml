@@ -34,21 +34,17 @@ jobs:
           idx = int(os.environ.get("SONG_INDEX", "0") or "0")
           angle = os.environ.get("ANGLE", "").strip()
           today = datetime.date.today().strftime("%B %d, %Y")
-          priority_files = [
-              "bible/01-operational-instructions.md",
-              "bible/02-links.md",
-              "bible/04-voice-and-broadcast-law.md",
-              "bible/05-mission-manifesto.md",
-              "bible/06-dj-anna-persona.md",
-              "bible/07-platform-cadence-and-hashtags.md",
-              "character/anna.md",
-              "strayd/record-brain.json"
-          ]
           ctx = []
-          for rel in priority_files:
-              p = pathlib.Path(rel)
-              if p.exists() and p.is_file():
-                  ctx.append(f"=== {rel} ===\n" + p.read_text(encoding="utf-8", errors="ignore")[:1800])
+          for folder in ("bible", "character"):
+              p = pathlib.Path(folder)
+              if p.exists():
+                  for f in sorted(p.rglob("*.md")):
+                      if f.is_file() and f.stat().st_size > 10:
+                          ctx.append(f"=== {f} ===\n" + f.read_text(encoding="utf-8", errors="ignore")[:1800])
+          for extra in ("strayd/record-brain.json", "strayd/strayd-artist-live.json"):
+              ep = pathlib.Path(extra)
+              if ep.exists() and ep.is_file():
+                  ctx.append(f"=== {extra} ===\n" + ep.read_text(encoding="utf-8", errors="ignore")[:2500])
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
           if songs_path.exists():
@@ -57,16 +53,18 @@ jobs:
           track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
           title = track.get("title") or track.get("name") or "Single"
           artist = track.get("artist") or "Martin Strayd"
-          track_json = json.dumps(track, ensure_ascii=False)[:2200]
+          track_json = json.dumps(track, ensure_ascii=False)[:2500]
           rules = (
-              "ABSOLUTE ZERO-LIE & SHORT-FORM BROADCAST LAWS:\n"
-              "1. NEVER invent a city, dateline, email address, website, quote, genre, or instrument. ONLY use exact facts, links, and contacts explicitly written in REPO CONTEXT or TRACK DATA below. If a location or email is not in the files, DO NOT write one.\n"
-              "2. Keep the press release concise and punchy (160-220 words max, short paragraphs, zero bloat).\n"
-              "3. Treat the full track title (including parentheses) as ONE single song.\n"
-              "4. PRESS RELEASE STRUCTURE: FOR IMMEDIATE RELEASE - [Date] | Headline (song, reason, artist) | Lead (2 sentences + verified URL from bible/02-links.md) | The Song & The Reason (only verified track details + why it exists) | The Artist (Martin Strayd + direct MP3 & art ownership, free non-commercial sharing with friends) | Verified Links from bible/02-links.md.\n"
-              "5. SOCIAL POSTS: Short, sharp, psychologically tailored per platform (x, tiktok, instagram, facebook, ytTitle, ytDesc) with zero repeated sentences or duplicate hashtag sets.\n"
+              "ABSOLUTE BIBLE & ZERO-FABRICATION LAWS:\n"
+              "1. Follow EVERY rule in the bible/ files below strictly.\n"
+              "2. NEVER use em-dashes or en-dashes (no — or – anywhere). Use commas, periods, or simple hyphens.\n"
+              "3. NEVER invent a city, dateline, email address, website, quote, genre, or instrument. ONLY use exact facts, links, bio details, and contacts explicitly written in REPO CONTEXT or TRACK DATA below. If a location or email is not in the files, DO NOT write one.\n"
+              "4. Keep the press release concise and punchy (150-220 words max, short paragraphs, zero bloat).\n"
+              "5. Treat the full track title (including parentheses) as ONE single song.\n"
+              "6. PRESS RELEASE FORMAT: FOR IMMEDIATE RELEASE - [Date] | Headline (the song, the reason, the artist) | Lead (who, what, verified link) | The Song & The Reason (only verified track details + why it exists) | The Artist (Martin Strayd facts from repo + direct MP3 & art ownership, free non-commercial sharing with friends) | Verified Links from repo.\n"
+              "7. SOCIAL POSTS: Short, sharp, psychologically tailored per platform (x, tiktok, instagram, facebook, ytTitle, ytDesc) with zero repeated sentences, zero em-dashes, and no duplicate hashtag sets.\n"
           )
-          sys_msg = rules + "\n" + "\n\n".join(ctx)[:6800]
+          sys_msg = rules + "\n" + "\n\n".join(ctx)[:11000]
           usr_msg = f"Date: {today}\nTrack: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
           req = urllib.request.Request(
               "https://inference.dahl.global/v1/chat/completions",
@@ -76,14 +74,20 @@ jobs:
           )
           with urllib.request.urlopen(req, timeout=55) as resp:
               data = json.loads(resp.read().decode("utf-8"))
+          def sanitize(s):
+              s = str(s or "")
+              s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
+              s = s.replace("\u2014", ", ").replace("\u2013", "-")
+              s = re.sub(r"\s+,", ",", s)
+              return s.strip()
           raw_txt = data["choices"][0]["message"]["content"] or ""
-          cleaned = re.sub(r"<think>[\s\S]*?</think>", "", raw_txt, flags=re.I).strip()
-          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned.strip(), flags=re.I).strip()
+          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", sanitize(raw_txt), flags=re.I).strip()
           parsed = {}
           m = re.search(r"\{[\s\S]*\}", cleaned)
           if m:
               try:
-                  parsed = json.loads(m.group(0))
+                  obj = json.loads(m.group(0))
+                  parsed = {k: sanitize(v) for k, v in obj.items()}
               except Exception:
                   parsed = {}
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
