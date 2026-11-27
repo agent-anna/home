@@ -48,7 +48,7 @@ jobs:
           for rel in priority_files:
               p = pathlib.Path(rel)
               if p.exists() and p.is_file():
-                  ctx.append(f"=== {rel} ===\n" + p.read_text(encoding="utf-8", errors="ignore")[:1600])
+                  ctx.append(f"=== {rel} ===\n" + p.read_text(encoding="utf-8", errors="ignore")[:1800])
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
           if songs_path.exists():
@@ -59,15 +59,15 @@ jobs:
           artist = track.get("artist") or "Martin Strayd"
           track_json = json.dumps(track, ensure_ascii=False)[:2200]
           rules = (
-              "STRICT ZERO-FABRICATION & BROADCAST LAWS:\n"
-              "1. ONLY use facts, URLs, emails, locations, and musical details explicitly present in the REPO CONTEXT and TRACK DATA below. NEVER guess a city, NEVER invent an email address, NEVER fabricate quotes, and NEVER invent instruments or genres not in the data.\n"
-              "2. Treat the track title (including any parenthetical subtitle) as ONE single song. Never split it into two releases.\n"
-              "3. Follow the persona, voice law, links, and cadence rules in the bible files below. Avoid empty hype words like unleashes, sonic catharsis, or pushes boundaries.\n"
-              "4. PRESS RELEASE FORMAT (250-350 words, plain text, no markdown stars): Header (FOR IMMEDIATE RELEASE - date + headline covering the song, the reason, and the artist), Lead (who/what/verified link), The Song & The Reason (what it sounds like from track metadata + why it was written), The Artist (who Martin Strayd is + direct MP3 & art ownership with free non-commercial sharing), Verified Links & Contact (ONLY URLs/contacts from bible/02-links.md).\n"
-              "5. SOCIAL POSTS: Write genuinely distinct, psychologically sharp posts tailored to each platform (x: punchy scroll-stopper under 260 chars; tiktok: relatable POV/hook + clean tags; instagram: warm story/connection + save/share prompt; facebook: conversational story inviting real comments; ytTitle: clear search-friendly title under 90 chars; ytDesc: hook + story + verified links + hashtags). Zero repeated sentences or duplicate hashtag sets across platforms.\n"
+              "ABSOLUTE ZERO-LIE & SHORT-FORM BROADCAST LAWS:\n"
+              "1. NEVER invent a city, dateline, email address, website, quote, genre, or instrument. ONLY use exact facts, links, and contacts explicitly written in REPO CONTEXT or TRACK DATA below. If a location or email is not in the files, DO NOT write one.\n"
+              "2. Keep the press release concise and punchy (160-220 words max, short paragraphs, zero bloat).\n"
+              "3. Treat the full track title (including parentheses) as ONE single song.\n"
+              "4. PRESS RELEASE STRUCTURE: FOR IMMEDIATE RELEASE - [Date] | Headline (song, reason, artist) | Lead (2 sentences + verified URL from bible/02-links.md) | The Song & The Reason (only verified track details + why it exists) | The Artist (Martin Strayd + direct MP3 & art ownership, free non-commercial sharing with friends) | Verified Links from bible/02-links.md.\n"
+              "5. SOCIAL POSTS: Short, sharp, psychologically tailored per platform (x, tiktok, instagram, facebook, ytTitle, ytDesc) with zero repeated sentences or duplicate hashtag sets.\n"
           )
-          sys_msg = rules + "\n" + "\n\n".join(ctx)[:6500]
-          usr_msg = f"Date: {today}\nTrack Title: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
+          sys_msg = rules + "\n" + "\n\n".join(ctx)[:6800]
+          usr_msg = f"Date: {today}\nTrack: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
           req = urllib.request.Request(
               "https://inference.dahl.global/v1/chat/completions",
               data=json.dumps({"model": "MiniMaxAI/MiniMax-M2.7", "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]}).encode("utf-8"),
