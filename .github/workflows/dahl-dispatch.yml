@@ -80,7 +80,7 @@ jobs:
           sys_msg = (
               "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
               "Enforce every rule in bible/000-bible.md: zero em/en-dashes, no repeated symbol runs, single song title intact,\n"
-              "single-of-the-day press release with world radio cities + Martin Strayd bio + MP3/art ownership terms,\n"
+              "single-of-the-day press release listing WORLD RADIO COUNTRIES (not cities) + Martin Strayd bio + MP3/art ownership terms,\n"
               "and distinct non-repeating platform-specific DJ/SEO copy per social channel.\n"
               + b000 + "\n" + b07 + "\n" + res
           )
@@ -121,7 +121,7 @@ jobs:
               except Exception:
                   parsed = {}
 
-          cities = "Manila, Melbourne, Ecuador, Atlanta, Santiago, Toronto, Denpasar, Paris, Hat Yai"
+          countries = "Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand"
           apple_url = "https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
           bundle_url = "https://tinyurl.com/martinstrayd"
           hub_url = "https://strayd.com"
@@ -145,10 +145,10 @@ jobs:
               f"A closer look at {title} by {artist} and its {topic} focus on Veg Anna Radio. Grab your MP3 and cover art bundle at {bundle_url}, free non-commercial friend sharing allowed. #martinstrayd #dailysingle #art"
           ]
           fb_list = [
-              f"Veg Anna Radio daily single spotlight: {title} by {artist}, diving into {topic}. World radio stations playing his music reach {cities}. Full artist hub at {hub_url} #martinstrayd #veganaradio",
-              f"Listeners tuning into {title} by {artist} on Veg Anna Radio are exploring {topic}, with world radio airplay reaching {cities}. More at {hub_url} #martinstrayd #dailysingle",
-              f"Today's single release on Veg Anna Radio is {title} by {artist} ({topic}), with world radio cities including {cities}. Visit {hub_url} #martinstrayd #newmusic",
-              f"From {artist}, {title} lands as today's single on Veg Anna Radio around {topic}, with world radio play in {cities}. Hub: {hub_url} #martinstrayd #radio"
+              f"Veg Anna Radio daily single spotlight: {title} by {artist}, diving into {topic}. World radio countries playing his music include {countries}. Full artist hub at {hub_url} #martinstrayd #veganaradio",
+              f"Listeners tuning into {title} by {artist} on Veg Anna Radio are exploring {topic}, with world radio airplay across {countries}. More at {hub_url} #martinstrayd #dailysingle",
+              f"Today's single release on Veg Anna Radio is {title} by {artist} ({topic}), with world radio countries including {countries}. Visit {hub_url} #martinstrayd #newmusic",
+              f"From {artist}, {title} lands as today's single on Veg Anna Radio around {topic}, with world radio play across {countries}. Hub: {hub_url} #martinstrayd #radio"
           ]
           yt_titles = [
               f"{title} - {artist} | Veg Anna Radio Daily Single",
@@ -160,7 +160,7 @@ jobs:
           base_press = (
               f"FOR IMMEDIATE RELEASE - {today}\n"
               f"Single of the Day on Veg Anna Radio: {title} by {artist}\n\n"
-              f"Daily Single and World Radio Cities: {artist} launches {title} as today's single and licensed original music drop on Veg Anna Radio, with world radio stations playing his music across {cities}.\n\n"
+              f"Daily Single and World Radio Countries: {artist} launches {title} as today's single and licensed original music drop on Veg Anna Radio, with world radio stations playing his music across {countries}.\n\n"
               f"About Martin Strayd: {artist} is an Australian lyricist, songwriter, and composer, and a former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.\n\n"
               f"Ownership and Links: Listeners who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} | YouTube: https://www.youtube.com/@martinstrayd"
           )
@@ -191,7 +191,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): enforce 000-bible.md rules across press and socials"
+            git commit -m "fix(dispatch): use world radio countries instead of cities"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
