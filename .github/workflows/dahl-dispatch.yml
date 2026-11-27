@@ -27,13 +27,23 @@ jobs:
           ANGLE: ${{ github.event.inputs.angle || '' }}
         run: |
           python3 - << 'PY'
-          import datetime, json, os, pathlib, re, urllib.request
-          key = os.environ.get("DAHL_API_KEY", "").strip()
-          if not key:
-              raise SystemExit("DAHL_KEY secret is empty")
-          idx = int(os.environ.get("SONG_INDEX", "0") or "0")
-          angle = os.environ.get("ANGLE", "").strip()
+          import datetime, json, os, pathlib, re, urllib.request, urllib.error
+
+          key = (os.environ.get("DAHL_API_KEY") or "").strip()
+          try:
+              idx = int((os.environ.get("SONG_INDEX") or "0").strip() or "0")
+          except Exception:
+              idx = 0
+          angle = (os.environ.get("ANGLE") or "").strip()
           today = datetime.date.today().strftime("%B %d, %Y")
+
+          def scrub(s):
+              s = str(s or "")
+              s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
+              s = s.replace("\u2014", ", ").replace("\u2013", "-")
+              s = re.sub(r"[:\-=*#~]{4,}", " ", s)
+              s = re.sub(r"\s+,", ",", s)
+              return re.sub(r"[ \t]{2,}", " ", s).strip()
 
           bible_docs = []
           bp = pathlib.Path("bible")
@@ -41,11 +51,11 @@ jobs:
               for f in sorted(bp.rglob("*.md")):
                   if f.is_file() and f.stat().st_size > 5:
                       txt = f.read_text(encoding="utf-8", errors="ignore")
-                      pri = 0 if re.search(r"radio|city|cities|28|airplay|station|link", txt, re.I) else 1
+                      pri = 0 if re.search(r"radio|city|cities|28|airplay|station|link|voice|hashtag", txt, re.I) else 1
                       bible_docs.append((pri, str(f), txt))
           bible_docs.sort(key=lambda x: (x[0], x[1]))
 
-          ctx = [f"=== {name} ===\n{txt[:2000]}" for _, name, txt in bible_docs]
+          ctx = [f"=== {name} ===\n{txt[:2200]}" for _, name, txt in bible_docs]
           for extra in ("strayd/record-brain.json", "strayd/strayd-artist-live.json"):
               ep = pathlib.Path(extra)
               if ep.exists() and ep.is_file():
@@ -54,60 +64,92 @@ jobs:
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
           if songs_path.exists():
-              raw = json.loads(songs_path.read_text(encoding="utf-8", errors="ignore"))
-              songs = raw if isinstance(raw, list) else (raw.get("songs") or raw.get("tracks") or [])
+              try:
+                  raw = json.loads(songs_path.read_text(encoding="utf-8", errors="ignore"))
+                  songs = raw if isinstance(raw, list) else (raw.get("songs") or raw.get("tracks") or [])
+              except Exception:
+                  songs = []
           track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
-          title = track.get("title") or track.get("name") or "Single"
-          artist = track.get("artist") or "Martin Strayd"
+          title = scrub(track.get("title") or track.get("name") or "Adhd I Can Do That (Travillen Disorder)")
+          artist = scrub(track.get("artist") or "Martin Strayd")
           track_json = json.dumps(track, ensure_ascii=False)[:1800]
 
           spec = (
-              "LABEL-GRADE DISPATCH SPECIFICATION:\n"
-              "1. Pull radio stations, 28-day cities, verified links, and bible rules from the REPO FILES below. If a detail is not in the repo files or TRACK DATA, do not invent it.\n"
-              "2. NEVER output em-dashes or en-dashes (no — or –). NEVER output repeated punctuation like :::::: or ----.\n"
+              "STRICT RECORD LABEL DISPATCH SPECIFICATION:\n"
+              "1. Ground every station, city, link, and rule in the REPO FILES below. If a station or city is in bible/, include it.\n"
+              "2. NEVER output em-dashes or en-dashes (no — or –). NEVER output repeated symbols like :::::: or ----.\n"
               "3. Keep the full track title as ONE single song.\n"
-              "4. PRESS RELEASE ('press'): Must have clean labeled lines (no markdown asterisks): HEADLINE (Martin Strayd releases daily single [title]), DAILY LAUNCH & AIRPLAY (daily single release, licensed original music, 28-day stations and cities from bible), ABOUT MARTIN STRAYD (Australian lyricist, songwriter, and composer; former guitar tech including Steve Jones of the Sex Pistols and Doug Fieger of The Knack; why this single exists today), OWNERSHIP & CTA (direct MP3 and cover art ownership, free non-commercial sharing with friends allowed, no commercial resale, and call to action with verified links).\n"
-              "5. DJ INTRO ('djIntro'): Spoken DJ Anna intro naming Martin Strayd, the single, and why listen now.\n"
-              "6. SOCIALS ('x', 'tiktok', 'instagram', 'facebook', 'ytTitle', 'ytDesc'): Distinct angle per platform; keep x under 275 chars and ytTitle under 95 chars; respect hashtag caps (x max 2, tiktok max 3, instagram max 3, facebook max 2, ytTitle 0, ytDesc max 3).\n"
+              "4. 'djIntro': Short spoken DJ Anna intro naming Martin Strayd, the single, and why tune in now.\n"
+              "5. 'press': Formal label press release covering: (a) daily single launch & single title, (b) 28-day global radio stations and cities from bible/, (c) ABOUT MARTIN STRAYD (Australian lyricist, songwriter, and composer; former guitar technician including Steve Jones of the Sex Pistols and Doug Fieger of The Knack; licensed original music across daily drops), and (d) direct MP3 and cover art ownership (free non-commercial sharing with friends allowed, no commercial resale) plus CTA and verified links.\n"
+              "6. 'x', 'tiktok', 'instagram', 'facebook', 'ytTitle', 'ytDesc': Distinct angle per platform; keep x under 275 chars and ytTitle under 95 chars; respect hashtag caps (x max 2, tiktok max 3, instagram max 3, facebook max 2, ytTitle 0, ytDesc max 3).\n"
+              "7. Return ONLY a single valid JSON object with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc. Escape newlines inside strings as \\n.\n"
           )
-          sys_msg = spec + "\n" + "\n\n".join(ctx)[:12000]
-          usr_msg = f"Date: {today}\nSingle: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
-          req = urllib.request.Request(
-              "https://inference.dahl.global/v1/chat/completions",
-              data=json.dumps({"model": "MiniMaxAI/MiniMax-M2.7", "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]}).encode("utf-8"),
-              headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
-              method="POST"
-          )
-          with urllib.request.urlopen(req, timeout=55) as resp:
-              data = json.loads(resp.read().decode("utf-8"))
+          sys_msg = spec + "\n" + "\n\n".join(ctx)[:13500]
+          usr_msg = f"Date: {today}\nSingle: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}"
 
-          def clean(s):
-              s = str(s or "")
-              s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
-              s = s.replace("\u2014", ", ").replace("\u2013", "-")
-              s = re.sub(r"[:\-=*#~]{4,}", " ", s)
-              s = re.sub(r"\s+,", ",", s)
-              return re.sub(r"[ \t]{2,}", " ", s).strip()
+          raw_txt = ""
+          api_status = "skipped_no_key"
+          if key:
+              try:
+                  req = urllib.request.Request(
+                      "https://inference.dahl.global/v1/chat/completions",
+                      data=json.dumps({"model": "MiniMaxAI/MiniMax-M2.7", "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]}).encode("utf-8"),
+                      headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
+                      method="POST"
+                  )
+                  with urllib.request.urlopen(req, timeout=65) as resp:
+                      api_status = f"http_{resp.status}"
+                      data = json.loads(resp.read().decode("utf-8"))
+                      choices = data.get("choices") or []
+                      if choices:
+                          msg = choices[0].get("message") or {}
+                          raw_txt = msg.get("content") or ""
+              except urllib.error.HTTPError as e:
+                  api_status = f"http_error_{e.code}"
+                  print("DAHL HTTPError:", e.code, e.read().decode("utf-8", errors="ignore")[:400])
+              except Exception as e:
+                  api_status = f"error_{type(e).__name__}"
+                  print("DAHL error:", repr(e))
+          else:
+              print("WARNING: DAHL_API_KEY is empty")
 
-          raw_txt = data["choices"][0]["message"]["content"] or ""
-          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", clean(raw_txt), flags=re.I).strip()
+          no_think = re.sub(r"<think>[\s\S]*?</think>", "", raw_txt, flags=re.I).strip()
+          fenced = re.sub(r"^```(?:json)?\s*|\s*```$", "", no_think, flags=re.I).strip()
+
           parsed = {}
-          m = re.search(r"\{[\s\S]*\}", cleaned)
+          m = re.search(r"\{[\s\S]*\}", fenced)
           if m:
               try:
-                  obj = json.loads(m.group(0))
-                  limits = {"x": 275, "tiktok": 2200, "instagram": 2200, "facebook": 63206, "ytTitle": 95, "ytDesc": 5000}
-                  for k in ["djIntro", "press", "x", "tiktok", "instagram", "facebook", "ytTitle", "ytDesc"]:
-                      val = clean(obj.get(k, ""))
-                      if k in limits:
-                          val = val[:limits[k]].strip()
-                      parsed[k] = val
-              except Exception:
-                  parsed = {}
+                  obj = json.loads(m.group(0), strict=False)
+                  if isinstance(obj, dict):
+                      parsed = {k: scrub(v) for k, v in obj.items()}
+              except Exception as e:
+                  print("JSON parse fallback:", repr(e))
+
+          limits = {"x": 275, "tiktok": 2200, "instagram": 2200, "facebook": 63206, "ytTitle": 95, "ytDesc": 5000}
+          keys = ["djIntro", "press", "x", "tiktok", "instagram", "facebook", "ytTitle", "ytDesc"]
+          final_d = {}
+          for k in keys:
+              val = scrub(parsed.get(k, ""))
+              if k in limits:
+                  val = val[:limits[k]].strip()
+              final_d[k] = val
+
+          if not final_d["djIntro"]:
+              final_d["djIntro"] = f"This is DJ Anna on Agent Anna with today's daily single from Martin Strayd, {title}."
+          if not final_d["press"]:
+              final_d["press"] = (
+                  f"FOR IMMEDIATE RELEASE - {today}\n"
+                  f"Martin Strayd Releases Daily Single: {title}\n\n"
+                  f"About Martin Strayd: Australian lyricist, songwriter, and composer, formerly a guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack, releasing daily singles and licensed original music.\n"
+                  f"Ownership and CTA: Buyers own MP3 and cover art bundles directly and may share freely with friends for non-commercial listening; commercial resale is prohibited."
+              )
+
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
-          payload = {"date": today, "track": title, "artist": artist, "dispatch": parsed, "clean_text": cleaned}
+          out_path.parent.mkdir(parents=True, exist_ok=True)
+          payload = {"date": today, "track": title, "artist": artist, "api_status": api_status, "dispatch": final_d, "clean_text": scrub(fenced)}
           out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
-          print("Wrote", out_path)
+          print("Wrote", out_path, "status:", api_status)
           PY
       - name: Commit generated dispatch
         env:
@@ -118,7 +160,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): label-grade press release + socials + bible cities"
+            git commit -m "chore(dispatch): resilient generator + full bio + bible radio cities"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
