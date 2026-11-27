@@ -12,55 +12,168 @@
 label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:4px}
 select,input,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-family:inherit}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
-.press-ta{min-height:360px;line-height:1.65;padding:14px}.soc-ta{min-height:175px;line-height:1.55;padding:12px}
+.dj-ta{min-height:110px;line-height:1.6;padding:12px}
+.press-ta{min-height:360px;line-height:1.65;padding:14px}
+.soc-ta{min-height:175px;line-height:1.55;padding:12px}
 .soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .scard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.sleft{display:flex;align-items:center;gap:10px;font-weight:600}.sleft img{width:42px;height:42px;border-radius:8px;object-fit:cover}
+.sleft{display:flex;align-items:center;gap:10px;font-weight:600}
+.sleft img{width:42px;height:42px;border-radius:8px;object-fit:cover}
 .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 button{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer}
-button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;padding:8px 14px}#st{color:var(--ac);font-size:.85rem}</style></head>
-<body><div class="wrap"><nav class="nav"><a href="dispatch.html" class="on">One-Page Dispatch</a><a href="studio.html">Studio</a><a href="press.html">Press</a><a href="social.html">Social</a></nav>
-<section class="top"><div class="art-box"><img id="bigArt" alt="Track cover art"/></div><div>
+button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;padding:8px 14px}
+#st{color:var(--ac);font-size:.85rem}</style></head>
+<body><div class="wrap">
+<nav class="nav" aria-label="Primary Navigation">
+<a href="dispatch.html" class="on">One-Page Dispatch</a>
+<a href="studio.html">Studio</a>
+<a href="press.html">Press</a>
+<a href="social.html">Social</a>
+</nav>
+<section class="top" aria-label="Release Controls">
+<div class="art-box"><img id="bigArt" alt="Track cover art"/></div>
+<div>
 <h1 id="songTitle" style="margin:0 0 4px">Loading catalog...</h1>
 <div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - Agent Anna GitHub Dispatch</div>
-<div class="ctrl"><div><label for="songSel">Select Song</label><select id="songSel"></select></div>
-<div><label for="voiceSel">Female Voice (Speech & MP3)</label><select id="voiceSel"></select></div>
+<div class="ctrl">
+<div><label for="songSel">Select Song</label><select id="songSel"></select></div>
+<div><label for="voiceSel">Female Voice (Speech &amp; MP3)</label><select id="voiceSel"></select></div>
 <div><label for="angleIn">Hook / Angle (For GitHub Action)</label><input id="angleIn" placeholder="Optional hook or release note..."/></div>
-<div><label for="patIn">GitHub PAT (Optional - Only to trigger Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div></div>
-<div class="bar"><button id="loadBtn" class="pri" type="button">Load Latest GitHub Dispatch</button>
+<div><label for="patIn">GitHub PAT (Optional - Only to trigger Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+</div>
+<div class="bar">
+<button id="loadBtn" class="pri" type="button">Load Latest GitHub Dispatch</button>
 <button id="runActBtn" type="button">Trigger GitHub Action</button>
-<button id="relCatBtn" type="button">Reload Songs</button><span id="st">Ready</span></div></div></section>
-<section class="box"><div class="shead" style="margin-bottom:10px"><h2 style="margin:0;font-size:1.1rem">Official World Media Press Release</h2>
-<div class="bar"><button id="spkPress" type="button">Speak</button><button id="dlPress" type="button">Download .MP3</button><button id="cpyPress" type="button">Copy</button></div></div>
-<textarea id="pressBox" class="press-ta" placeholder="Load latest dispatch from GitHub or trigger dahl-dispatch.yml..."></textarea></section>
-<section id="socGrid" class="soc-grid"></section></div>
-<script>const $=id=>document.getElementById(id);
+<button id="relCatBtn" type="button">Reload Songs</button>
+<span id="st" role="status" aria-live="polite">Ready</span>
+</div>
+</div>
+</section>
+<section class="box" aria-label="DJ Anna Intro">
+<div class="shead" style="margin-bottom:10px">
+<h2 style="margin:0;font-size:1.1rem">DJ Anna Voice Intro</h2>
+<div class="bar">
+<button id="spkDj" type="button">Speak</button>
+<button id="dlDj" type="button">Download .MP3</button>
+<button id="cpyDj" type="button">Copy</button>
+</div>
+</div>
+<label for="djBox">DJ Anna Intro Text</label>
+<textarea id="djBox" class="dj-ta" placeholder="DJ Anna spoken intro..."></textarea>
+</section>
+<section class="box" aria-label="Press Release">
+<div class="shead" style="margin-bottom:10px">
+<h2 style="margin:0;font-size:1.1rem">Official World Media Press Release</h2>
+<div class="bar">
+<button id="spkPress" type="button">Speak</button>
+<button id="dlPress" type="button">Download .MP3</button>
+<button id="cpyPress" type="button">Copy</button>
+</div>
+</div>
+<label for="pressBox">Press Release Text</label>
+<textarea id="pressBox" class="press-ta" placeholder="Load latest dispatch from GitHub or trigger dahl-dispatch.yml..."></textarea>
+</section>
+<section id="socGrid" class="soc-grid" aria-label="Social Media Posts"></section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
 const CH=[["x","X",280],["tiktok","TikTok",2200],["instagram","Instagram",2200],["facebook","Facebook",63206],["ytTitle","YouTube Title",100],["ytDesc","YouTube Description",5000]];
 const FH=["aria","jenny","sonia","libby","maisie","natasha","clara","ava","samantha","victoria","zira","hazel","female","amy","emma"];
 const MH=["guy","ryan","christopher","eric","davis","andrew","brian","david","mark","daniel","male"];
 let SONGS=[],VOICES=[];
-const stripThink=s=>String(s||"").replace(/<think>[\s\S]*?<\/think>/gi,"").replace(/^```(?:json)?\s*|\s*```$/gim,"").replace(/`/g,"").trim();
-CH.forEach(([id,lbl,lim])=>{const d=document.createElement("article");d.className="scard";
-$("socGrid").appendChild(d);});
-async function fetchRepo(p){for(const b of["https://raw.githubusercontent.com/agent-anna/home/main/","https://agent-anna.github.io/home/"]){try{const r=await fetch(b+p+"?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.text();}catch{}}return"";}
-function artUrl(s,t){const r=String((s&&(s.artUrl||s.art||s.image||s.artwork))||"").trim();if(!r)return"https://martinstrayd.github.io/artist/store-art/Martin%20Strayd%20-%20"+encodeURIComponent(t)+".png";if(/^https?:\/\//i.test(r))return r;return"https://martinstrayd.github.io/artist/"+encodeURI(r.replace(/^\.?\//,""));}
-function syncSong(){const s=SONGS[Number($("songSel").value||0)]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};const t=s.title||s.name||"Single";const a=s.artist||"Martin Strayd";const u=artUrl(s,t);
-$("songTitle").textContent=t;$("songMeta").textContent=a+" - "+SONGS.length+" songs - Dahl MiniMax-M2.7 via GitHub";$("bigArt").src=u;document.querySelectorAll("img[data-th]").forEach(im=>im.src=u);return{idx:Number($("songSel").value||0),t,a};}
-function parseDispatch(rawText){const c=stripThink(rawText);let obj={};const m=c.match(/\{[\s\S]*\}/);if(m){try{obj=JSON.parse(m[0]);}catch{}}
-return{press:String(obj.press||c).trim(),x:String(obj.x||"").trim(),tiktok:String(obj.tiktok||"").trim(),instagram:String(obj.instagram||"").trim(),facebook:String(obj.facebook||"").trim(),ytTitle:String(obj.ytTitle||"").trim(),ytDesc:String(obj.ytDesc||"").trim()};}
-function applyDispatch(data){if(!data)return;let d=data.dispatch;if(!d||typeof d!=="object"){d=parseDispatch(data.clean_text||data.raw||"");}else{d={press:stripThink(d.press||data.clean_text||data.raw||""),x:stripThink(d.x||""),tiktok:stripThink(d.tiktok||""),instagram:stripThink(d.instagram||""),facebook:stripThink(d.facebook||""),ytTitle:stripThink(d.ytTitle||""),ytDesc:stripThink(d.ytDesc||"")};}
-$("pressBox").value=d.press||"";CH.forEach(([id,,lim])=>{const v=String(d[id]||"").slice(0,lim);$("t_"+id).value=v;$("c_"+id).textContent=v.length+" / "+lim;});}
-async function loadLatest(){$("st").textContent="Loading strayd/last-dahl-dispatch.json...";const raw=await fetchRepo("strayd/last-dahl-dispatch.json");if(!raw){$("st").textContent="No dispatch file yet";return;}
-try{const j=JSON.parse(raw);if(j.track){const i=SONGS.findIndex(x=>(x.title||x.name)===j.track);if(i>=0)$("songSel").value=String(i);}syncSong();applyDispatch(j);$("st").textContent="Loaded dispatch for "+(j.track||"track");}catch(e){$("st").textContent="Parse error: "+e.message;}}
-async function loadSongs(){const raw=await fetchRepo("strayd/songs-db.json");try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"}];
-const sel=$("songSel");sel.innerHTML="";SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});syncSong();}
-async function triggerWorkflow(){const pat=($("patIn").value||"").trim()||localStorage.getItem("anna_dispatch_pat")||"";if(pat)localStorage.setItem("anna_dispatch_pat",pat);if(!pat){$("st").textContent="Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab";return;}
-const{idx}=syncSong();$("st").textContent="Triggering GitHub Action...";try{const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{method:"POST",headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:($("angleIn").value||"").trim()}})});
-if(!r.ok)throw new Error("HTTP "+r.status);$("st").textContent="Action started (song_index="+idx+") - wait ~15s then click Load Latest GitHub Dispatch";}catch(e){$("st").textContent=e.message;}}
+const scrub=s=>String(s||"").replace(/<think>[\s\S]*?<\/think>/gi,"").replace(/^```(?:json)?\s*|\s*```$/gim,"").replace(/\u2014/g,", ").replace(/\u2013/g,"-").replace(/`/g,"").trim();
+CH.forEach(([id,lbl,lim])=>{
+  const art=document.createElement("article");
+  art.className="scard";
+  art.setAttribute("aria-label",lbl+" Post");
+  art.innerHTML='<div class="shead"><div class="sleft"><img data-th alt="'+lbl+' cover thumbnail"/><span>'+lbl+'</span></div><span id="c_'+id+'" style="color:var(--mu);font-size:.8rem">0 / '+lim+'</span></div>'
+    +'<label for="t_'+id+'">'+lbl+' Post Text</label>'
+    +'<textarea id="t_'+id+'" class="soc-ta" maxlength="'+lim+'" placeholder="'+lbl+' post..."></textarea>'
+    +'<div class="bar"><button type="button" onclick="spkId(\''+id+'\')">Speak</button><button type="button" onclick="dlId(\''+id+'\')">Download .MP3</button><button type="button" onclick="cpyId(\''+id+'\')">Copy</button></div>';
+  $("socGrid").appendChild(art);
+  $("t_"+id).addEventListener("input",()=>{
+    $("c_"+id).textContent=$("t_"+id).value.length+" / "+lim;
+  });
+});
+async function fetchRepo(p){
+  for(const b of["https://agent-anna.github.io/home/","https://raw.githubusercontent.com/agent-anna/home/main/"]){
+    try{const r=await fetch(b+p+"?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.text();}catch{}
+  }
+  return"";
+}
+function artUrl(s,t){
+  const r=String((s&&(s.artUrl||s.art||s.image||s.artwork))||"").trim();
+  if(!r)return"https://martinstrayd.github.io/artist/store-art/Martin%20Strayd%20-%20"+encodeURIComponent(t)+".png";
+  if(/^https?:\/\//i.test(r))return r;
+  return"https://martinstrayd.github.io/artist/"+encodeURI(r.replace(/^\.?\//,""));
+}
+function syncSong(){
+  const s=SONGS[Number($("songSel").value||0)]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
+  const t=s.title||s.name||"Single";
+  const a=s.artist||"Martin Strayd";
+  const u=artUrl(s,t);
+  $("songTitle").textContent=t;
+  $("songMeta").textContent=a+" - "+SONGS.length+" songs - Dahl MiniMax-M2.7 via GitHub";
+  $("bigArt").src=u;
+  document.querySelectorAll("img[data-th]").forEach(im=>im.src=u);
+  return{idx:Number($("songSel").value||0),t,a};
+}
+function parseDispatch(rawText){
+  const c=scrub(rawText);
+  let obj={};
+  const m=c.match(/\{[\s\S]*\}/);
+  if(m){try{obj=JSON.parse(m[0]);}catch{}}
+  return{djIntro:scrub(obj.djIntro||""),press:scrub(obj.press||c),x:scrub(obj.x||""),tiktok:scrub(obj.tiktok||""),instagram:scrub(obj.instagram||""),facebook:scrub(obj.facebook||""),ytTitle:scrub(obj.ytTitle||""),ytDesc:scrub(obj.ytDesc||"")};
+}
+function applyDispatch(data){
+  if(!data)return;
+  let d=data.dispatch;
+  if(!d||typeof d!=="object"){d=parseDispatch(data.clean_text||data.raw||"");}
+  else{d={djIntro:scrub(d.djIntro||""),press:scrub(d.press||data.clean_text||data.raw||""),x:scrub(d.x||""),tiktok:scrub(d.tiktok||""),instagram:scrub(d.instagram||""),facebook:scrub(d.facebook||""),ytTitle:scrub(d.ytTitle||""),ytDesc:scrub(d.ytDesc||"")};}
+  $("djBox").value=d.djIntro||"";
+  $("pressBox").value=d.press||"";
+  CH.forEach(([id,,lim])=>{
+    const v=String(d[id]||"").slice(0,lim);
+    $("t_"+id).value=v;
+    $("c_"+id).textContent=v.length+" / "+lim;
+  });
+}
+async function loadLatest(){
+  $("st").textContent="Loading strayd/last-dahl-dispatch.json...";
+  const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
+  if(!raw){$("st").textContent="No dispatch file yet";return;}
+  try{
+    const j=JSON.parse(raw);
+    if(j.track){const i=SONGS.findIndex(x=>(x.title||x.name)===j.track);if(i>=0)$("songSel").value=String(i);}
+    syncSong();
+    applyDispatch(j);
+    $("st").textContent="Loaded dispatch for "+(j.track||"track");
+  }catch(e){$("st").textContent="Parse error: "+e.message;}
+}
+async function loadSongs(){
+  const raw=await fetchRepo("strayd/songs-db.json");
+  try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
+  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"}];
+  const sel=$("songSel");sel.innerHTML="";
+  SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});
+  syncSong();
+}
+async function triggerWorkflow(){
+  const pat=($("patIn").value||"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
+  if(pat)localStorage.setItem("anna_dispatch_pat",pat);
+  if(!pat){$("st").textContent="Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab";return;}
+  const{idx}=syncSong();
+  $("st").textContent="Triggering GitHub Action...";
+  try{
+    const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{method:"POST",headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:($("angleIn").value||"").trim()}})});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    $("st").textContent="Action started (song_index="+idx+") - wait ~20s then click Load Latest GitHub Dispatch";
+  }catch(e){$("st").textContent=e.message;}
+}
 function scV(v){const h=(v.name+" "+v.lang).toLowerCase();let s=0;for(const x of FH)if(h.includes(x))s+=40;for(const x of MH)if(new RegExp("\\b"+x+"\\b").test(h))s-=100;return s;}
 function popV(){if(!("speechSynthesis"in window))return;const list=(speechSynthesis.getVoices()||[]).sort((a,b)=>scV(b)-scV(a));VOICES=list.filter(v=>scV(v)>-50);if(!VOICES.length)VOICES=list;const sel=$("voiceSel");sel.innerHTML="";VOICES.forEach((v,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(scV(v)>=40?"Female - ":"")+v.name;sel.appendChild(o);});}
-function cleanSpeech(t){return stripThink(String(t||"")).replace(/https?:\/\/\S+/g," ").replace(/#[A-Za-z0-9_]+/g," ").replace(/\s+/g," ").trim();}
+function cleanSpeech(t){return scrub(String(t||"")).replace(/https?:\/\/\S+/g," ").replace(/#[A-Za-z0-9_]+/g," ").replace(/\s+/g," ").trim();}
 function speakTxt(t){const sp=cleanSpeech(t).slice(0,1200);if(!sp||!("speechSynthesis"in window))return;popV();try{speechSynthesis.cancel();}catch{}const v=VOICES[Number($("voiceSel").value||0)]||VOICES[0]||null;(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,10).forEach(pt=>{const u=new SpeechSynthesisUtterance(pt.trim());if(v)u.voice=v;u.pitch=1.05;speechSynthesis.speak(u);});}
 async function dlMp3Txt(t,fname){const sp=cleanSpeech(t).slice(0,320);if(!sp)return;speakTxt(sp);try{const r=await fetch("https://api.streamelements.com/kappa/v2/speech?voice=Amy&text="+encodeURIComponent(sp));if(!r.ok)throw new Error("HTTP "+r.status);const b=await r.blob();const url=URL.createObjectURL(b);const a=document.createElement("a");a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);$("st").textContent="Downloaded "+fname;}catch(e){$("st").textContent="MP3 download blocked ("+e.message+"); spoke via voice";}}
 function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));$("st").textContent="Copied "+lbl;}
@@ -68,6 +181,7 @@ window.spkId=id=>speakTxt($("t_"+id)?.value||"");window.dlId=id=>dlMp3Txt($("t_"
 if("speechSynthesis"in window){popV();speechSynthesis.onvoiceschanged=popV;}
 if(localStorage.getItem("anna_dispatch_pat"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
 $("loadBtn").onclick=loadLatest;$("runActBtn").onclick=triggerWorkflow;$("relCatBtn").onclick=loadSongs;$("songSel").onchange=syncSong;
+$("spkDj").onclick=()=>speakTxt($("djBox").value);$("dlDj").onclick=()=>dlMp3Txt($("djBox").value,"dj-intro-anna.mp3");$("cpyDj").onclick=()=>cpyTxt($("djBox").value,"DJ intro");
 $("spkPress").onclick=()=>speakTxt($("pressBox").value);$("dlPress").onclick=()=>dlMp3Txt($("pressBox").value,"press-release-anna.mp3");$("cpyPress").onclick=()=>cpyTxt($("pressBox").value,"press release");
 (async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
