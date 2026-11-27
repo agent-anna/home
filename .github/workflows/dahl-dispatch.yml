@@ -27,7 +27,7 @@ jobs:
           ANGLE: ${{ github.event.inputs.angle || '' }}
         run: |
           python3 - << 'PY'
-          import datetime, json, os, pathlib, re, urllib.request, urllib.error
+          import datetime, json, os, pathlib, re, urllib.request
 
           key = (os.environ.get("DAHL_API_KEY") or "").strip()
           try:
@@ -59,14 +59,19 @@ jobs:
           track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
           title = scrub(track.get("title") or track.get("name") or "Adhd I Can Do That (Travillen Disorder)")
           artist = scrub(track.get("artist") or "Martin Strayd")
+          topic = scrub(track.get("topic") or track.get("theme") or track.get("mood") or track.get("genre") or angle or "neurodivergent drive and high-speed focus")
 
           sys_msg = (
-              "Write record-label dispatch JSON ONLY with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
-              "Rules: No em-dashes or en-dashes. Keep full single title intact. Pull cities, bio, ownership, and links from ESSENTIALS.\n"
-              "Limits: x under 275 chars (max 2 tags), ytTitle under 95 chars (0 tags), tiktok/instagram max 3 tags, facebook max 2 tags, ytDesc max 3 tags.\n"
+              "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
+              "Rules:\n"
+              "1. NO em-dashes or en-dashes (no — or –), NO repeated symbols like ::::::.\n"
+              "2. Keep full single title intact as ONE single song.\n"
+              "3. press: Press release for the SINGLE OF THE DAY (single title + Martin Strayd + daily single and licensed original music), list the WORLD RADIO CITIES playing his song from ESSENTIALS, include ABOUT MARTIN STRAYD (Australian lyricist, songwriter, composer; former guitar tech including Steve Jones of the Sex Pistols and Doug Fieger of The Knack), and include MP3/art bundle ownership (share freely with friends for non-commercial play, no resale) plus CTA and links.\n"
+              "4. socials (x, tiktok, instagram, facebook, ytTitle, ytDesc): Use the single title, song topic, and artist through the lens of how a real DJ promotes and backs a new song drop (cueing the hook, calling out the theme/topic, building rotation energy, and directing listeners to hear and grab the bundle). Do NOT pitch a 28-day ad campaign.\n"
+              "5. Limits: x under 275 chars (max 2 tags), ytTitle under 95 chars (0 tags), tiktok/instagram max 3 tags, facebook max 2 tags, ytDesc max 3 tags.\n"
               "ESSENTIALS:\n" + ess_txt
           )
-          usr_msg = f"Date: {today}\nSingle: {title}\nArtist: {artist}\nAngle: {angle}"
+          usr_msg = f"Date: {today}\nSingle of the Day: {title}\nArtist: {artist}\nTopic/Hook: {topic}"
 
           raw_txt = ""
           api_status = "fallback_ready"
@@ -107,26 +112,26 @@ jobs:
           cities = "Manila, Melbourne, Ecuador, Atlanta, Santiago, Toronto, Denpasar, Paris, Hat Yai"
           base_press = (
               f"FOR IMMEDIATE RELEASE - {today}\n"
-              f"Martin Strayd Releases Daily Single: {title}\n\n"
-              f"Daily Single and 28-Day Airplay: {artist} drops the single {title} as part of his daily single and licensed original music catalog, featured across 28-day radio airplay markets in {cities}.\n\n"
+              f"Single of the Day: {title} by {artist}\n\n"
+              f"Single and World Radio Play: {artist} releases {title} as today's single and licensed original music drop, with world radio airplay reaching cities including {cities}.\n\n"
               f"About Martin Strayd: Australian lyricist, songwriter, and composer, and former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.\n\n"
-              f"Ownership and Links: Listeners who get MP3 and cover art bundles own them directly and may share freely with friends for non-commercial listening; commercial resale is not permitted. Hub: https://strayd.com | Bundle: https://tinyurl.com/martinstrayd | Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 | YouTube: https://www.youtube.com/@martinstrayd"
+              f"Ownership and CTA: Listeners who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Listen and get the single at https://strayd.com , https://tinyurl.com/martinstrayd , and Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
           )
 
           final_d = {
-              "djIntro": scrub(parsed.get("djIntro") or f"This is DJ Anna with today's daily single from Martin Strayd, {title}."),
+              "djIntro": scrub(parsed.get("djIntro") or f"Spinning today's single drop from {artist}: {title}, locked in on {topic}."),
               "press": scrub(parsed.get("press") or base_press),
-              "x": scrub(parsed.get("x") or f"{title} by Martin Strayd is out now. Stream on Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 #martinstrayd")[:275],
-              "tiktok": scrub(parsed.get("tiktok") or f"Daily single drop: {title} by Martin Strayd. Share MP3 and art bundles with friends for non-commercial play at https://tinyurl.com/martinstrayd #martinstrayd #dailysingle")[:2200],
-              "instagram": scrub(parsed.get("instagram") or f"Martin Strayd releases {title}. Direct MP3 and cover art bundles at https://tinyurl.com/martinstrayd with free non-commercial sharing with friends. #martinstrayd")[:2200],
-              "facebook": scrub(parsed.get("facebook") or f"Martin Strayd presents daily single {title}, airing across 28-day stations including {cities}. Full hub at https://strayd.com #martinstrayd")[:63206],
-              "ytTitle": scrub(parsed.get("ytTitle") or f"{title} - Martin Strayd")[:95],
-              "ytDesc": scrub(parsed.get("ytDesc") or f"{title} by Martin Strayd. Listen on Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 | Bundle: https://tinyurl.com/martinstrayd #martinstrayd")[:5000],
+              "x": scrub(parsed.get("x") or f"DJ spin alert: {artist} drops single {title} on {topic}. Hear it now: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 #martinstrayd")[:275],
+              "tiktok": scrub(parsed.get("tiktok") or f"Cueing up {title} by {artist}, built around {topic}. Grab the MP3 and art bundle at https://tinyurl.com/martinstrayd and share with friends for non-commercial play #martinstrayd #newmusic")[:2200],
+              "instagram": scrub(parsed.get("instagram") or f"In rotation today: {title} by {artist} ({topic}). Own the MP3 and cover art bundle at https://tinyurl.com/martinstrayd and share freely with friends for non-commercial listening. #martinstrayd #songdrop")[:2200],
+              "facebook": scrub(parsed.get("facebook") or f"New single rotation from {artist}: {title}, spotlighting {topic}. Full hub at https://strayd.com and bundle at https://tinyurl.com/martinstrayd #martinstrayd")[:63206],
+              "ytTitle": scrub(parsed.get("ytTitle") or f"{title} - {artist} (Single Drop)")[:95],
+              "ytDesc": scrub(parsed.get("ytDesc") or f"{title} by {artist} | Topic: {topic}. Stream on Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 | Bundle: https://tinyurl.com/martinstrayd | Hub: https://strayd.com #martinstrayd")[:5000],
           }
 
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
           out_path.parent.mkdir(parents=True, exist_ok=True)
-          payload = {"date": today, "track": title, "artist": artist, "api_status": api_status, "dispatch": final_d, "clean_text": scrub(fenced)}
+          payload = {"date": today, "track": title, "artist": artist, "topic": topic, "api_status": api_status, "dispatch": final_d, "clean_text": scrub(fenced)}
           out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
           print("Wrote", out_path, "status:", api_status)
           PY
@@ -139,7 +144,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): lean bible essentials + fast non-blocking dispatch"
+            git commit -m "chore(dispatch): single-of-day press release + DJ promo socials"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
