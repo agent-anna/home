@@ -41,17 +41,11 @@ jobs:
               for f in sorted(bp.rglob("*.md")):
                   if f.is_file() and f.stat().st_size > 5:
                       txt = f.read_text(encoding="utf-8", errors="ignore")
-                      priority = 0 if re.search(r"radio|city|cities|28|airplay|station", txt, re.I) else 1
-                      bible_docs.append((priority, str(f), txt))
+                      pri = 0 if re.search(r"radio|city|cities|28|airplay|station|link", txt, re.I) else 1
+                      bible_docs.append((pri, str(f), txt))
           bible_docs.sort(key=lambda x: (x[0], x[1]))
 
-          ctx = [f"=== {name} ===\n{txt[:2200]}" for _, name, txt in bible_docs]
-          for folder in ("character",):
-              p = pathlib.Path(folder)
-              if p.exists():
-                  for f in sorted(p.rglob("*.md")):
-                      if f.is_file() and f.stat().st_size > 5:
-                          ctx.append(f"=== {f} ===\n" + f.read_text(encoding="utf-8", errors="ignore")[:1200])
+          ctx = [f"=== {name} ===\n{txt[:2000]}" for _, name, txt in bible_docs]
           for extra in ("strayd/record-brain.json", "strayd/strayd-artist-live.json"):
               ep = pathlib.Path(extra)
               if ep.exists() and ep.is_file():
@@ -67,17 +61,17 @@ jobs:
           artist = track.get("artist") or "Martin Strayd"
           track_json = json.dumps(track, ensure_ascii=False)[:1800]
 
-          rules = (
-              "BIBLE-FIRST GROUNDING & STRICT RULES:\n"
-              "1. Pull radio stations, 28-day cities, links, voice/broadcast laws, and artist facts directly from the bible/ files and strayd/ data below. Whenever bible/ files are updated, reflect those updates automatically.\n"
-              "2. NEVER invent cities, emails, quotes, genres, or instruments not present in the bible/ files, strayd/ files, or TRACK DATA.\n"
-              "3. NEVER output em-dashes or en-dashes (no — or – anywhere). Use commas, periods, or hyphens.\n"
-              "4. Keep the full track title (including parentheses) as ONE single song.\n"
-              "5. Include djIntro (spoken DJ Anna intro), press (daily single release covering who Martin Strayd is, what today's single is and why it exists, the radio stations/cities from the bible, direct MP3 and cover art ownership with free non-commercial sharing, and verified links), plus social posts: x (under 275 chars, max 2 tags), tiktok (max 3 tags), instagram (max 3 tags), facebook (max 2 tags), ytTitle (under 95 chars, 0 tags), ytDesc (max 3 tags).\n"
-              "6. Give every platform a distinct angle and phrasing, with fresh wording across cards and #martinstrayd as the shared artist tag.\n"
+          spec = (
+              "LABEL-GRADE DISPATCH SPECIFICATION:\n"
+              "1. Pull radio stations, 28-day cities, verified links, and bible rules from the REPO FILES below. If a detail is not in the repo files or TRACK DATA, do not invent it.\n"
+              "2. NEVER output em-dashes or en-dashes (no — or –). NEVER output repeated punctuation like :::::: or ----.\n"
+              "3. Keep the full track title as ONE single song.\n"
+              "4. PRESS RELEASE ('press'): Must have clean labeled lines (no markdown asterisks): HEADLINE (Martin Strayd releases daily single [title]), DAILY LAUNCH & AIRPLAY (daily single release, licensed original music, 28-day stations and cities from bible), ABOUT MARTIN STRAYD (Australian lyricist, songwriter, and composer; former guitar tech including Steve Jones of the Sex Pistols and Doug Fieger of The Knack; why this single exists today), OWNERSHIP & CTA (direct MP3 and cover art ownership, free non-commercial sharing with friends allowed, no commercial resale, and call to action with verified links).\n"
+              "5. DJ INTRO ('djIntro'): Spoken DJ Anna intro naming Martin Strayd, the single, and why listen now.\n"
+              "6. SOCIALS ('x', 'tiktok', 'instagram', 'facebook', 'ytTitle', 'ytDesc'): Distinct angle per platform; keep x under 275 chars and ytTitle under 95 chars; respect hashtag caps (x max 2, tiktok max 3, instagram max 3, facebook max 2, ytTitle 0, ytDesc max 3).\n"
           )
-          sys_msg = rules + "\n" + "\n\n".join(ctx)[:12000]
-          usr_msg = f"Date: {today}\nTrack: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
+          sys_msg = spec + "\n" + "\n\n".join(ctx)[:12000]
+          usr_msg = f"Date: {today}\nSingle: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
           req = urllib.request.Request(
               "https://inference.dahl.global/v1/chat/completions",
               data=json.dumps({"model": "MiniMaxAI/MiniMax-M2.7", "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]}).encode("utf-8"),
@@ -91,8 +85,9 @@ jobs:
               s = str(s or "")
               s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
               s = s.replace("\u2014", ", ").replace("\u2013", "-")
+              s = re.sub(r"[:\-=*#~]{4,}", " ", s)
               s = re.sub(r"\s+,", ",", s)
-              return s.strip()
+              return re.sub(r"[ \t]{2,}", " ", s).strip()
 
           raw_txt = data["choices"][0]["message"]["content"] or ""
           cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", clean(raw_txt), flags=re.I).strip()
@@ -102,7 +97,11 @@ jobs:
               try:
                   obj = json.loads(m.group(0))
                   limits = {"x": 275, "tiktok": 2200, "instagram": 2200, "facebook": 63206, "ytTitle": 95, "ytDesc": 5000}
-                  parsed = {k: clean(v)[:limits[k]] if k in limits else clean(v) for k, v in obj.items()}
+                  for k in ["djIntro", "press", "x", "tiktok", "instagram", "facebook", "ytTitle", "ytDesc"]:
+                      val = clean(obj.get(k, ""))
+                      if k in limits:
+                          val = val[:limits[k]].strip()
+                      parsed[k] = val
               except Exception:
                   parsed = {}
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
@@ -119,7 +118,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): pull radio stations and cities dynamically from bible/"
+            git commit -m "chore(dispatch): label-grade press release + socials + bible cities"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
