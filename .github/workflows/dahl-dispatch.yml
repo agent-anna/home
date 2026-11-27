@@ -34,17 +34,29 @@ jobs:
           idx = int(os.environ.get("SONG_INDEX", "0") or "0")
           angle = os.environ.get("ANGLE", "").strip()
           today = datetime.date.today().strftime("%B %d, %Y")
-          ctx = []
-          for folder in ("bible", "character"):
+
+          bible_docs = []
+          bp = pathlib.Path("bible")
+          if bp.exists():
+              for f in sorted(bp.rglob("*.md")):
+                  if f.is_file() and f.stat().st_size > 5:
+                      txt = f.read_text(encoding="utf-8", errors="ignore")
+                      priority = 0 if re.search(r"radio|city|cities|28|airplay|station", txt, re.I) else 1
+                      bible_docs.append((priority, str(f), txt))
+          bible_docs.sort(key=lambda x: (x[0], x[1]))
+
+          ctx = [f"=== {name} ===\n{txt[:2200]}" for _, name, txt in bible_docs]
+          for folder in ("character",):
               p = pathlib.Path(folder)
               if p.exists():
                   for f in sorted(p.rglob("*.md")):
-                      if f.is_file() and f.stat().st_size > 10:
-                          ctx.append(f"=== {f} ===\n" + f.read_text(encoding="utf-8", errors="ignore")[:1500])
+                      if f.is_file() and f.stat().st_size > 5:
+                          ctx.append(f"=== {f} ===\n" + f.read_text(encoding="utf-8", errors="ignore")[:1200])
           for extra in ("strayd/record-brain.json", "strayd/strayd-artist-live.json"):
               ep = pathlib.Path(extra)
               if ep.exists() and ep.is_file():
-                  ctx.append(f"=== {extra} ===\n" + ep.read_text(encoding="utf-8", errors="ignore")[:2000])
+                  ctx.append(f"=== {extra} ===\n" + ep.read_text(encoding="utf-8", errors="ignore")[:1800])
+
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
           if songs_path.exists():
@@ -53,27 +65,18 @@ jobs:
           track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
           title = track.get("title") or track.get("name") or "Single"
           artist = track.get("artist") or "Martin Strayd"
-          track_json = json.dumps(track, ensure_ascii=False)[:2000]
-          radio_28d = (
-              "28-DAY RADIO STATIONS & CITIES: "
-              "DZRH News Radyo (Manila, Philippines), 3JJJ, RPP FM 98.7 (Melbourne, Australia), "
-              "Radio Ultimito Mix (Ecuador), WREK Atlanta - WREK (Atlanta, USA), "
-              "Radio Milenaire FM 98.1 (Santiago, Chile), CTBC (Toronto, Canada), "
-              "RRI Pro 4 Denpasar (Denpasar, Indonesia), Aligre FM 93.1 (Paris, France), "
-              "Musichitz Looktung Station (Hat Yai, Thailand)."
+          track_json = json.dumps(track, ensure_ascii=False)[:1800]
+
+          rules = (
+              "BIBLE-FIRST GROUNDING & STRICT RULES:\n"
+              "1. Pull radio stations, 28-day cities, links, voice/broadcast laws, and artist facts directly from the bible/ files and strayd/ data below. Whenever bible/ files are updated, reflect those updates automatically.\n"
+              "2. NEVER invent cities, emails, quotes, genres, or instruments not present in the bible/ files, strayd/ files, or TRACK DATA.\n"
+              "3. NEVER output em-dashes or en-dashes (no — or – anywhere). Use commas, periods, or hyphens.\n"
+              "4. Keep the full track title (including parentheses) as ONE single song.\n"
+              "5. Include djIntro (spoken DJ Anna intro), press (daily single release covering who Martin Strayd is, what today's single is and why it exists, the radio stations/cities from the bible, direct MP3 and cover art ownership with free non-commercial sharing, and verified links), plus social posts: x (under 275 chars, max 2 tags), tiktok (max 3 tags), instagram (max 3 tags), facebook (max 2 tags), ytTitle (under 95 chars, 0 tags), ytDesc (max 3 tags).\n"
+              "6. Give every platform a distinct angle and phrasing, with fresh wording across cards and #martinstrayd as the shared artist tag.\n"
           )
-          bio_and_rules = (
-              "VERIFIED MARTIN STRAYD PROFILE & STRICT RULES:\n"
-              "- Martin Strayd is an Australian lyricist, songwriter, and composer (strayd.com, martinstrayd@gmail.com) who previously worked as a guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack, releasing a new single every day across satire, seduction, wordplay, club, anti-pop, rock, and acoustic blues-jazz.\n"
-              "- " + radio_28d + "\n"
-              "- Direct MP3 and cover art ownership: fans may copy and share freely with friends for non-commercial listening; commercial resale is prohibited.\n"
-              "- NEVER invent cities outside the 28-day list above and repo context, and NEVER invent emails, quotes, genres, or instruments not supported by the repo or TRACK DATA.\n"
-              "- NEVER output em-dashes or en-dashes (no — or – anywhere). Use commas, periods, or hyphens.\n"
-              "- Keep full song title (including parentheses) as ONE single song.\n"
-              "- Output JSON keys: djIntro (spoken DJ Anna promo line), press (release covering daily single drop, what today's song is and why it exists, 28-day global radio stations/cities, who Martin Strayd is, direct MP3 + cover art ownership & free sharing, and verified links), plus platform posts x (under 275 chars, max 2 tags), tiktok (max 3 tags), instagram (max 3 tags), facebook (max 2 tags), ytTitle (under 95 chars, 0 tags), ytDesc (max 3 tags).\n"
-              "- Every platform needs its own distinct angle and structure, with unique SEO words across the output except #martinstrayd.\n"
-          )
-          sys_msg = bio_and_rules + "\n" + "\n\n".join(ctx)[:10500]
+          sys_msg = rules + "\n" + "\n\n".join(ctx)[:12000]
           usr_msg = f"Date: {today}\nTrack: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
           req = urllib.request.Request(
               "https://inference.dahl.global/v1/chat/completions",
@@ -83,41 +86,23 @@ jobs:
           )
           with urllib.request.urlopen(req, timeout=55) as resp:
               data = json.loads(resp.read().decode("utf-8"))
-          seen_words = set()
-          def scrub_dashes(s):
+
+          def clean(s):
               s = str(s or "")
               s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
               s = s.replace("\u2014", ", ").replace("\u2013", "-")
               s = re.sub(r"\s+,", ",", s)
               return s.strip()
-          def unique_seo_filter(text, keep_terms):
-              keep_lower = {k.lower() for k in keep_terms if k}
-              def repl(m):
-                  tok = m.group(0)
-                  low = tok.lower()
-                  if low == "#martinstrayd" or low in keep_lower or re.match(r"^https?://", low):
-                      return tok
-                  if low in seen_words:
-                      return ""
-                  seen_words.add(low)
-                  return tok
-              out = re.sub(r"https?://\S+|#?[A-Za-z0-9_']+", repl, text)
-              return re.sub(r"[ \t]{2,}", " ", re.sub(r"\n{3,}", "\n\n", out)).strip()
+
           raw_txt = data["choices"][0]["message"]["content"] or ""
-          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", scrub_dashes(raw_txt), flags=re.I).strip()
+          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", clean(raw_txt), flags=re.I).strip()
           parsed = {}
           m = re.search(r"\{[\s\S]*\}", cleaned)
           if m:
               try:
                   obj = json.loads(m.group(0))
-                  keep = set(re.findall(r"[A-Za-z0-9]+", f"{title} {artist} {radio_28d}"))
                   limits = {"x": 275, "tiktok": 2200, "instagram": 2200, "facebook": 63206, "ytTitle": 95, "ytDesc": 5000}
-                  for k in ["djIntro", "press", "x", "tiktok", "instagram", "facebook", "ytTitle", "ytDesc"]:
-                      val = scrub_dashes(obj.get(k, ""))
-                      val = unique_seo_filter(val, keep)
-                      if k in limits:
-                          val = val[:limits[k]].strip()
-                      parsed[k] = val
+                  parsed = {k: clean(v)[:limits[k]] if k in limits else clean(v) for k, v in obj.items()}
               except Exception:
                   parsed = {}
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
@@ -134,7 +119,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): 28-day radio cities + daily single + unique SEO"
+            git commit -m "chore(dispatch): pull radio stations and cities dynamically from bible/"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
