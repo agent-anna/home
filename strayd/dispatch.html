@@ -78,110 +78,248 @@ button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;paddin
 </div>
 <script>
 const $=id=>document.getElementById(id);
+const setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
+const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v||"");};
 const CH=[["x","X",280],["tiktok","TikTok",2200],["instagram","Instagram",2200],["facebook","Facebook",63206],["ytTitle","YouTube Title",100],["ytDesc","YouTube Description",5000]];
 const FH=["aria","jenny","sonia","libby","maisie","natasha","clara","ava","samantha","victoria","zira","hazel","female","amy","emma"];
 const MH=["guy","ryan","christopher","eric","davis","andrew","brian","david","mark","daniel","male"];
 let SONGS=[],VOICES=[];
-const scrub=s=>String(s||"").replace(/<think>[\s\S]*?<\/think>/gi,"").replace(/^```(?:json)?\s*|\s*```$/gim,"").replace(/\u2014/g,", ").replace(/\u2013/g,"-").replace(/`/g,"").trim();
-CH.forEach(([id,lbl,lim])=>{
-  const art=document.createElement("article");
-  art.className="scard";
-  art.setAttribute("aria-label",lbl+" Post");
-  art.innerHTML='<div class="shead"><div class="sleft"><img data-th alt="'+lbl+' cover thumbnail"/><span>'+lbl+'</span></div><span id="c_'+id+'" style="color:var(--mu);font-size:.8rem">0 / '+lim+'</span></div>'
-    +'<label for="t_'+id+'">'+lbl+' Post Text</label>'
-    +'<textarea id="t_'+id+'" class="soc-ta" maxlength="'+lim+'" placeholder="'+lbl+' post..."></textarea>'
-    +'<div class="bar"><button type="button" onclick="spkId(\''+id+'\')">Speak</button><button type="button" onclick="dlId(\''+id+'\')">Download .MP3</button><button type="button" onclick="cpyId(\''+id+'\')">Copy</button></div>';
-  $("socGrid").appendChild(art);
-  $("t_"+id).addEventListener("input",()=>{
-    $("c_"+id).textContent=$("t_"+id).value.length+" / "+lim;
+const scrub=s=>String(s||"").replace(/<think>[\s\S]*?<\/think>/gi,"").replace(/^```(?:json)?\s*|\s*```$/gim,"").replace(/\u2014/g,", ").replace(/\u2013/g,"-").replace(/[:\-=*#~]{4,}/g," ").replace(/`/g,"").trim();
+
+function buildSocialCards(){
+  const grid=$("socGrid");
+  if(!grid)return;
+  grid.innerHTML="";
+  CH.forEach(([id,lbl,lim])=>{
+    const art=document.createElement("article");
+    art.className="scard";
+    art.setAttribute("aria-label",lbl+" Post");
+
+    const head=document.createElement("div");
+    head.className="shead";
+    const left=document.createElement("div");
+    left.className="sleft";
+    const img=document.createElement("img");
+    img.setAttribute("data-th","");
+    img.alt=lbl+" cover thumbnail";
+    const spLbl=document.createElement("span");
+    spLbl.textContent=lbl;
+    left.appendChild(img);
+    left.appendChild(spLbl);
+
+    const cnt=document.createElement("span");
+    cnt.id="c_"+id;
+    cnt.style.color="var(--mu)";
+    cnt.style.fontSize=".8rem";
+    cnt.textContent="0 / "+lim;
+
+    head.appendChild(left);
+    head.appendChild(cnt);
+
+    const lab=document.createElement("label");
+    lab.htmlFor="t_"+id;
+    lab.textContent=lbl+" Post Text";
+
+    const ta=document.createElement("textarea");
+    ta.id="t_"+id;
+    ta.className="soc-ta";
+    ta.maxLength=lim;
+    ta.placeholder=lbl+" post...";
+    ta.addEventListener("input",()=>{cnt.textContent=ta.value.length+" / "+lim;});
+
+    const bar=document.createElement("div");
+    bar.className="bar";
+
+    const bSpk=document.createElement("button");
+    bSpk.type="button";
+    bSpk.textContent="Speak";
+    bSpk.onclick=()=>speakTxt(ta.value);
+
+    const bDl=document.createElement("button");
+    bDl.type="button";
+    bDl.textContent="Download .MP3";
+    bDl.onclick=()=>dlMp3Txt(ta.value,id+"-anna.mp3");
+
+    const bCpy=document.createElement("button");
+    bCpy.type="button";
+    bCpy.textContent="Copy";
+    bCpy.onclick=()=>cpyTxt(ta.value,lbl);
+
+    bar.appendChild(bSpk);
+    bar.appendChild(bDl);
+    bar.appendChild(bCpy);
+
+    art.appendChild(head);
+    art.appendChild(lab);
+    art.appendChild(ta);
+    art.appendChild(bar);
+    grid.appendChild(art);
   });
-});
+}
+
 async function fetchRepo(p){
   for(const b of["https://agent-anna.github.io/home/","https://raw.githubusercontent.com/agent-anna/home/main/"]){
     try{const r=await fetch(b+p+"?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.text();}catch{}
   }
   return"";
 }
+
 function artUrl(s,t){
   const r=String((s&&(s.artUrl||s.art||s.image||s.artwork))||"").trim();
   if(!r)return"https://martinstrayd.github.io/artist/store-art/Martin%20Strayd%20-%20"+encodeURIComponent(t)+".png";
   if(/^https?:\/\//i.test(r))return r;
   return"https://martinstrayd.github.io/artist/"+encodeURI(r.replace(/^\.?\//,""));
 }
+
 function syncSong(){
-  const s=SONGS[Number($("songSel").value||0)]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
+  const sel=$("songSel");
+  const idx=sel?Number(sel.value||0):0;
+  const s=SONGS[idx]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
   const t=s.title||s.name||"Single";
   const a=s.artist||"Martin Strayd";
   const u=artUrl(s,t);
-  $("songTitle").textContent=t;
-  $("songMeta").textContent=a+" - "+SONGS.length+" songs - Dahl MiniMax-M2.7 via GitHub";
-  $("bigArt").src=u;
-  document.querySelectorAll("img[data-th]").forEach(im=>im.src=u);
-  return{idx:Number($("songSel").value||0),t,a};
+  setTxt("songTitle",t);
+  setTxt("songMeta",a+" - "+SONGS.length+" songs - Dahl MiniMax-M2.7 via GitHub");
+  const big=$("bigArt");
+  if(big)big.src=u;
+  document.querySelectorAll("img[data-th]").forEach(im=>{im.src=u;});
+  return{idx,t,a};
 }
+
+function extractFallbackFields(rawText){
+  const txt=scrub(rawText);
+  const out={djIntro:"",press:txt,x:"",tiktok:"",instagram:"",facebook:"",ytTitle:"",ytDesc:""};
+  const keys=["djIntro","press","x","tiktok","instagram","facebook","ytTitle","ytDesc"];
+  keys.forEach(k=>{
+    const re=new RegExp('"'+k+'"\\s*:\\s*"([\\s\\S]*?)"(?=\\s*,\\s*"|\\s*\\})');
+    const m=txt.match(re);
+    if(m&&m[1]){out[k]=scrub(m[1].replace(/\\n/g,"\n").replace(/\\"/g,'"'));}
+  });
+  return out;
+}
+
 function parseDispatch(rawText){
   const c=scrub(rawText);
-  let obj={};
+  let obj=null;
   const m=c.match(/\{[\s\S]*\}/);
   if(m){try{obj=JSON.parse(m[0]);}catch{}}
-  return{djIntro:scrub(obj.djIntro||""),press:scrub(obj.press||c),x:scrub(obj.x||""),tiktok:scrub(obj.tiktok||""),instagram:scrub(obj.instagram||""),facebook:scrub(obj.facebook||""),ytTitle:scrub(obj.ytTitle||""),ytDesc:scrub(obj.ytDesc||"")};
+  if(obj&&typeof obj==="object"){
+    return{
+      djIntro:scrub(obj.djIntro||""),
+      press:scrub(obj.press||c),
+      x:scrub(obj.x||""),
+      tiktok:scrub(obj.tiktok||""),
+      instagram:scrub(obj.instagram||""),
+      facebook:scrub(obj.facebook||""),
+      ytTitle:scrub(obj.ytTitle||""),
+      ytDesc:scrub(obj.ytDesc||"")
+    };
+  }
+  return extractFallbackFields(c);
 }
+
 function applyDispatch(data){
-  if(!data)return;
+  if(!data||typeof data!=="object")return;
   let d=data.dispatch;
-  if(!d||typeof d!=="object"){d=parseDispatch(data.clean_text||data.raw||"");}
-  else{d={djIntro:scrub(d.djIntro||""),press:scrub(d.press||data.clean_text||data.raw||""),x:scrub(d.x||""),tiktok:scrub(d.tiktok||""),instagram:scrub(d.instagram||""),facebook:scrub(d.facebook||""),ytTitle:scrub(d.ytTitle||""),ytDesc:scrub(d.ytDesc||"")};}
-  $("djBox").value=d.djIntro||"";
-  $("pressBox").value=d.press||"";
+  if(!d||typeof d!=="object"){
+    d=parseDispatch(data.clean_text||data.raw||"");
+  }else{
+    const fb=extractFallbackFields(data.clean_text||data.raw||"");
+    d={
+      djIntro:scrub(d.djIntro||fb.djIntro||""),
+      press:scrub(d.press||fb.press||data.clean_text||data.raw||""),
+      x:scrub(d.x||fb.x||""),
+      tiktok:scrub(d.tiktok||fb.tiktok||""),
+      instagram:scrub(d.instagram||fb.instagram||""),
+      facebook:scrub(d.facebook||fb.facebook||""),
+      ytTitle:scrub(d.ytTitle||fb.ytTitle||""),
+      ytDesc:scrub(d.ytDesc||fb.ytDesc||"")
+    };
+  }
+  setVal("djBox",d.djIntro||"");
+  setVal("pressBox",d.press||"");
   CH.forEach(([id,,lim])=>{
     const v=String(d[id]||"").slice(0,lim);
-    $("t_"+id).value=v;
-    $("c_"+id).textContent=v.length+" / "+lim;
+    setVal("t_"+id,v);
+    setTxt("c_"+id,v.length+" / "+lim);
   });
 }
+
 async function loadLatest(){
-  $("st").textContent="Loading strayd/last-dahl-dispatch.json...";
+  setTxt("st","Loading strayd/last-dahl-dispatch.json...");
   const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
-  if(!raw){$("st").textContent="No dispatch file yet";return;}
+  if(!raw){setTxt("st","No dispatch file yet");return;}
   try{
     const j=JSON.parse(raw);
-    if(j.track){const i=SONGS.findIndex(x=>(x.title||x.name)===j.track);if(i>=0)$("songSel").value=String(i);}
+    if(j&&j.track&&$("songSel")){
+      const i=SONGS.findIndex(x=>(x.title||x.name)===j.track);
+      if(i>=0)$("songSel").value=String(i);
+    }
     syncSong();
     applyDispatch(j);
-    $("st").textContent="Loaded dispatch for "+(j.track||"track");
-  }catch(e){$("st").textContent="Parse error: "+e.message;}
+    setTxt("st","Loaded dispatch for "+((j&&j.track)||"track"));
+  }catch(e){
+    const fb=extractFallbackFields(raw);
+    applyDispatch({dispatch:fb});
+    setTxt("st","Loaded with text recovery: "+e.message);
+  }
 }
+
 async function loadSongs(){
   const raw=await fetchRepo("strayd/songs-db.json");
   try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
   if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"}];
-  const sel=$("songSel");sel.innerHTML="";
-  SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});
+  const sel=$("songSel");
+  if(sel){
+    sel.innerHTML="";
+    SONGS.forEach((x,i)=>{
+      const o=document.createElement("option");
+      o.value=i;
+      o.textContent=(i+1)+" - "+(x.title||x.name||"Track");
+      sel.appendChild(o);
+    });
+  }
   syncSong();
 }
+
 async function triggerWorkflow(){
-  const pat=($("patIn").value||"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
+  const patIn=$("patIn");
+  const angleIn=$("angleIn");
+  const pat=(patIn?patIn.value:"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
   if(pat)localStorage.setItem("anna_dispatch_pat",pat);
-  if(!pat){$("st").textContent="Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab";return;}
+  if(!pat){setTxt("st","Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab");return;}
   const{idx}=syncSong();
-  $("st").textContent="Triggering GitHub Action...";
+  setTxt("st","Triggering GitHub Action...");
   try{
-    const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{method:"POST",headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:($("angleIn").value||"").trim()}})});
+    const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{
+      method:"POST",
+      headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
+      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(angleIn?angleIn.value:"").trim()}})
+    });
     if(!r.ok)throw new Error("HTTP "+r.status);
-    $("st").textContent="Action started (song_index="+idx+") - wait ~20s then click Load Latest GitHub Dispatch";
-  }catch(e){$("st").textContent=e.message;}
+    setTxt("st","Action started (song_index="+idx+") - wait ~25s then click Load Latest GitHub Dispatch");
+  }catch(e){setTxt("st",e.message);}
 }
+
 function scV(v){const h=(v.name+" "+v.lang).toLowerCase();let s=0;for(const x of FH)if(h.includes(x))s+=40;for(const x of MH)if(new RegExp("\\b"+x+"\\b").test(h))s-=100;return s;}
-function popV(){if(!("speechSynthesis"in window))return;const list=(speechSynthesis.getVoices()||[]).sort((a,b)=>scV(b)-scV(a));VOICES=list.filter(v=>scV(v)>-50);if(!VOICES.length)VOICES=list;const sel=$("voiceSel");sel.innerHTML="";VOICES.forEach((v,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(scV(v)>=40?"Female - ":"")+v.name;sel.appendChild(o);});}
+function popV(){if(!("speechSynthesis"in window))return;const list=(speechSynthesis.getVoices()||[]).sort((a,b)=>scV(b)-scV(a));VOICES=list.filter(v=>scV(v)>-50);if(!VOICES.length)VOICES=list;const sel=$("voiceSel");if(!sel)return;sel.innerHTML="";VOICES.forEach((v,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(scV(v)>=40?"Female - ":"")+v.name;sel.appendChild(o);});}
 function cleanSpeech(t){return scrub(String(t||"")).replace(/https?:\/\/\S+/g," ").replace(/#[A-Za-z0-9_]+/g," ").replace(/\s+/g," ").trim();}
-function speakTxt(t){const sp=cleanSpeech(t).slice(0,1200);if(!sp||!("speechSynthesis"in window))return;popV();try{speechSynthesis.cancel();}catch{}const v=VOICES[Number($("voiceSel").value||0)]||VOICES[0]||null;(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,10).forEach(pt=>{const u=new SpeechSynthesisUtterance(pt.trim());if(v)u.voice=v;u.pitch=1.05;speechSynthesis.speak(u);});}
-async function dlMp3Txt(t,fname){const sp=cleanSpeech(t).slice(0,320);if(!sp)return;speakTxt(sp);try{const r=await fetch("https://api.streamelements.com/kappa/v2/speech?voice=Amy&text="+encodeURIComponent(sp));if(!r.ok)throw new Error("HTTP "+r.status);const b=await r.blob();const url=URL.createObjectURL(b);const a=document.createElement("a");a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);$("st").textContent="Downloaded "+fname;}catch(e){$("st").textContent="MP3 download blocked ("+e.message+"); spoke via voice";}}
-function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));$("st").textContent="Copied "+lbl;}
-window.spkId=id=>speakTxt($("t_"+id)?.value||"");window.dlId=id=>dlMp3Txt($("t_"+id)?.value||"",id+"-anna.mp3");window.cpyId=id=>cpyTxt($("t_"+id)?.value||"",id);
+function speakTxt(t){const sp=cleanSpeech(t).slice(0,1200);if(!sp||!("speechSynthesis"in window))return;popV();try{speechSynthesis.cancel();}catch{}const vSel=$("voiceSel");const v=VOICES[Number(vSel?vSel.value:0)]||VOICES[0]||null;(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,10).forEach(pt=>{const u=new SpeechSynthesisUtterance(pt.trim());if(v)u.voice=v;u.pitch=1.05;speechSynthesis.speak(u);});}
+async function dlMp3Txt(t,fname){const sp=cleanSpeech(t).slice(0,320);if(!sp)return;speakTxt(sp);try{const r=await fetch("https://api.streamelements.com/kappa/v2/speech?voice=Amy&text="+encodeURIComponent(sp));if(!r.ok)throw new Error("HTTP "+r.status);const b=await r.blob();const url=URL.createObjectURL(b);const a=document.createElement("a");a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);setTxt("st","Downloaded "+fname);}catch(e){setTxt("st","MP3 download blocked ("+e.message+"); spoke via voice");}}
+function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));setTxt("st","Copied "+lbl);}
+
+buildSocialCards();
 if("speechSynthesis"in window){popV();speechSynthesis.onvoiceschanged=popV;}
-if(localStorage.getItem("anna_dispatch_pat"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
-$("loadBtn").onclick=loadLatest;$("runActBtn").onclick=triggerWorkflow;$("relCatBtn").onclick=loadSongs;$("songSel").onchange=syncSong;
-$("spkDj").onclick=()=>speakTxt($("djBox").value);$("dlDj").onclick=()=>dlMp3Txt($("djBox").value,"dj-intro-anna.mp3");$("cpyDj").onclick=()=>cpyTxt($("djBox").value,"DJ intro");
-$("spkPress").onclick=()=>speakTxt($("pressBox").value);$("dlPress").onclick=()=>dlMp3Txt($("pressBox").value,"press-release-anna.mp3");$("cpyPress").onclick=()=>cpyTxt($("pressBox").value,"press release");
+if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
+if($("loadBtn"))$("loadBtn").onclick=loadLatest;
+if($("runActBtn"))$("runActBtn").onclick=triggerWorkflow;
+if($("relCatBtn"))$("relCatBtn").onclick=loadSongs;
+if($("songSel"))$("songSel").onchange=syncSong;
+if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")?.value||"");
+if($("dlDj"))$("dlDj").onclick=()=>dlMp3Txt($("djBox")?.value||"","dj-intro-anna.mp3");
+if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")?.value||"","DJ intro");
+if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")?.value||"");
+if($("dlPress"))$("dlPress").onclick=()=>dlMp3Txt($("pressBox")?.value||"","press-release-anna.mp3");
+if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")?.value||"","press release");
 (async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
