@@ -27,7 +27,7 @@ jobs:
           ANGLE: ${{ github.event.inputs.angle || '' }}
         run: |
           python3 - << 'PY'
-          import datetime, json, os, pathlib, re, urllib.request
+          import datetime, hashlib, json, os, pathlib, re, urllib.request
 
           key = (os.environ.get("DAHL_API_KEY") or "").strip()
           try:
@@ -45,8 +45,21 @@ jobs:
               s = re.sub(r"\s+,", ",", s)
               return re.sub(r"[ \t]{2,}", " ", s).strip()
 
-          ess_path = pathlib.Path("bible/dispatch-essentials.md")
-          ess_txt = ess_path.read_text(encoding="utf-8", errors="ignore")[:3500] if ess_path.exists() else ""
+          def cap_tags(txt, max_tags):
+              tags = re.findall(r"#[A-Za-z0-9_]+", txt)
+              if len(tags) <= max_tags:
+                  return txt
+              seen = 0
+              def repl(m):
+                  nonlocal seen
+                  seen += 1
+                  return m.group(0) if seen <= max_tags else ""
+              out = re.sub(r"#[A-Za-z0-9_]+", repl, txt)
+              return re.sub(r"[ \t]{2,}", " ", out).strip()
+
+          b000 = pathlib.Path("bible/000-bible.md").read_text(encoding="utf-8", errors="ignore")[:4200] if pathlib.Path("bible/000-bible.md").exists() else ""
+          b07 = pathlib.Path("bible/07-platform-cadence-and-hashtags.md").read_text(encoding="utf-8", errors="ignore")[:1500] if pathlib.Path("bible/07-platform-cadence-and-hashtags.md").exists() else ""
+          res = pathlib.Path("bible/resources/dj-promo-and-seo-laws.md").read_text(encoding="utf-8", errors="ignore")[:1200] if pathlib.Path("bible/resources/dj-promo-and-seo-laws.md").exists() else ""
 
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
@@ -61,17 +74,17 @@ jobs:
           artist = scrub(track.get("artist") or "Martin Strayd")
           topic = scrub(track.get("topic") or track.get("theme") or track.get("mood") or track.get("genre") or angle or "neurodivergent drive and high-speed focus")
 
+          seed_src = f"{today}|{idx}|{title}|{topic}|{angle}|{os.environ.get('GITHUB_RUN_ID','')}"
+          variant = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest(), 16) % 4
+
           sys_msg = (
               "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
-              "Rules:\n"
-              "1. NO em-dashes or en-dashes (no — or –), NO repeated symbols like ::::::.\n"
-              "2. Keep full single title intact as ONE single song.\n"
-              "3. press: Press release for the SINGLE OF THE DAY (single title + Martin Strayd + daily single and licensed original music), list the WORLD RADIO CITIES playing his song from ESSENTIALS, include ABOUT MARTIN STRAYD (Australian lyricist, songwriter, composer; former guitar tech including Steve Jones of the Sex Pistols and Doug Fieger of The Knack), and include MP3/art bundle ownership (share freely with friends for non-commercial play, no resale) plus CTA and links.\n"
-              "4. socials (x, tiktok, instagram, facebook, ytTitle, ytDesc): Use the single title, song topic, and artist through the lens of how a real DJ promotes and backs a new song drop (cueing the hook, calling out the theme/topic, building rotation energy, and directing listeners to hear and grab the bundle). Do NOT pitch a 28-day ad campaign.\n"
-              "5. Limits: x under 275 chars (max 2 tags), ytTitle under 95 chars (0 tags), tiktok/instagram max 3 tags, facebook max 2 tags, ytDesc max 3 tags.\n"
-              "ESSENTIALS:\n" + ess_txt
+              "Enforce every rule in bible/000-bible.md: zero em/en-dashes, no repeated symbol runs, single song title intact,\n"
+              "single-of-the-day press release with world radio cities + Martin Strayd bio + MP3/art ownership terms,\n"
+              "and distinct non-repeating platform-specific DJ/SEO copy per social channel.\n"
+              + b000 + "\n" + b07 + "\n" + res
           )
-          usr_msg = f"Date: {today}\nSingle of the Day: {title}\nArtist: {artist}\nTopic/Hook: {topic}"
+          usr_msg = f"Date: {today}\nVariant: {variant}\nSingle of the Day: {title}\nArtist: {artist}\nTopic: {topic}"
 
           raw_txt = ""
           api_status = "fallback_ready"
@@ -81,7 +94,7 @@ jobs:
                       "https://inference.dahl.global/v1/chat/completions",
                       data=json.dumps({
                           "model": "MiniMaxAI/MiniMax-M2.7",
-                          "max_tokens": 1400,
+                          "max_tokens": 1500,
                           "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]
                       }).encode("utf-8"),
                       headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
@@ -95,7 +108,6 @@ jobs:
                           api_status = f"http_{resp.status}"
               except Exception as e:
                   api_status = f"fast_fallback_{type(e).__name__}"
-                  print("Dahl fast fallback:", repr(e))
 
           no_think = re.sub(r"<think>[\s\S]*?</think>", "", raw_txt, flags=re.I).strip()
           fenced = re.sub(r"^```(?:json)?\s*|\s*```$", "", no_think, flags=re.I).strip()
@@ -110,30 +122,65 @@ jobs:
                   parsed = {}
 
           cities = "Manila, Melbourne, Ecuador, Atlanta, Santiago, Toronto, Denpasar, Paris, Hat Yai"
+          apple_url = "https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
+          bundle_url = "https://tinyurl.com/martinstrayd"
+          hub_url = "https://strayd.com"
+
+          x_list = [
+              f"Veg Anna Radio spin: {title} by {artist} locks into {topic}. Hear it: {apple_url} #martinstrayd",
+              f"Search spotlight: {title} ({artist}) on {topic}, spun daily via Veg Anna Radio. Stream: {apple_url} #martinstrayd",
+              f"DJ cue on Veg Anna Radio: {artist} brings {title} around {topic}. Listen here: {apple_url} #martinstrayd",
+              f"Daily single cue: {title} by {artist} hits {topic} on Veg Anna Radio. Stream now: {apple_url} #martinstrayd"
+          ]
+          tt_list = [
+              f"{title} by {artist} ({topic}) on Veg Anna Radio. Hear why listeners lock onto this daily single drop and grab MP3 + art at {bundle_url} (share freely with friends for non-commercial play) #martinstrayd #veganaradio #dailysingle",
+              f"{artist} takes on {topic} in {title} for today's Veg Anna Radio spin. Get direct MP3 and artwork ownership at {bundle_url}, non-commercial friend sharing allowed #martinstrayd #newmusic #songdrop",
+              f"Daily single check: {title} ({artist}) unpacks {topic} on Veg Anna Radio. MP3 + cover art bundle at {bundle_url}, share with friends for non-commercial listening #martinstrayd #veganaradio #musicdiscovery",
+              f"Why {title} by {artist} stands out around {topic} on Veg Anna Radio today. Bundle at {bundle_url} with free non-commercial sharing with friends #martinstrayd #dailysingle #artist"
+          ]
+          ig_list = [
+              f"Today's single on Veg Anna Radio is {title} by {artist}, exploring {topic}. Listeners who pick up the MP3 and cover art bundle at {bundle_url} own it directly and can share freely with friends for non-commercial play. #martinstrayd #veganaradio #dailysingle",
+              f"Inside {title}: {artist} shapes {topic} into today's Veg Anna Radio feature release. Direct MP3 and artwork bundle at {bundle_url} with non-commercial friend sharing permitted. #martinstrayd #newrelease #music",
+              f"Built for listeners following {topic}: {artist} drops {title} on Veg Anna Radio today. Own the MP3 and cover art bundle at {bundle_url}, share with friends for non-commercial listening. #martinstrayd #veganaradio #song",
+              f"A closer look at {title} by {artist} and its {topic} focus on Veg Anna Radio. Grab your MP3 and cover art bundle at {bundle_url}, free non-commercial friend sharing allowed. #martinstrayd #dailysingle #art"
+          ]
+          fb_list = [
+              f"Veg Anna Radio daily single spotlight: {title} by {artist}, diving into {topic}. World radio stations playing his music reach {cities}. Full artist hub at {hub_url} #martinstrayd #veganaradio",
+              f"Listeners tuning into {title} by {artist} on Veg Anna Radio are exploring {topic}, with world radio airplay reaching {cities}. More at {hub_url} #martinstrayd #dailysingle",
+              f"Today's single release on Veg Anna Radio is {title} by {artist} ({topic}), with world radio cities including {cities}. Visit {hub_url} #martinstrayd #newmusic",
+              f"From {artist}, {title} lands as today's single on Veg Anna Radio around {topic}, with world radio play in {cities}. Hub: {hub_url} #martinstrayd #radio"
+          ]
+          yt_titles = [
+              f"{title} - {artist} | Veg Anna Radio Daily Single",
+              f"{artist} - {title} (Official Daily Single | Veg Anna Radio)",
+              f"Veg Anna Radio: {title} by {artist} (Single Drop)",
+              f"{title} ({artist}) - Daily Single on Veg Anna Radio"
+          ]
+
           base_press = (
               f"FOR IMMEDIATE RELEASE - {today}\n"
-              f"Single of the Day: {title} by {artist}\n\n"
-              f"Single and World Radio Play: {artist} releases {title} as today's single and licensed original music drop, with world radio airplay reaching cities including {cities}.\n\n"
-              f"About Martin Strayd: Australian lyricist, songwriter, and composer, and former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.\n\n"
-              f"Ownership and CTA: Listeners who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Listen and get the single at https://strayd.com , https://tinyurl.com/martinstrayd , and Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
+              f"Single of the Day on Veg Anna Radio: {title} by {artist}\n\n"
+              f"Daily Single and World Radio Cities: {artist} launches {title} as today's single and licensed original music drop on Veg Anna Radio, with world radio stations playing his music across {cities}.\n\n"
+              f"About Martin Strayd: {artist} is an Australian lyricist, songwriter, and composer, and a former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.\n\n"
+              f"Ownership and Links: Listeners who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} | YouTube: https://www.youtube.com/@martinstrayd"
           )
 
           final_d = {
-              "djIntro": scrub(parsed.get("djIntro") or f"Spinning today's single drop from {artist}: {title}, locked in on {topic}."),
+              "djIntro": scrub(parsed.get("djIntro") or f"You are locked into Veg Anna Radio with today's single from {artist}: {title}, focused on {topic}."),
               "press": scrub(parsed.get("press") or base_press),
-              "x": scrub(parsed.get("x") or f"DJ spin alert: {artist} drops single {title} on {topic}. Hear it now: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 #martinstrayd")[:275],
-              "tiktok": scrub(parsed.get("tiktok") or f"Cueing up {title} by {artist}, built around {topic}. Grab the MP3 and art bundle at https://tinyurl.com/martinstrayd and share with friends for non-commercial play #martinstrayd #newmusic")[:2200],
-              "instagram": scrub(parsed.get("instagram") or f"In rotation today: {title} by {artist} ({topic}). Own the MP3 and cover art bundle at https://tinyurl.com/martinstrayd and share freely with friends for non-commercial listening. #martinstrayd #songdrop")[:2200],
-              "facebook": scrub(parsed.get("facebook") or f"New single rotation from {artist}: {title}, spotlighting {topic}. Full hub at https://strayd.com and bundle at https://tinyurl.com/martinstrayd #martinstrayd")[:63206],
-              "ytTitle": scrub(parsed.get("ytTitle") or f"{title} - {artist} (Single Drop)")[:95],
-              "ytDesc": scrub(parsed.get("ytDesc") or f"{title} by {artist} | Topic: {topic}. Stream on Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 | Bundle: https://tinyurl.com/martinstrayd | Hub: https://strayd.com #martinstrayd")[:5000],
+              "x": cap_tags(scrub(parsed.get("x") or x_list[variant]), 2)[:275],
+              "tiktok": cap_tags(scrub(parsed.get("tiktok") or tt_list[variant]), 5)[:2200],
+              "instagram": cap_tags(scrub(parsed.get("instagram") or ig_list[variant]), 5)[:2200],
+              "facebook": cap_tags(scrub(parsed.get("facebook") or fb_list[variant]), 5)[:63206],
+              "ytTitle": scrub(re.sub(r"#[A-Za-z0-9_]+", "", parsed.get("ytTitle") or yt_titles[variant]))[:95],
+              "ytDesc": cap_tags(scrub(parsed.get("ytDesc") or f"{title} by {artist} on Veg Anna Radio. Topic: {topic}. Apple Music: {apple_url} | MP3 and cover art bundle (free non-commercial sharing with friends, no resale): {bundle_url} | Hub: {hub_url} #martinstrayd #veganaradio"), 5)[:5000],
           }
 
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
           out_path.parent.mkdir(parents=True, exist_ok=True)
-          payload = {"date": today, "track": title, "artist": artist, "topic": topic, "api_status": api_status, "dispatch": final_d, "clean_text": scrub(fenced)}
+          payload = {"date": today, "track": title, "artist": artist, "topic": topic, "variant": variant, "api_status": api_status, "dispatch": final_d, "clean_text": scrub(fenced)}
           out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
-          print("Wrote", out_path, "status:", api_status)
+          print("Wrote", out_path, "status:", api_status, "variant:", variant)
           PY
       - name: Commit generated dispatch
         env:
@@ -144,7 +191,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): single-of-day press release + DJ promo socials"
+            git commit -m "chore(dispatch): enforce 000-bible.md rules across press and socials"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
