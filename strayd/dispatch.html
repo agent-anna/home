@@ -40,7 +40,7 @@ button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;paddin
 <div><label for="songSel">Select Song</label><select id="songSel"></select></div>
 <div><label for="voiceSel">Female Voice (Speech &amp; MP3)</label><select id="voiceSel"></select></div>
 <div><label for="angleIn">Hook / Angle (For GitHub Action)</label><input id="angleIn" placeholder="Optional hook or release note..."/></div>
-<div><label for="patIn">GitHub PAT (Optional - Only to trigger Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+<div><label for="patIn">GitHub PAT (Optional - For Live API &amp; Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
 </div>
 <div class="bar">
 <button id="loadBtn" class="pri" type="button">Load Latest GitHub Dispatch</button>
@@ -93,7 +93,7 @@ function buildSocialCards(){
   CH.forEach(([id,lbl,lim])=>{
     const art=document.createElement("article");
     art.className="scard";
-    art.setAttribute("aria-label",lbl+" Post");
+    art.setAttribute("aria-label",lbl+" Social Post");
 
     const head=document.createElement("div");
     head.className="shead";
@@ -102,10 +102,12 @@ function buildSocialCards(){
     const img=document.createElement("img");
     img.setAttribute("data-th","");
     img.alt=lbl+" cover thumbnail";
-    const spLbl=document.createElement("span");
-    spLbl.textContent=lbl;
+    const h2=document.createElement("h2");
+    h2.style.margin="0";
+    h2.style.fontSize="1rem";
+    h2.textContent=lbl;
     left.appendChild(img);
-    left.appendChild(spLbl);
+    left.appendChild(h2);
 
     const cnt=document.createElement("span");
     cnt.id="c_"+id;
@@ -118,7 +120,7 @@ function buildSocialCards(){
 
     const lab=document.createElement("label");
     lab.htmlFor="t_"+id;
-    lab.textContent=lbl+" Post Text";
+    lab.textContent=lbl+" Post Content";
 
     const ta=document.createElement("textarea");
     ta.id="t_"+id;
@@ -157,7 +159,32 @@ function buildSocialCards(){
   });
 }
 
+function getPat(){
+  const patIn=$("patIn");
+  const p=(patIn?patIn.value:"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
+  if(p)localStorage.setItem("anna_dispatch_pat",p);
+  return p;
+}
+
 async function fetchRepo(p){
+  const pat=getPat();
+  if(pat){
+    try{
+      const r=await fetch("https://api.github.com/repos/agent-anna/home/contents/"+p+"?ref=main",{
+        headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json"},
+        cache:"no-store"
+      });
+      if(r.ok){
+        const j=await r.json();
+        if(j&&j.content){
+          const bin=atob(String(j.content).replace(/\s+/g,""));
+          const bytes=new Uint8Array(bin.length);
+          for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+          return new TextDecoder("utf-8").decode(bytes);
+        }
+      }
+    }catch{}
+  }
   for(const b of["https://agent-anna.github.io/home/","https://raw.githubusercontent.com/agent-anna/home/main/"]){
     try{const r=await fetch(b+p+"?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.text();}catch{}
   }
@@ -238,11 +265,14 @@ function applyDispatch(data){
   }
   setVal("djBox",d.djIntro||"");
   setVal("pressBox",d.press||"");
+  let populated=0;
   CH.forEach(([id,,lim])=>{
     const v=String(d[id]||"").slice(0,lim);
     setVal("t_"+id,v);
     setTxt("c_"+id,v.length+" / "+lim);
+    if(v.length>0)populated++;
   });
+  return populated;
 }
 
 async function loadLatest(){
@@ -256,12 +286,12 @@ async function loadLatest(){
       if(i>=0)$("songSel").value=String(i);
     }
     syncSong();
-    applyDispatch(j);
-    setTxt("st","Loaded dispatch for "+((j&&j.track)||"track"));
+    const n=applyDispatch(j);
+    setTxt("st","Loaded dispatch for "+((j&&j.track)||"track")+" ("+n+" of "+CH.length+" social channels populated)");
   }catch(e){
     const fb=extractFallbackFields(raw);
-    applyDispatch({dispatch:fb});
-    setTxt("st","Loaded with text recovery: "+e.message);
+    const n=applyDispatch({dispatch:fb});
+    setTxt("st","Loaded via recovery ("+n+" social channels): "+e.message);
   }
 }
 
@@ -283,10 +313,8 @@ async function loadSongs(){
 }
 
 async function triggerWorkflow(){
-  const patIn=$("patIn");
+  const pat=getPat();
   const angleIn=$("angleIn");
-  const pat=(patIn?patIn.value:"").trim()||localStorage.getItem("anna_dispatch_pat")||"";
-  if(pat)localStorage.setItem("anna_dispatch_pat",pat);
   if(!pat){setTxt("st","Paste GitHub PAT once to trigger workflow, or run from GitHub Actions tab");return;}
   const{idx}=syncSong();
   setTxt("st","Triggering GitHub Action...");
