@@ -3,9 +3,9 @@
 ## Artist Bio
 - Artist: Martin Strayd, Australian lyricist, songwriter, and composer.
 - Background: Former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.
-- Catalog and Format: Daily single releases and licensed original music across rock, alternative, blues, reggae, and soundtrack work.
+- Catalog and Format: Daily single of the day and licensed original music across rock, alternative, blues, reggae, and soundtrack work.
 
-## 28-Day Global Radio Airplay Stations and Cities
+## World Radio Cities Playing His Song
 - Manila (Philippines)
 - Melbourne (Australia)
 - Ecuador
