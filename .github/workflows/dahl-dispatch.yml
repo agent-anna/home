@@ -27,19 +27,28 @@ jobs:
           ANGLE: ${{ github.event.inputs.angle || '' }}
         run: |
           python3 - << 'PY'
-          import json, os, pathlib, urllib.request
+          import datetime, json, os, pathlib, re, urllib.request
           key = os.environ.get("DAHL_API_KEY", "").strip()
           if not key:
               raise SystemExit("DAHL_KEY secret is empty")
           idx = int(os.environ.get("SONG_INDEX", "0") or "0")
           angle = os.environ.get("ANGLE", "").strip()
+          today = datetime.date.today().strftime("%B %d, %Y")
+          priority_files = [
+              "bible/01-operational-instructions.md",
+              "bible/02-links.md",
+              "bible/04-voice-and-broadcast-law.md",
+              "bible/05-mission-manifesto.md",
+              "bible/06-dj-anna-persona.md",
+              "bible/07-platform-cadence-and-hashtags.md",
+              "character/anna.md",
+              "strayd/record-brain.json"
+          ]
           ctx = []
-          for folder in ("body", "bible", "soul", "character"):
-              p = pathlib.Path(folder)
-              if p.exists():
-                  for f in sorted(p.glob("*"))[:3]:
-                      if f.is_file():
-                          ctx.append(f"[{f}]\n" + f.read_text(encoding="utf-8", errors="ignore")[:800])
+          for rel in priority_files:
+              p = pathlib.Path(rel)
+              if p.exists() and p.is_file():
+                  ctx.append(f"=== {rel} ===\n" + p.read_text(encoding="utf-8", errors="ignore")[:1600])
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
           if songs_path.exists():
@@ -48,18 +57,38 @@ jobs:
           track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
           title = track.get("title") or track.get("name") or "Single"
           artist = track.get("artist") or "Martin Strayd"
-          sys_msg = "You are Agent Anna. Use the repo context to write a fresh press release and distinct social posts (x, tiktok, instagram, facebook, ytTitle, ytDesc) for ONE song without repeating sentences or hashtags across channels.\n" + "\n\n".join(ctx)[:2800]
-          usr_msg = f"Track: {title}\nArtist: {artist}\nAngle: {angle}\nReturn JSON with keys press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
+          track_json = json.dumps(track, ensure_ascii=False)[:2200]
+          rules = (
+              "STRICT ZERO-FABRICATION & BROADCAST LAWS:\n"
+              "1. ONLY use facts, URLs, emails, locations, and musical details explicitly present in the REPO CONTEXT and TRACK DATA below. NEVER guess a city, NEVER invent an email address, NEVER fabricate quotes, and NEVER invent instruments or genres not in the data.\n"
+              "2. Treat the track title (including any parenthetical subtitle) as ONE single song. Never split it into two releases.\n"
+              "3. Follow the persona, voice law, links, and cadence rules in the bible files below. Avoid empty hype words like unleashes, sonic catharsis, or pushes boundaries.\n"
+              "4. PRESS RELEASE FORMAT (250-350 words, plain text, no markdown stars): Header (FOR IMMEDIATE RELEASE - date + headline covering the song, the reason, and the artist), Lead (who/what/verified link), The Song & The Reason (what it sounds like from track metadata + why it was written), The Artist (who Martin Strayd is + direct MP3 & art ownership with free non-commercial sharing), Verified Links & Contact (ONLY URLs/contacts from bible/02-links.md).\n"
+              "5. SOCIAL POSTS: Write genuinely distinct, psychologically sharp posts tailored to each platform (x: punchy scroll-stopper under 260 chars; tiktok: relatable POV/hook + clean tags; instagram: warm story/connection + save/share prompt; facebook: conversational story inviting real comments; ytTitle: clear search-friendly title under 90 chars; ytDesc: hook + story + verified links + hashtags). Zero repeated sentences or duplicate hashtag sets across platforms.\n"
+          )
+          sys_msg = rules + "\n" + "\n\n".join(ctx)[:6500]
+          usr_msg = f"Date: {today}\nTrack Title: {title}\nArtist: {artist}\nAngle: {angle}\nTRACK DATA:\n{track_json}\n\nReturn ONLY valid JSON with keys: press, x, tiktok, instagram, facebook, ytTitle, ytDesc."
           req = urllib.request.Request(
               "https://inference.dahl.global/v1/chat/completions",
               data=json.dumps({"model": "MiniMaxAI/MiniMax-M2.7", "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]}).encode("utf-8"),
               headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
               method="POST"
           )
-          with urllib.request.urlopen(req, timeout=45) as resp:
+          with urllib.request.urlopen(req, timeout=55) as resp:
               data = json.loads(resp.read().decode("utf-8"))
+          raw_txt = data["choices"][0]["message"]["content"] or ""
+          cleaned = re.sub(r"<think>[\s\S]*?</think>", "", raw_txt, flags=re.I).strip()
+          cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned.strip(), flags=re.I).strip()
+          parsed = {}
+          m = re.search(r"\{[\s\S]*\}", cleaned)
+          if m:
+              try:
+                  parsed = json.loads(m.group(0))
+              except Exception:
+                  parsed = {}
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
-          out_path.write_text(json.dumps({"track": title, "artist": artist, "raw": data["choices"][0]["message"]["content"]}, indent=2), encoding="utf-8")
+          payload = {"date": today, "track": title, "artist": artist, "dispatch": parsed, "clean_text": cleaned}
+          out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
           print("Wrote", out_path)
           PY
       - name: Commit generated dispatch
@@ -71,7 +100,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(dispatch): generate via Dahl MiniMaxAI/MiniMax-M2.7"
+            git commit -m "chore(dispatch): grounded daily release via Dahl MiniMaxAI/MiniMax-M2.7"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
