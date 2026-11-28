@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ANTIPOP Dispatch — Veg Anna &amp; DJ ANNA</title>
+<title>ANTIPOP Daily Unwrap — Veg Anna &amp; DJ ANNA</title>
 <style>
   :root {
     --bg: #0b0e13;
@@ -81,7 +81,7 @@
   }
   textarea[readonly] { opacity: 0.92; background: #10151d; }
   textarea { min-height: 115px; resize: vertical; }
-  textarea.press-area { min-height: 260px; }
+  textarea.feature-area { min-height: 220px; }
   .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
   .btn {
     background: var(--panel-2);
@@ -120,7 +120,7 @@
       </div>
       <div>
         <h1 id="catalogStatus">Loading catalog...</h1>
-        <div class="sub" id="stationLine">ANTIPOP Daily Single Launcher • DJ ANNA &amp; Veg Anna</div>
+        <div class="sub" id="stationLine">24-Hour Record Store Unwrap • DJ ANNA &amp; Veg Anna</div>
 
         <div class="field">
           <label for="songSel">Song</label>
@@ -134,7 +134,7 @@
 
         <div class="field">
           <label for="topicInput">Topic / Angle</label>
-          <input id="topicInput" type="text" placeholder="Optional custom angle or story hook..." />
+          <input id="topicInput" type="text" placeholder="Optional unwrap hook, mood, or angle..." />
         </div>
 
         <div class="field">
@@ -162,21 +162,21 @@
         <button class="btn" id="copyIntroBtn" type="button">Copy</button>
       </div>
     </div>
-    <label for="djIntroText">On-Air FM DJ Script (Spoken TTS Ready)</label>
-    <textarea id="djIntroText" placeholder="Fresh on-air FM DJ intro..."></textarea>
+    <label for="djIntroText">24-Hour DJ Unwrap Script (Spoken TTS Ready)</label>
+    <textarea id="djIntroText" placeholder="Fresh 24-hour DJ unwrap..."></textarea>
   </div>
 
   <div class="card">
     <div class="card-head">
-      <h2>Single of the Day Press Release</h2>
+      <h2>Single of the Day Feature</h2>
       <div class="mini-actions">
         <button class="btn" id="speakPressBtn" type="button">Speak</button>
         <button class="btn" id="dlPressBtn" type="button">DL Audio</button>
         <button class="btn" id="copyPressBtn" type="button">Copy</button>
       </div>
     </div>
-    <label for="pressText">Editorial Single of the Day Release</label>
-    <textarea id="pressText" class="press-area" placeholder="Editorial press release for today's single..."></textarea>
+    <label for="pressText">Daily Record Store Spotlight (Title Theme, Radio Momentum &amp; Bible Context)</label>
+    <textarea id="pressText" class="feature-area" placeholder="Daily single spotlight..."></textarea>
   </div>
 
   <div class="social-grid" id="socialCardsGrid">
@@ -433,7 +433,7 @@ function extractStoryNotes() {
     .split(/\r?\n/)
     .map(l => cleanText(l.replace(/^[-*•\d.)\s]+/, "")))
     .filter(l =>
-      l.length > 26 &&
+      l.length > 24 &&
       l.length < 185 &&
       !/^===/.test(l) &&
       !/https?:\/\//i.test(l) &&
@@ -443,6 +443,20 @@ function extractStoryNotes() {
   const step = Math.max(1, Math.floor(lines.length / 5));
   const start = (NONCE * step) % lines.length;
   return [0, 1, 2, 3, 4].map(k => lines[(start + k * step) % lines.length]).filter(Boolean);
+}
+
+function deriveTitleTheme(title, customTopic) {
+  if (customTopic) return customTopic;
+  const raw = String(title || "");
+  const parenMatch = raw.match(/\(([^)]+)\)/);
+  if (parenMatch && parenMatch[1]) {
+    return "the tension and energy inside \"" + parenMatch[1].trim() + "\"";
+  }
+  const words = raw.replace(/[^a-zA-Z0-9\s'-]/g, " ").trim().split(/\s+/).filter(w => w.length > 2);
+  if (words.length >= 2) {
+    return "the story behind \"" + words.slice(0, 4).join(" ") + "\"";
+  }
+  return "today's fresh 24-hour single pick";
 }
 
 function scrubSpoken(str) {
@@ -554,79 +568,76 @@ async function generateFreshDispatchFromBible(cur) {
   const n0 = notes[0] || "";
   const n1 = notes[1] || "";
   const n2 = notes[2] || "";
-  const angle = cur.topic || "";
+  const theme = deriveTitleTheme(cur.title, cur.topic);
   const link = cur.cleanLink ? (" " + cur.cleanLink) : "";
 
   const djOpeners = [
-    "You are on ANTIPOP with DJ ANNA. Today's single of the day is \"" + cur.title + "\" from " + cur.artist + ".",
-    "Veg Anna in the ANTIPOP booth right now with today's single drop: \"" + cur.title + "\" by " + cur.artist + ".",
-    "Fresh single on ANTIPOP today: \"" + cur.title + "\" by " + cur.artist + ", hosted with DJ ANNA."
+    "Fresh 24-hour record unwrap on ANTIPOP with DJ ANNA. Today we are tearing into \"" + cur.title + "\" by " + cur.artist + ".",
+    "Veg Anna just pulled today's fresh 24-hour single off the ANTIPOP rack: \"" + cur.title + "\" from " + cur.artist + ".",
+    "New 24-hour single unwrap on ANTIPOP. DJ ANNA is spinning \"" + cur.title + "\" by " + cur.artist + " because " + theme + "."
   ];
 
   const djIntro =
     djOpeners[NONCE % djOpeners.length] +
-    (angle ? (" Today's angle hits " + angle + ".") : "") +
+    " Every day brings a brand-new single into rotation as " + cur.artist + " keeps climbing radio, spotlighting " + theme + "." +
     (n0 ? (" " + n0) : "") +
     (n1 ? (" " + n1) : "");
 
-  const headlines = [
-    cur.artist + " Unveils Daily Single \"" + cur.title + "\" on ANTIPOP",
-    "Single of the Day: " + cur.artist + " Drops \"" + cur.title + "\"",
-    "\"" + cur.title + "\" Leads Today's ANTIPOP Single Spotlight for " + cur.artist
+  const headings = [
+    "24-Hour Record Unwrap: \"" + cur.title + "\" by " + cur.artist,
+    "Today's Fresh Single on ANTIPOP: \"" + cur.title + "\" - " + cur.artist,
+    "On the 24-Hour Turntable: \"" + cur.title + "\" (" + cur.artist + ")"
   ];
 
-  const press =
-    headlines[NONCE % headlines.length] + "\n" +
+  const featureBody =
+    headings[NONCE % headings.length] + "\n" +
     META.date + "\n\n" +
-    cur.artist + " has released \"" + cur.title + "\" as today's featured single on ANTIPOP, with DJ ANNA and Veg Anna leading the daily broadcast spotlight" + (angle ? (" around " + angle) : "") + ".\n\n" +
-    (n0 ? (n0 + "\n\n") : "") +
+    "Every 24 hours, ANTIPOP unwraps a new single for listeners and radio selectors, with DJ ANNA and Veg Anna spotlighting \"" + cur.title + "\" by " + cur.artist + " - built around " + theme + ".\n\n" +
+    "As " + cur.artist + " keeps rising across radio charts, today's track brings a fresh angle and new energy into daily rotation" + (n0 ? (". " + n0) : ".") + "\n\n" +
     (n1 ? (n1 + "\n\n") : "") +
     (n2 ? (n2 + "\n\n") : "") +
-    "Listeners and curators can tune in to \"" + cur.title + "\" and pass it along as today's single pick" + (cur.cleanLink ? (" at" + link) : ".") + "\n\n" +
-    "Artist: " + cur.artist + "\n" +
-    "Featured Single: " + cur.title;
+    "Spin today's unwrap, pass it to listeners who love discovering new music every day, and catch tomorrow's new single drop" + (cur.cleanLink ? (" at" + link) : ".");
 
-  const xPosts = [
-    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "." + (angle ? (" " + angle + ".") : "") + (n0 ? (" " + capText(n0, 95)) : "") + link,
-    "\"" + cur.title + "\" - " + cur.artist + " is today's single pick on ANTIPOP." + (n1 ? (" " + capText(n1, 105)) : "") + link,
-    "New single spotlight: \"" + cur.title + "\" from " + cur.artist + "." + (angle ? (" " + angle + ".") : "") + link
+  const xDrops = [
+    "24-hour single unwrap: \"" + cur.title + "\" by " + cur.artist + " - built around " + theme + " as radio momentum climbs." + link,
+    "Today's new single on ANTIPOP: \"" + cur.title + "\" - " + cur.artist + "." + (n0 ? (" " + capText(n0, 95)) : (" Unwrapping " + theme + ".")) + link,
+    "DJ ANNA & Veg Anna unwrap \"" + cur.title + "\" by " + cur.artist + " today. Fresh single every 24 hours." + link
   ];
 
-  const tiktokPost =
-    "\"" + cur.title + "\" by " + cur.artist + " is today's single on ANTIPOP." +
-    (angle ? (" " + angle + ".") : "") +
+  const tiktokDrop =
+    "Fresh 24-hour single unwrap: \"" + cur.title + "\" by " + cur.artist + ". Today's title leans straight into " + theme + "." +
     (n0 ? (" " + n0) : "") +
-    " Hear today's single and stay tuned for the next drop." + link;
+    " Hear today's single and catch tomorrow's unwrap." + link;
 
-  const igPost =
-    "\"" + cur.title + "\" - " + cur.artist + "\nSingle of the Day\n\n" +
-    (angle ? (angle + "\n") : "") +
+  const igDrop =
+    "\"" + cur.title + "\" - " + cur.artist + "\n24-Hour Single Unwrap\n\n" +
+    "Unwrapping " + theme + " today on ANTIPOP with DJ ANNA and Veg Anna.\n" +
     (n0 ? (n0 + "\n") : "") +
     (n1 ? (n1 + "\n") : "") +
-    "\nOn air now with DJ ANNA and Veg Anna." + link;
+    "\nNew single every 24 hours as radio momentum builds." + link;
 
-  const fbPost =
-    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+  const fbDrop =
+    "24-Hour Single Unwrap: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+    "Today on ANTIPOP, DJ ANNA and Veg Anna unwrap \"" + cur.title + "\", exploring " + theme + ".\n" +
     (n0 ? (n0 + "\n") : "") +
     (n2 ? (n2 + "\n") : "") +
-    (angle ? ("\nFocus: " + angle) : "") +
-    "\nListen to today's single and share it with listeners who back independent music." + link;
+    "\nTune in to today's single and share it with friends who love fresh daily music." + link;
 
-  const ytTitle = "\"" + cur.title + "\" - " + cur.artist + " | Single of the Day";
+  const ytTitle = "\"" + cur.title + "\" - " + cur.artist + " | 24-Hour Single Unwrap";
   const ytDesc =
-    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
-    (angle ? ("Focus: " + angle + "\n\n") : "") +
-    (n0 ? (n0 + "\n") : "") +
-    (n1 ? (n1 + "\n") : "") +
+    "24-Hour Single Unwrap: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+    "Today's single explores " + theme + " on ANTIPOP with DJ ANNA and Veg Anna.\n" +
+    (n0 ? ("\n" + n0) : "") +
+    (n1 ? ("\n" + n1) : "") +
     (cur.cleanLink ? ("\nListen:" + link) : "");
 
   writeDispatchFields({
     djIntro,
-    press,
-    x: xPosts[NONCE % xPosts.length],
-    tiktok: tiktokPost,
-    instagram: igPost,
-    facebook: fbPost,
+    press: featureBody,
+    x: xDrops[NONCE % xDrops.length],
+    tiktok: tiktokDrop,
+    instagram: igDrop,
+    facebook: fbDrop,
     ytTitle,
     ytDesc
   });
@@ -912,7 +923,7 @@ async function loadCatalogAndDispatch() {
       sel.appendChild(opt);
     });
     sel.value = "0";
-    document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Single Launcher (" + SONGS.length + " songs)";
+    document.getElementById("catalogStatus").textContent = "ANTIPOP 24-Hour Single Unwrap (" + SONGS.length + " songs)";
   } else {
     document.getElementById("catalogStatus").textContent = "Catalog unavailable (songs-db.json)";
   }
@@ -983,7 +994,7 @@ function wireUI() {
   });
   document.getElementById("renderBtn").addEventListener("click", async () => {
     NONCE++;
-    setStatus("Pulling bible/ & generating fresh dispatch...");
+    setStatus("Pulling bible/ & unwrapping fresh single...");
     await loadBibleCorpus();
     const cur = syncSong();
     await generateFreshDispatchFromBible(cur);
@@ -997,9 +1008,9 @@ function wireUI() {
   document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
   document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
   document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro"));
-  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-press-release"));
+  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-daily-feature"));
   document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ Intro"));
-  document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Press Release"));
+  document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Daily Feature"));
 
   wireSocialCards();
 }
