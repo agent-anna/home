@@ -158,91 +158,30 @@ jobs:
                   except Exception:
                       parsed = {}
 
-              countries = "Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand, and United Kingdom"
               apple_url = "https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
               bundle_url = "https://tinyurl.com/martinstrayd"
               hub_url = "https://strayd.com"
-              yt_url = "https://www.youtube.com/@martinstrayd"
 
-              dj_bank = [
-                  f"Good evening, music lovers! You are locked into ANTIPOP, broadcast by ANNA, and I am your host Veg Anna! Somewhere on Earth right now, someone is hearing '{title}' by {artist} for the very first time, diving straight into {topic}. Let's turn it up and feel the world listen!",
-                  f"Hey everybody, it is Veg Anna hosting live on ANTIPOP, broadcast by ANNA! Today's brand-new single premiere is '{title}' from {artist}, built around {topic}. Across ten countries and more than a hundred original tracks, the daily song revolution rolls on!",
-                  f"Welcome back to ANTIPOP, where ANNA broadcasts a brand-new single to the world every single day! I am Veg Anna, and today we spotlight '{title}' by {artist}, a high-voltage look at {topic}. Let's spin today's feature single!",
-                  f"From Hollywood guitar tech to global daily single creator, {artist} is back on ANTIPOP with your host Veg Anna! Today's feature release is '{title}', capturing {topic} for listeners around the globe. Here we go!"
-              ]
+              def smart_trim(s, limit):
+                  s = str(s or "").strip()
+                  if len(s) <= limit:
+                      return s
+                  cut = s[:limit]
+                  sp = cut.rfind(" ")
+                  if sp > int(limit * 0.6):
+                      cut = cut[:sp]
+                  return re.sub(r"\s+https?://\S*$", "", cut).strip()
 
-              x_bank = [
-                  f"Major labels release once a quarter. {artist} drops a new single every single day on ANTIPOP. Hear '{title}' ({topic}): {apple_url} #martinstrayd",
-                  f"The track nobody expected {artist} to drop today just hit ANTIPOP: '{title}', tackling {topic}. Listen now: {apple_url} #martinstrayd",
-                  f"Backstage for the Sex Pistols and The Knack, now building an independent song-a-day empire. Hear {artist} on '{title}': {apple_url} #martinstrayd",
-                  f"One artist. One song a day. Zero label gatekeepers. Stream '{title}' by {artist} ({topic}) on ANTIPOP: {apple_url} #martinstrayd"
-              ]
-
-              tt_bank = [
-                  f"POV: You found the one song that sounds like {topic} running at 200 mph. '{title}' by {artist} is today's daily single drop on ANTIPOP with host Veg Anna, built for late-night drives and creator edits. Full audio and art bundle: {bundle_url} #martinstrayd #newmusic #dailysingle #fyp #songrecommendation",
-                  f"Wait for the hook on '{title}' by {artist}. If your brain lives inside {topic}, this daily single from the 100+ song ANTIPOP catalog will hit home immediately. Grab the bundle at {bundle_url} #martinstrayd #antipop #indiemusic #musicdiscovery #newrelease",
-                  f"How a former Hollywood guitar tech for rock legends started dropping one original song every single day: meet '{title}' by {artist}, exploring {topic}. Hear it and get the bundle at {bundle_url} #martinstrayd #rockhistory #songaday #musicstory #artist",
-                  f"Stop scrolling if you love raw, story-driven tracks about {topic}. '{title}' by {artist} just landed as today's Single of the Day on ANTIPOP. Bundle link: {bundle_url} #martinstrayd #dailydrop #music #playlist #discover"
-              ]
-
-              ig_bank = [
-                  f"Some songs feel like a midnight confession you did not know you needed. With '{title}', {artist} turns {topic} into a vivid, unfiltered chapter of his 100+ song independent catalog on ANTIPOP. Listeners who collect the direct MP3 and cover art bundle at {bundle_url} own it outright and can share it freely with friends for non-commercial listening. #martinstrayd #antipop #storytelling #independentartist #dailysingle",
-                  f"Every song in the {artist} universe carries a pulse of real life, rebellion, and late-night honesty. Today's feature release '{title}' steps straight into {topic}, proving what happens when an artist owns every note from studio to listener. Direct MP3 and cover art ownership available at {bundle_url} (free non-commercial sharing with friends welcome). #martinstrayd #musicjourney #originalmusic #newrelease #songwriting",
-                  f"Behind '{title}' is a simple truth about {topic} that hits harder the second time you play it. Hosted today by Veg Anna on ANTIPOP, {artist} continues his daily single odyssey with direct-to-fan MP3 and artwork bundles at {bundle_url}, ready to share non-commercially with friends. #martinstrayd #songmeaning #indierock #musiclovers #catalog",
-                  f"No middlemen, no waiting rooms, just pure songcraft delivered one day at a time. '{title}' captures {artist} reflecting on {topic} with raw emotional weight. Own the MP3 and cover art bundle directly at {bundle_url} and pass it along to friends for non-commercial play. #martinstrayd #artistowned #dailyrelease #musiccommunity #soundtrack"
-              ]
-
-              fb_bank = [
-                  f"Listeners tuning in from {countries} are discovering today's Single of the Day on ANTIPOP (hosted by Veg Anna and broadcast by ANNA): '{title}' by {artist}. What started as a bold song-a-day experiment has grown into a 100+ track independent catalog connecting radio audiences across ten nations. Explore the full catalog, stories, and direct artist hub at {hub_url} #martinstrayd #antipop #worldradio #independentmusic #dailysingle",
-                  f"Across {countries}, world radio stations are spinning the catalog of {artist}, and today's spotlight lands on '{title}'. Drawing on years backstage as a Hollywood celebrity guitar technician before launching his own independent media network, {artist} invites listeners inside the music at {hub_url} #martinstrayd #rockandroll #globalradio #musiccommunity #newmusic",
-                  f"Imagine a station where a brand-new studio single premieres every single day for listeners across {countries}. That is the heartbeat of ANTIPOP with host Veg Anna and {artist}, featured today with '{title}' ({topic}). Join the listener community and explore the archive at {hub_url} #martinstrayd #radio #musicdiscovery #songaday #artist",
-                  f"From {countries} to your speakers right now: '{title}' marks the latest chapter in {artist}'s daily singles launch campaign on ANTIPOP. Discover how one independent artist built a self-owned catalog of over 100 songs at {hub_url} #martinstrayd #antipop #musicfans #catalog #globalmusic"
-              ]
-
-              yt_titles = [
-                  f"Inside '{title}' by {artist} | Story, Sound & ANTIPOP Daily Single",
-                  f"{artist} - '{title}' (How a Former Rock Guitar Tech Built a Song-a-Day Empire)",
-                  f"Why '{title}' Hits Different | {artist} Daily Single on ANTIPOP",
-                  f"'{title}' by {artist} | Official ANTIPOP Daily Release & Catalog Story"
-              ]
-
-              base_press = (
-                  f"FOR IMMEDIATE RELEASE - {today}\n"
-                  f"ANTIPOP PREMIERES '{title}' BY {artist.upper()} AS TODAY'S SINGLE OF THE DAY\n\n"
-                  f"GLOBAL DAILY SINGLES LAUNCH CAMPAIGN: Broadcast by ANNA and hosted by Veg Anna, station ANTIPOP today officially premieres '{title}' by {artist} as its featured Single of the Day. The release anchors an ongoing daily singles launch campaign built around one artist, one new song per day, and continuous global discovery across an expanding catalog of more than 100 original studio recordings and licensed tracks.\n\n"
-                  f"ABOUT THE SINGLE AND SONG STORY: Centered on {topic}, '{title}' blends story-driven songwriting, sharp observation, and radio-ready production. Rather than treating music as a disposable one-day upload, ANTIPOP pairs each daily single with dedicated Veg Anna radio intros, cover artwork, and searchable catalog documentation so listeners and music programmers worldwide can explore the narrative behind every release.\n\n"
-                  f"WORLD RADIO BROADCAST FOOTPRINT: {artist}'s catalog enjoys active world radio airplay reaching audiences across 10 countries: {countries}. Through continuous radio rotation and daily single premieres, international listeners experience each new release as part of a connected, living broadcast schedule.\n\n"
-                  f"ABOUT {artist.upper()}: {artist} is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock legends including Steve Jones of the Sex Pistols and Doug Fieger of The Knack before channeling his personal experiences into his own recording career. Operating independently without traditional major-label gatekeepers, his sprawling catalog spans radio rock, anti-pop, reggae, blues, and electronic dance floor remixes exploring modern life, freedom, rebellion, and love.\n\n"
-                  f"DIRECT FAN OWNERSHIP AND NON-COMMERCIAL SHARING MODEL: Under the self-built artist-under-one-roof business model, listeners who purchase MP3 and cover art bundles own their files directly and are explicitly authorized to copy and share them freely with friends for non-commercial listening. Commercial resale, redistribution for profit, or unauthorized monetization of the audio files or artwork is strictly prohibited.\n\n"
-                  f"MEDIA AND LISTENER CALL TO ACTION: Tune in to ANTIPOP with host Veg Anna to hear '{title}' in rotation, explore the 100+ song catalog, and support independent artist-owned music directly through the official links below:\n"
-                  f"Official Artist Portfolio and Hub: {hub_url}\n"
-                  f"Direct MP3 and Cover Art Bundle: {bundle_url}\n"
-                  f"Stream on Apple Music: {apple_url}\n"
-                  f"Official YouTube Channel: {yt_url}"
-              )
-
-              press_val = scrub(parsed.get("press") or "")
-              if len(press_val) < 1200:
-                  press_val = scrub(base_press)
-
-              yt_desc_default = (
-                  f"{title} by {artist} | Featured Single of the Day on ANTIPOP (Hosted by Veg Anna, Broadcast by ANNA).\n"
-                  f"Theme & Story: {topic}. Discover {artist}, Australian lyricist, songwriter, composer, and former Hollywood celebrity guitar technician (Steve Jones of the Sex Pistols, Doug Fieger of The Knack), building a 100+ song independent daily singles catalog heard across {countries}.\n"
-                  f"Stream on Apple Music: {apple_url}\n"
-                  f"Direct MP3 & Cover Art Bundle (Own your copy and share freely with friends for non-commercial listening; commercial resale prohibited): {bundle_url}\n"
-                  f"Official Artist Hub: {hub_url}\n"
-                  f"#martinstrayd #antipop #dailysingle #independentmusic #newmusic"
-              )
-
+              p = parsed
               final_d = {
-                  "djIntro": scrub(parsed.get("djIntro") or dj_bank[variant]),
-                  "press": press_val,
-                  "x": cap_tags(scrub(parsed.get("x") or x_bank[variant]), 2)[:275],
-                  "tiktok": cap_tags(scrub(parsed.get("tiktok") or tt_bank[variant]), 5)[:2200],
-                  "instagram": cap_tags(scrub(parsed.get("instagram") or ig_bank[variant]), 5)[:2200],
-                  "facebook": cap_tags(scrub(parsed.get("facebook") or fb_bank[variant]), 5)[:63206],
-                  "ytTitle": scrub(re.sub(r"#[A-Za-z0-9_]+", "", parsed.get("ytTitle") or yt_titles[variant]))[:95],
-                  "ytDesc": cap_tags(scrub(parsed.get("ytDesc") or yt_desc_default), 5)[:5000],
+                  "djIntro": smart_trim(p.get("djIntro") or f"DJ Bananna on the Agent Anna desk: '{title}' by {artist} is today's daily single push around {topic}.", 900),
+                  "press": p.get("press") or f"{today}\n\n{title} by {artist}\n\nDaily single spotlight around {topic}, with Agent Anna and DJ Bananna pushing momentum behind {artist}'s catalog. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url}",
+                  "x": smart_trim(cap_tags(p.get("x") or f"'{title}' by {artist} ({topic}) {bundle_url} #MartinStrayd", 2), 275),
+                  "tiktok": smart_trim(cap_tags(p.get("tiktok") or f"'{title}' by {artist} on {topic} with DJ Bananna. {bundle_url} #Songwriting #IndieMusic #DailySingle", 5), 2200),
+                  "instagram": smart_trim(cap_tags(p.get("instagram") or f"'{title}' by {artist} explores {topic} with DJ Bananna. {bundle_url} #Songwriting #ArtistOwned #DailySingle", 5), 2200),
+                  "facebook": smart_trim(cap_tags(p.get("facebook") or f"'{title}' by {artist} ({topic}) is today's single focus with DJ Bananna. {hub_url} #Songwriters", 3), 63206),
+                  "ytTitle": smart_trim(scrub(re.sub(r"#[A-Za-z0-9_]+", "", p.get("ytTitle") or f"{title} - {artist} | Daily Single")), 95),
+                  "ytDesc": smart_trim(cap_tags(p.get("ytDesc") or f"'{title}' by {artist} ({topic}). Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} #MartinStrayd #DailySingle", 3), 5000),
               }
               payload = {
                   "date": today,
