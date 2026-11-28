@@ -387,8 +387,7 @@ function scrubDashAndNoise(str) {
   return String(str || "")
     .replace(/<think>[\s\S]*?<\/think>/gi, "")
     .replace(/[\u2013\u2014]/g, ", ")
-    .replace(/\bDJ\s+Bananna\b/gi, "DJ ANNA")
-    .replace(/\bVeg\s+Anna\b/gi, "DJ ANNA")
+
     .replace(/\*\*/g, "")
     .replace(/`+/g, "")
     .replace(/\s+,/g, ",")
@@ -705,7 +704,6 @@ async function refreshDispatch(cur, triggerWorkflow) {
               angle: cur.angle || "",
               voice: selVoiceOpt.edgeVoiceName || "en-US-LunaNeural",
               mode: "full",
-              seed: String(seedNum)
             }
           })
         });
@@ -922,44 +920,63 @@ function splitForMp3(text, maxChunk) {
   return parts.slice(0, 4);
 }
 
-async function fetchMp3Blob(cleanText, profile) {
-  const shortName = (profile.label || "Luna").split(" ")[0];
-  const seVoice = profile.edgeVoiceName ? profile.edgeVoiceName.replace(/Neural$/i, "") : shortName;
-  try {
-    const r = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(seVoice) + "&text=" + encodeURIComponent(cleanText.slice(0, 420)));
-    if (r.ok) {
-      const b = await r.blob();
-      if (b && b.size > 400 && /audio|mpeg|octet-stream/i.test(b.type || "audio/mpeg")) return b;
-    }
-  } catch (_) {}
-
-  const tl = (profile.lang || "en-US").split("-")[0] || "en";
-  const chunks = splitForMp3(cleanText.slice(0, 600), 180);
-  const buffers = [];
-  for (const ch of chunks) {
-    try {
-      const gr = await fetch("https://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(ch) + "&tl=" + encodeURIComponent(tl) + "&client=tw-ob");
-      if (!gr.ok) return null;
-      const ab = await gr.arrayBuffer();
-      if (!ab || ab.byteLength < 200) return null;
-      buffers.push(ab);
-    } catch (_) {
-      return null;
+function resolveRepoMp3Path(audioKey) {
+  const safeKey = String(audioKey || "").replace(/[^a-zA-Z0-9_-]/g, "");
+  if (LAST_DISPATCH && LAST_DISPATCH.audio && typeof LAST_DISPATCH.audio === "object") {
+    const mapped = LAST_DISPATCH.audio[safeKey];
+    if (typeof mapped === "string" && mapped.trim()) {
+      return mapped.trim().replace(/^\/+/, "");
     }
   }
-  if (!buffers.length) return null;
-  return new Blob(buffers, { type: "audio/mpeg" });
+  return safeKey ? ("strayd/audio/" + safeKey + ".mp3") : "";
 }
 
-async function downloadMp3File(text, baseName) {
-  const clean = cleanForSpeech(text);
-  if (!clean) {
-    setStatus("No text to render MP3");
-    return;
+async function fetchRepoMp3Blob(audioKey) {
+  const repoPath = resolveRepoMp3Path(audioKey);
+  if (!repoPath) return null;
+  const pat = getPat();
+
+  if (pat) {
+    try {
+      const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(repoPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
+      const r = await fetch(apiUrl, {
+        headers: { Authorization: "Bearer " + pat, Accept: "application/vnd.github+json" },
+        cache: "no-store"
+      });
+      if (r.ok) {
+        const data = await r.json();
+        if (data && data.content) {
+          const cleanB64 = String(data.content).replace(/\s+/g, "");
+          const bin = atob(cleanB64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          if (bytes.byteLength > 512) return new Blob([bytes], { type: "audio/mpeg" });
+        }
+      }
+    } catch (_) {}
   }
+
+  const urls = [
+    "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/" + encodeURI(repoPath) + "?t=" + Date.now(),
+    "https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/" + encodeURI(repoPath) + "?t=" + Date.now(),
+    "../" + encodeURI(repoPath) + "?t=" + Date.now()
+  ];
+  for (const u of urls) {
+    try {
+      const res = await fetch(u, { cache: "no-store" });
+      if (!res.ok) continue;
+      const ab = await res.arrayBuffer();
+      if (ab && ab.byteLength > 512) return new Blob([ab], { type: "audio/mpeg" });
+    } catch (_) {}
+  }
+  return null;
+}
+
+async function downloadMp3File(text, baseName, audioKey) {
+  const clean = cleanForSpeech(text);
   const profile = getSelectedVoiceProfile();
-  setStatus("Rendering MP3 (" + profile.label + ")...");
-  const blob = await fetchMp3Blob(clean, profile);
+  setStatus("Fetching repo MP3 (" + (audioKey || baseName) + ")...");
+  const blob = await fetchRepoMp3Blob(audioKey || baseName);
   if (blob) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -969,11 +986,15 @@ async function downloadMp3File(text, baseName) {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
-    setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
-  } else {
-    setStatus("MP3 endpoint unavailable, speaking aloud with " + profile.label);
-    speakText(clean);
+    setStatus("Downloaded " + baseName + ".mp3 from repo");
+    return;
   }
+  if (!clean) {
+    setStatus("No repo MP3 or text available");
+    return;
+  }
+  setStatus("Repo MP3 not found yet, speaking aloud with " + profile.label);
+  speakText(clean);
 }
 
 async function advanceTrack(autoSpeak) {
@@ -1091,7 +1112,7 @@ function wireSocialCards() {
       if (act === "speak") {
         speakText(ta.value);
       } else if (act === "dlAudio") {
-        downloadMp3File(ta.value, "daily-very-show-" + platform.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+        downloadMp3File(ta.value, "daily-very-show-" + platform.toLowerCase().replace(/[^a-z0-9]+/g, "-"), platform);
       } else if (act === "edit") {
         ta.readOnly = false;
         ta.focus();
@@ -1144,7 +1165,7 @@ function wireUI() {
     await loadGitHubState();
     const cur = syncSong();
     await refreshDispatch(cur, true);
-    await downloadMp3File(document.getElementById("djIntroText").value, "daily-very-show-dj-intro");
+    await downloadMp3File(document.getElementById("djIntroText").value, "daily-very-show-dj-intro", "djIntro");
   });
   document.getElementById("radioLoopBtn").addEventListener("click", () => {
     setRadio24x7(!RADIO_24X7);
@@ -1167,8 +1188,8 @@ function wireUI() {
 
   document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
   document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
-  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "daily-very-show-dj-intro"));
-  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "daily-very-show-daily-release"));
+  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "daily-very-show-dj-intro", "djIntro"));
+  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "daily-very-show-daily-release", "press"));
   document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ ANNA Intro"));
   document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Daily Release"));
 
