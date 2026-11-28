@@ -411,7 +411,8 @@ const RADIO_VOICES=[
 function populateVoices(){
   const sel=$("voiceSel");
   if(!sel)return;
-  const prevVal=sel.value;
+  const savedVal=localStorage.getItem("anna_dispatch_voice")||"";
+  const prevVal=sel.value||savedVal;
   VOICES=("speechSynthesis"in window)?(speechSynthesis.getVoices()||[]):[];
   sel.innerHTML="";
   const defOpt=document.createElement("option");
@@ -420,21 +421,21 @@ function populateVoices(){
   defOpt.textContent="Default: Luna (US - Female)";
   sel.appendChild(defOpt);
 
-  RADIO_VOICES.forEach((rv,i)=>{
-    const o=document.createElement("option");
-    o.value="radio:"+i;
-    o.dataset.edge=rv.edge;
-    o.dataset.lang=rv.lang;
-    o.textContent=rv.label+" ["+rv.edge+"]";
-    sel.appendChild(o);
-  });
-
   VOICES.forEach((v,idx)=>{
     const o=document.createElement("option");
     o.value="sys:"+idx;
     o.dataset.vname=v.name||"";
     o.dataset.edge=mapToEdgeVoice(v);
     o.textContent="Browser: "+(v.name||"Voice")+(v.lang?" ("+v.lang+")":"");
+    sel.appendChild(o);
+  });
+
+  RADIO_VOICES.forEach((rv,i)=>{
+    const o=document.createElement("option");
+    o.value="radio:"+i;
+    o.dataset.edge=rv.edge;
+    o.dataset.lang=rv.lang;
+    o.textContent=rv.label+" ["+rv.edge+"]";
     sel.appendChild(o);
   });
 
@@ -529,17 +530,32 @@ function speakTxt(t,announceOnly){
   if(!("speechSynthesis"in window)){setTxt("st","Browser speech not available");return;}
   const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2200);
   if(!sp){setTxt("st","Nothing to speak");return;}
+  populateVoices();
   try{
     if(speechSynthesis.paused)speechSynthesis.resume();
     speechSynthesis.cancel();
   }catch{}
   const voice=getSelectedVoice();
-  const u=new SpeechSynthesisUtterance(sp);
-  if(voice){u.voice=voice;if(voice.lang)u.lang=voice.lang;}
-  u.onstart=()=>setTxt("st","Speaking"+(voice?" ("+voice.name+")":"")+"...");
-  u.onend=()=>setTxt("st","Done speaking");
-  u.onerror=ev=>setTxt("st","Speech error: "+(ev&&ev.error?ev.error:"check browser audio"));
-  speechSynthesis.speak(u);
+  const sentences=sp.match(/[^.!?]+[.!?]?/g)||[sp];
+  const chunks=sentences.map(s=>s.trim()).filter(Boolean).slice(0,12);
+  let spokeAny=false;
+  chunks.forEach((part,i)=>{
+    try{
+      const u=new SpeechSynthesisUtterance(part);
+      if(voice){u.voice=voice;if(voice.lang)u.lang=voice.lang;}
+      u.rate=0.98;
+      u.pitch=1.04;
+      if(i===chunks.length-1)u.onend=()=>setTxt("st","Done speaking");
+      u.onerror=ev=>setTxt("st","Speech error: "+(ev&&ev.error?ev.error:"check browser audio"));
+      speechSynthesis.speak(u);
+      spokeAny=true;
+    }catch{}
+  });
+  if(spokeAny){
+    setTxt("st","Speaking"+(voice?" ("+voice.name+")":"")+"...");
+  }else{
+    setTxt("st","Voice playback blocked by browser");
+  }
 }
 
 async function triggerAction(){
@@ -613,7 +629,7 @@ if($("runActBtn"))$("runActBtn").onclick=triggerAction;
 if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
 if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
-if($("voiceSel"))$("voiceSel").onchange=()=>{try{speechSynthesis.cancel();}catch{}const eo=mapToEdgeVoice(getSelectedVoice());setTxt("st","Voice: "+eo);};
+if($("voiceSel"))$("voiceSel").onchange=()=>{try{localStorage.setItem("anna_dispatch_voice",$("voiceSel").value||"");}catch{}try{speechSynthesis.cancel();}catch{}const eo=mapToEdgeVoice(getSelectedVoice());setTxt("st","Voice: "+eo);};
 if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")&&$("djBox").value||"",false);
 if($("dlDj"))$("dlDj").onclick=()=>dlMp3("djIntro","dj-intro-antipop");
 if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ intro");
