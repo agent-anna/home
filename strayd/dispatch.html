@@ -80,8 +80,8 @@
     font-family: inherit;
   }
   textarea[readonly] { opacity: 0.92; background: #10151d; }
-  textarea { min-height: 110px; resize: vertical; }
-  textarea.press-area { min-height: 220px; }
+  textarea { min-height: 115px; resize: vertical; }
+  textarea.press-area { min-height: 250px; }
   .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
   .btn {
     background: var(--panel-2);
@@ -107,7 +107,6 @@
   }
   .mini-actions { display: flex; gap: 6px; flex-wrap: wrap; }
   .social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -117,11 +116,11 @@
     <div class="top-grid">
       <div class="art-box" id="coverWrap">
         <span id="coverPlaceholder">Track cover art</span>
-        <img id="coverImg" alt="Track cover art" class="hidden" />
+        <img id="coverImg" alt="Track cover art" style="display:none;" />
       </div>
       <div>
         <h1 id="catalogStatus">Loading catalog...</h1>
-        <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; Dispatch</div>
+        <div class="sub" id="stationLine">Live bible/ &amp; catalog dispatch</div>
 
         <div class="field">
           <label for="songSel">Song</label>
@@ -135,11 +134,11 @@
 
         <div class="field">
           <label for="topicInput">Topic / Angle</label>
-          <input id="topicInput" type="text" placeholder="Song topic or angle..." />
+          <input id="topicInput" type="text" placeholder="Optional angle or hook..." />
         </div>
 
         <div class="field">
-          <label for="patInput">GitHub PAT (Pull bible/ &amp; Dispatch)</label>
+          <label for="patInput">GitHub PAT (Pull bible/ &amp; Trigger Dispatch)</label>
           <input id="patInput" type="password" placeholder="ghp_..." autocomplete="off" />
         </div>
 
@@ -163,8 +162,8 @@
         <button class="btn" id="copyIntroBtn" type="button">Copy</button>
       </div>
     </div>
-    <label for="djIntroText">On-Air FM DJ Script</label>
-    <textarea id="djIntroText" placeholder="Spoken FM DJ intro driven by bible/ &amp; single metadata..."></textarea>
+    <label for="djIntroText">On-Air FM DJ Script (Spoken TTS Ready)</label>
+    <textarea id="djIntroText" placeholder="Spoken FM DJ script generated from bible/ &amp; selected single..."></textarea>
   </div>
 
   <div class="card">
@@ -176,12 +175,12 @@
         <button class="btn" id="copyPressBtn" type="button">Copy</button>
       </div>
     </div>
-    <label for="pressText">Single of the Day Release Brief (Who / What / Why / 365-Day Drop / CTA)</label>
-    <textarea id="pressText" class="press-area" placeholder="Single of the day press release driven by bible/..."></textarea>
+    <label for="pressText">Single of the Day Press Release (Driven by bible/ &amp; Single Data)</label>
+    <textarea id="pressText" class="press-area" placeholder="Press release generated from bible/ &amp; selected single..."></textarea>
   </div>
 
   <div class="social-grid" id="socialCardsGrid">
-    <div class="card" data-platform="X" data-target="xText" data-audio="strayd/audio/x.mp3">
+    <div class="card" data-platform="X" data-target="xText">
       <div class="card-head">
         <h3>X</h3>
         <div class="mini-actions">
@@ -196,7 +195,7 @@
       <textarea id="xText"></textarea>
     </div>
 
-    <div class="card" data-platform="TikTok" data-target="tiktokText" data-audio="strayd/audio/tiktok.mp3">
+    <div class="card" data-platform="TikTok" data-target="tiktokText">
       <div class="card-head">
         <h3>TikTok</h3>
         <div class="mini-actions">
@@ -211,7 +210,7 @@
       <textarea id="tiktokText"></textarea>
     </div>
 
-    <div class="card" data-platform="Instagram" data-target="igText" data-audio="strayd/audio/instagram.mp3">
+    <div class="card" data-platform="Instagram" data-target="igText">
       <div class="card-head">
         <h3>Instagram</h3>
         <div class="mini-actions">
@@ -226,7 +225,7 @@
       <textarea id="igText"></textarea>
     </div>
 
-    <div class="card" data-platform="Facebook" data-target="fbText" data-audio="strayd/audio/facebook.mp3">
+    <div class="card" data-platform="Facebook" data-target="fbText">
       <div class="card-head">
         <h3>Facebook</h3>
         <div class="mini-actions">
@@ -241,7 +240,7 @@
       <textarea id="fbText"></textarea>
     </div>
 
-    <div class="card" data-platform="YouTube Title" data-target="ytTitleText" data-audio="strayd/audio/ytTitle.mp3">
+    <div class="card" data-platform="YouTube Title" data-target="ytTitleText">
       <div class="card-head">
         <h3>YouTube Title</h3>
         <div class="mini-actions">
@@ -256,7 +255,7 @@
       <textarea id="ytTitleText"></textarea>
     </div>
 
-    <div class="card" data-platform="YouTube Description" data-target="ytDescText" data-audio="strayd/audio/ytDesc.mp3">
+    <div class="card" data-platform="YouTube Description" data-target="ytDescText">
       <div class="card-head">
         <h3>YouTube Description</h3>
         <div class="mini-actions">
@@ -306,10 +305,9 @@ const EDGE_VOICE_CATALOG = [
   ["ms-MY-YasminNeural","Yasmin (ms-MY)"],["vi-VN-HoaiMyNeural","HoaiMy (vi-VN)"],["fil-PH-BlessicaNeural","Blessica (fil-PH)"]
 ];
 
-const MALE_EDGE_NAMES = new Set([
-  "SteffanNeural","RogerNeural","RyanNeural","ThomasNeural","LiamNeural","AaravNeural",
-  "NiwatNeural","KeitaNeural","InJoonNeural","YunxiNeural","YunJheNeural","AlvaroNeural",
-  "JorgeNeural","HenriNeural","ConradNeural","DiegoNeural"
+const MALE_NAMES = new Set([
+  "steffan","roger","ryan","thomas","liam","aarav","niwat","keita","injoon","yunxi","yunjhe",
+  "alvaro","jorge","henri","conrad","diego","guy","david","mark","daniel","arthur","george"
 ]);
 
 let SONGS = [];
@@ -405,61 +403,69 @@ async function loadBibleCorpus() {
     : "Bible source: no bible/ files loaded yet (add GitHub PAT and click Load).";
 }
 
-function scrubSpoken(str) {
+function sanitizePublicText(str) {
   return String(str || "")
-    .replace(/https?:\/\/\S+/gi, "")
-    .replace(/[=*_~#]{2,}/g, " ")
-    .replace(/[\u2013\u2014]/g, ", ")
+    .replace(/https?:\/\/music\.apple\.com\/\S+/gi, "")
+    .replace(/https?:\/\/tinyurl\.com\/\S+/gi, "")
+    .replace(/\|?\s*STRAYD[-_A-Z0-9]+\s*\.?/gi, "")
+    .replace(/\bSTRAYD[-_][A-Z0-9-]+\b/gi, "")
+    .replace(/\b(awaiting_review|in_review|draft|published_status)\b/gi, "")
+    .replace(/AGENT ANNA BIBLE ARCHITECTURE[^)\n]*/gi, "")
+    .replace(/SINGLE SOURCE OF TRUTH/gi, "")
+    .replace(/\*\*|\`+/g, "")
+    .replace(/^\s*#+\s+.*$/gm, "")
+    .replace(/^\s*={2,}.*$/gm, "")
     .replace(/\bDJ\s+Bananna\b/gi, "Veg Anna")
     .replace(/\bDJ\s+Veg\s+Anna\b/gi, "Veg Anna")
-    .replace(/([!?.])\1{2,}/g, "$1")
+    .replace(/\bnever\s+"?Veg\s+Anna"?\b/gi, "")
+    .replace(/\s*\|\s*$/g, "")
     .replace(/[ \t]+/g, " ")
     .trim();
 }
 
-function scrubCopy(str) {
-  return String(str || "")
-    .replace(/https?:\/\/music\.apple\.com\/\S+/gi, "")
-    .replace(/https?:\/\/tinyurl\.com\/\S+/gi, "")
-    .replace(/\bDJ\s+Bananna\b/gi, "Veg Anna")
-    .replace(/\bDJ\s+Veg\s+Anna\b/gi, "Veg Anna")
-    .replace(/[\u2013\u2014]/g, " - ")
-    .replace(/[ \t]+/g, " ")
+function scrubSpoken(str) {
+  return sanitizePublicText(str)
+    .replace(/https?:\/\/\S+/gi, "")
+    .replace(/[=*_~#`]{2,}/g, " ")
+    .replace(/[\u2013\u2014]/g, ", ")
+    .replace(/([!?.])\1{2,}/g, "$1")
     .trim();
 }
 
 function smartTrimStr(str, maxLen) {
-  const s = scrubCopy(str);
+  const s = sanitizePublicText(str);
   if (s.length <= maxLen) return s;
   const cut = s.slice(0, maxLen - 1);
   const sp = cut.lastIndexOf(" ");
   return (sp > 20 ? cut.slice(0, sp) : cut).trim();
 }
 
-function extractBibleSignals() {
+function extractBibleFacts() {
   const combined = Object.values(BIBLE_DOCS).join("\n");
   const lines = combined
     .split(/\r?\n/)
-    .map(l => l.replace(/^[-*#\s]+/, "").trim())
-    .filter(l => l.length > 20 && l.length < 190 && !/^===/.test(l) && !/https?:\/\//i.test(l));
+    .map(l => sanitizePublicText(l.replace(/^[-*•\d.)\s]+/, "")))
+    .filter(l =>
+      l.length > 24 &&
+      l.length < 190 &&
+      !/^===/.test(l) &&
+      !/https?:\/\//i.test(l) &&
+      !/\.md\b/i.test(l) &&
+      !/rules[A-Z0-9]*\b/i.test(l)
+    );
   if (!lines.length) return [];
-  const baseIdx = (NONCE - 1) % lines.length;
-  return [
-    lines[baseIdx],
-    lines[(baseIdx + 2) % lines.length],
-    lines[(baseIdx + 5) % lines.length],
-    lines[(baseIdx + 9) % lines.length]
-  ].filter(Boolean);
+  const step = Math.max(1, Math.floor(lines.length / 5));
+  const start = (NONCE * step) % lines.length;
+  return [0, 1, 2, 3, 4].map(k => lines[(start + k * step) % lines.length]).filter(Boolean);
 }
 
 function getSelectedSong() {
   if (!SONGS.length) {
     return {
       idx: 0,
-      id: "",
       title: "",
       artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
-      topic: scrubCopy((document.getElementById("topicInput").value || "").trim()),
+      topic: sanitizePublicText((document.getElementById("topicInput").value || "").trim()),
       cover: "",
       cleanLink: "",
       genre: ""
@@ -470,19 +476,18 @@ function getSelectedSong() {
   const s = SONGS[idx] || SONGS[0];
   const am = (s && s.platforms && s.platforms.appleMusic) || {};
   const customTopic = (document.getElementById("topicInput").value || "").trim();
-  const autoTopic = [am.genre, s.promoStatus, s.id].filter(Boolean).join(" | ");
+  const genre = sanitizePublicText(am.genre || s.genre || "");
   const rawPortal = String(s.portalUrl || (RECORD_BRAIN && RECORD_BRAIN.salesPortal) || "").trim();
   const cleanLink = rawPortal && !/music\.apple\.com|tinyurl\.com|strayd\.com/i.test(rawPortal) ? rawPortal : "";
 
   return {
     idx: isNaN(idx) ? 0 : idx,
-    id: s.id || "",
-    title: scrubCopy(s.title || s.name || ""),
-    artist: scrubCopy(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
-    topic: scrubCopy(customTopic || s.topic || s.theme || s.mood || autoTopic || ""),
+    title: sanitizePublicText(s.title || s.name || ""),
+    artist: sanitizePublicText(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
+    topic: sanitizePublicText(customTopic || s.topic || s.theme || s.mood || ""),
     cover: am.artworkUrlHighRes || s.artUrl || s.cover || s.artwork || s.art || "",
     cleanLink,
-    genre: am.genre || ""
+    genre
   };
 }
 
@@ -492,19 +497,19 @@ function syncSong() {
   const ph = document.getElementById("coverPlaceholder");
   if (cur.cover) {
     img.src = cur.cover;
-    img.classList.remove("hidden");
-    ph.classList.add("hidden");
+    img.style.display = "block";
+    ph.style.display = "none";
   } else {
     img.removeAttribute("src");
-    img.classList.add("hidden");
-    ph.classList.remove("hidden");
+    img.style.display = "none";
+    ph.style.display = "flex";
   }
   return cur;
 }
 
 function writeDispatchFields(out) {
-  document.getElementById("djIntroText").value = scrubCopy(out.djIntro || "");
-  document.getElementById("pressText").value = scrubCopy(out.press || "");
+  document.getElementById("djIntroText").value = sanitizePublicText(out.djIntro || "");
+  document.getElementById("pressText").value = sanitizePublicText(out.press || "");
   document.getElementById("xText").value = smartTrimStr(out.x || "", 275);
   document.getElementById("tiktokText").value = smartTrimStr(out.tiktok || "", 2200);
   document.getElementById("igText").value = smartTrimStr(out.instagram || "", 2200);
@@ -534,7 +539,7 @@ async function generateFreshDispatchFromBible(cur) {
           inputs: {
             track: cur.title,
             artist: cur.artist,
-            topic: cur.topic || "daily single release",
+            topic: cur.topic || "",
             nonce: String(NONCE)
           }
         })
@@ -542,71 +547,75 @@ async function generateFreshDispatchFromBible(cur) {
     } catch (_) {}
   }
 
-  const sig = extractBibleSignals();
-  const s0 = sig[0] || "";
-  const s1 = sig[1] || "";
-  const s2 = sig[2] || "";
-  const s3 = sig[3] || "";
-  const angle = cur.topic || (cur.genre ? (cur.genre + " daily single drop") : "365-day daily release drop");
+  const facts = extractBibleFacts();
+  const f0 = facts[0] || "";
+  const f1 = facts[1] || "";
+  const f2 = facts[2] || "";
+  const f3 = facts[3] || "";
+  const angleNote = cur.topic ? (" Angle: " + cur.topic + ".") : (cur.genre ? (" Sound: " + cur.genre + ".") : "");
   const ctaLink = cur.cleanLink ? (" " + cur.cleanLink) : "";
 
+  const djOpeners = [
+    "On ANTIPOP with DJ ANNA, today's featured single is " + cur.title + " by " + cur.artist + ".",
+    "Veg Anna on the ANTIPOP broadcast with today's single drop: " + cur.title + " from " + cur.artist + ".",
+    "Today's single on ANTIPOP is " + cur.title + " by " + cur.artist + "."
+  ];
+
   const djIntro =
-    "You are tuned in with DJ ANNA on ANTIPOP for today's single drop: " + cur.title + " by " + cur.artist + ". " +
-    angle + ". " +
-    (s0 ? (s0 + ". ") : "") +
-    "Lock in to the 365-day single rollout and stay with the signal.";
+    djOpeners[NONCE % djOpeners.length] +
+    angleNote +
+    (f0 ? (" " + f0) : "") +
+    (f1 ? (" " + f1) : "");
 
   const press =
-    "SINGLE OF THE DAY RELEASE | " + META.date + "\n" +
-    "Track: " + cur.title + "\n" +
-    "Artist: " + cur.artist + "\n" +
-    "Rollout: 365-Day Daily Single Drop\n\n" +
-    "WHO & WHAT: " + cur.artist + " unveils the daily single \"" + cur.title + "\" on ANTIPOP, hosted live by DJ ANNA with angle focus: " + angle + ".\n\n" +
-    "WHY IT MATTERS: " + (s0 || angle) + (s1 ? (" " + s1) : "") + "\n\n" +
-    "CONTEXT & MOMENTUM: " + (s2 || "Daily single cadence built for consistent listener discovery.") + (s3 ? (" " + s3) : "") + "\n\n" +
-    "CALL TO ACTION: Stream, share, and explore the artist release directly" + (ctaLink ? (":" + ctaLink) : ".");
+    "SINGLE OF THE DAY: \"" + cur.title + "\" - " + cur.artist + "\n" +
+    META.date + "\n\n" +
+    "WHO & WHAT: " + cur.artist + " presents \"" + cur.title + "\" as today's single on ANTIPOP" + (cur.topic ? (", focused on " + cur.topic) : "") + ".\n\n" +
+    "WHY & CURRENT DISPATCH: " + (f0 || angleNote || ("Featured single release from " + cur.artist + ".")) + (f1 ? ("\n" + f1) : "") + (f2 ? ("\n" + f2) : "") + "\n\n" +
+    "CALL TO ACTION: Listen to today's single and share it across your channels" + (cur.cleanLink ? (" at" + ctaLink) : ".") + (f3 ? ("\n\n" + f3) : "");
 
-  const xPost =
-    "SINGLE OF THE DAY: " + cur.title + " - " + cur.artist + ". " +
-    angle + ". " +
-    (s0 ? smartTrimStr(s0, 95) + " " : "") +
-    (cur.cleanLink || "");
+  const xVariants = [
+    "SINGLE OF THE DAY: \"" + cur.title + "\" - " + cur.artist + "." + angleNote + (f0 ? (" " + smartTrimStr(f0, 90)) : "") + ctaLink,
+    "Today's single drop: \"" + cur.title + "\" by " + cur.artist + "." + (f1 ? (" " + smartTrimStr(f1, 100)) : angleNote) + ctaLink,
+    "On ANTIPOP: \"" + cur.title + "\" - " + cur.artist + "." + angleNote + ctaLink
+  ];
 
-  const tiktokPost =
-    "Hook: Today's single drop is \"" + cur.title + "\" by " + cur.artist + " on the 365-day daily release run.\n" +
-    "Why listen now: " + (s0 || angle) + "\n" +
-    "CTA: Tap in and catch the daily drop" + (ctaLink ? (":" + ctaLink) : ".");
+  const tiktokCopy =
+    "Today's single is \"" + cur.title + "\" by " + cur.artist + "." +
+    angleNote +
+    (f0 ? (" " + f0) : "") +
+    " Tap in for today's drop." + ctaLink;
 
-  const igPost =
-    cur.title + " - " + cur.artist + " | Single of the Day (365-Day Daily Drop)\n\n" +
-    angle + "\n" +
-    (s0 ? (s0 + "\n") : "") +
-    (s1 ? (s1 + "\n") : "") +
-    "CTA: Check today's release" + (ctaLink ? (":" + ctaLink) : ".");
+  const igCopy =
+    "\"" + cur.title + "\" - " + cur.artist + "\n" +
+    "Single of the Day\n\n" +
+    (f0 ? (f0 + "\n") : "") +
+    (f1 ? (f1 + "\n") : "") +
+    (cur.topic ? ("Focus: " + cur.topic + "\n") : "") +
+    "Hear today's single and follow the drop." + ctaLink;
 
-  const fbPost =
-    "SINGLE OF THE DAY: " + cur.title + " by " + cur.artist + "\n" +
-    "Daily Release Focus: " + angle + "\n\n" +
-    (s0 ? (s0 + "\n") : "") +
-    (s1 ? (s1 + "\n") : "") +
-    (s2 ? (s2 + "\n") : "") +
-    "\nCTA: Hear today's single and follow the 365-day daily release" + (ctaLink ? (":" + ctaLink) : ".");
+  const fbCopy =
+    "SINGLE OF THE DAY: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+    (f0 ? (f0 + "\n") : "") +
+    (f2 ? (f2 + "\n") : "") +
+    (cur.topic ? ("\nAngle: " + cur.topic) : "") +
+    "\nTune in to today's single and share it with listeners." + ctaLink;
 
-  const ytTitle = cur.title + " - " + cur.artist + " | Single of the Day";
+  const ytTitle = "\"" + cur.title + "\" - " + cur.artist + " | Single of the Day";
   const ytDesc =
-    "Single of the Day: " + cur.title + " by " + cur.artist + "\n" +
-    "365-Day Daily Release Drop | Angle: " + angle + "\n\n" +
-    (s0 ? (s0 + "\n") : "") +
-    (s2 ? (s2 + "\n") : "") +
-    (cur.cleanLink ? ("\nMore: " + cur.cleanLink) : "");
+    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+    (f0 ? (f0 + "\n") : "") +
+    (f1 ? (f1 + "\n") : "") +
+    (cur.topic ? ("Angle: " + cur.topic + "\n") : "") +
+    (cur.cleanLink ? ("\nListen:" + ctaLink) : "");
 
   writeDispatchFields({
     djIntro,
     press,
-    x: xPost,
-    tiktok: tiktokPost,
-    instagram: igPost,
-    facebook: fbPost,
+    x: xVariants[NONCE % xVariants.length],
+    tiktok: tiktokCopy,
+    instagram: igCopy,
+    facebook: fbCopy,
     ytTitle,
     ytDesc
   });
@@ -671,11 +680,19 @@ function persistSelectedVoice(showMsg) {
   if (showMsg) setStatus("Voice saved: " + cleanName);
 }
 
+function detectMaleVoice(nameOrLabel) {
+  const low = String(nameOrLabel || "").toLowerCase();
+  for (const m of MALE_NAMES) {
+    if (new RegExp("\\b" + m + "\\b", "i").test(low)) return true;
+  }
+  return /\b(male|man)\b/i.test(low);
+}
+
 function resolveSpeechProfile(selVal, sysVoices) {
   if (selVal.startsWith("sys:")) {
     const targetName = selVal.slice(4);
     const voice = sysVoices.find(v => v.name === targetName) || null;
-    const isMale = /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i.test(targetName);
+    const isMale = detectMaleVoice(targetName);
     return {
       voice,
       edgeVoiceName: "",
@@ -694,22 +711,20 @@ function resolveSpeechProfile(selVal, sysVoices) {
     const targetLang = localeMatch ? localeMatch[1] : "en-US";
     const langPrefix = targetLang.split("-")[0].toLowerCase();
     const shortName = labelText.split(" ")[0].toLowerCase();
-    const isMale = MALE_EDGE_NAMES.has(edgeName);
+    const isMale = detectMaleVoice(shortName + " " + edgeName);
 
     const exactLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase() === targetLang.toLowerCase());
     const prefixLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase().startsWith(langPrefix + "-"));
     const pool = exactLangVoices.length ? exactLangVoices : prefixLangVoices;
 
     const byName = pool.find(v => String(v.name || "").toLowerCase().includes(shortName));
-    const genderRx = isMale
-      ? /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i
-      : /\b(female|woman|aria|luna|jenny|michelle|sonia|natasha|clara|samantha|victoria|zira|premwadee|nanami|sunhi|elvira|denise|katja|isabella|francisca|salma)\b/i;
+    const femalePool = pool.filter(v => !detectMaleVoice(v.name || ""));
+    const malePool = pool.filter(v => detectMaleVoice(v.name || ""));
 
     const voice =
       byName ||
-      pool.find(v => genderRx.test(v.name || "")) ||
+      (!isMale ? (femalePool[0] || sysVoices.find(v => !detectMaleVoice(v.name || "") && /^en/i.test(v.lang || ""))) : (malePool[0] || sysVoices.find(v => detectMaleVoice(v.name || "")))) ||
       pool[0] ||
-      sysVoices.find(v => /^en/i.test(v.lang || "")) ||
       sysVoices[0] ||
       null;
 
@@ -717,19 +732,19 @@ function resolveSpeechProfile(selVal, sysVoices) {
       voice,
       edgeVoiceName: edgeName,
       lang: targetLang,
-      pitch: isMale ? 0.86 : 1.05,
+      pitch: isMale ? 0.86 : 1.06,
       rate: isMale ? 0.96 : 1.0,
       label: labelText
     };
   }
 
-  const fallbackVoice = sysVoices.find(v => /^en/i.test(v.lang || "")) || sysVoices[0] || null;
+  const fallbackVoice = sysVoices.find(v => !detectMaleVoice(v.name || "") && /^en/i.test(v.lang || "")) || sysVoices[0] || null;
   return {
     voice: fallbackVoice,
     edgeVoiceName: "",
     lang: (fallbackVoice && fallbackVoice.lang) || "en-US",
-    pitch: 1.02,
-    rate: 0.98,
+    pitch: 1.05,
+    rate: 1.0,
     label: fallbackVoice ? fallbackVoice.name : "Default"
   };
 }
@@ -764,57 +779,77 @@ function speakText(text) {
   setStatus("Speaking (" + profile.label + ")...");
 }
 
-async function downloadMp3File(text, baseName, repoAudioPath) {
-  const clean = scrubSpoken(text).slice(0, 450);
+function splitForMp3(text, maxChunk) {
+  const parts = [];
+  const sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [text];
+  let buf = "";
+  for (const s of sentences) {
+    const t = s.trim();
+    if (!t) continue;
+    if ((buf + " " + t).trim().length <= maxChunk) {
+      buf = (buf + " " + t).trim();
+    } else {
+      if (buf) parts.push(buf);
+      buf = t.slice(0, maxChunk);
+    }
+  }
+  if (buf) parts.push(buf);
+  return parts.slice(0, 4);
+}
+
+async function fetchMp3Blob(cleanText, profile) {
+  const shortName = (profile.label || "Aria").split(" ")[0];
+  const seVoice = profile.edgeVoiceName ? profile.edgeVoiceName.replace(/Neural$/i, "") : shortName;
+  try {
+    const r = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(seVoice) + "&text=" + encodeURIComponent(cleanText.slice(0, 420)));
+    if (r.ok) {
+      const b = await r.blob();
+      if (b && b.size > 400 && /audio|mpeg|octet-stream/i.test(b.type || "audio/mpeg")) return b;
+    }
+  } catch (_) {}
+
+  const tl = (profile.lang || "en-US").split("-")[0] || "en";
+  const chunks = splitForMp3(cleanText.slice(0, 600), 180);
+  const buffers = [];
+  for (const ch of chunks) {
+    try {
+      const gr = await fetch("https://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(ch) + "&tl=" + encodeURIComponent(tl) + "&client=tw-ob");
+      if (!gr.ok) return null;
+      const ab = await gr.arrayBuffer();
+      if (!ab || ab.byteLength < 200) return null;
+      buffers.push(ab);
+    } catch (_) {
+      return null;
+    }
+  }
+  if (!buffers.length) return null;
+  return new Blob(buffers, { type: "audio/mpeg" });
+}
+
+async function downloadMp3File(text, baseName) {
+  const clean = scrubSpoken(text);
+  if (!clean) {
+    setStatus("No text to render MP3");
+    return;
+  }
   const selVal = document.getElementById("voiceSel").value || "";
   const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
   const profile = resolveSpeechProfile(selVal, sysVoices);
-  const voiceKey = profile.edgeVoiceName
-    ? profile.edgeVoiceName.replace(/Neural$/i, "")
-    : (profile.voice && profile.voice.name ? profile.voice.name : "Aria");
 
-  setStatus("Fetching MP3 (" + profile.label + ")...");
-  try {
-    if (clean) {
-      const resp = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(voiceKey) + "&text=" + encodeURIComponent(clean));
-      if (resp.ok) {
-        const blob = await resp.blob();
-        if (blob && blob.size > 200 && /audio|octet-stream/i.test(blob.type || "audio/mpeg")) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = baseName + ".mp3";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 4000);
-          setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
-          return;
-        }
-      }
-    }
-    if (repoAudioPath) {
-      const mp3Url = "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/" + repoAudioPath + "?t=" + Date.now();
-      const mr = await fetch(mp3Url);
-      if (mr.ok) {
-        const mblob = await mr.blob();
-        if (mblob && mblob.size > 200) {
-          const url = URL.createObjectURL(mblob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = baseName + ".mp3";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 4000);
-          setStatus("Downloaded " + baseName + ".mp3 from " + repoAudioPath);
-          return;
-        }
-      }
-    }
-    throw new Error("No MP3 stream available");
-  } catch (err) {
-    setStatus("MP3 unavailable (" + (err && err.message ? err.message : "check GitHub/TTS") + ") — speaking aloud");
+  setStatus("Rendering MP3 (" + profile.label + ")...");
+  const blob = await fetchMp3Blob(clean, profile);
+  if (blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = baseName + ".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
+  } else {
+    setStatus("MP3 endpoint unavailable — speaking aloud with " + profile.label);
     speakText(clean);
   }
 }
@@ -828,7 +863,7 @@ function copyVal(id, label) {
 function postSocialCard(platform, id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const text = scrubCopy(el.value || "");
+  const text = sanitizePublicText(el.value || "");
   if (!text) {
     setStatus("Nothing to post for " + platform);
     return;
@@ -862,11 +897,11 @@ async function loadCatalogAndDispatch() {
     SONGS.forEach((s, i) => {
       const opt = document.createElement("option");
       opt.value = String(i);
-      opt.textContent = (i + 1) + ". " + scrubCopy(s.title || s.name || ("Track " + (i + 1)));
+      opt.textContent = (i + 1) + ". " + sanitizePublicText(s.title || s.name || ("Track " + (i + 1)));
       sel.appendChild(opt);
     });
     sel.value = "0";
-    document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Dispatch (" + SONGS.length + " songs)";
+    document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Single Launcher (" + SONGS.length + " songs)";
   } else {
     document.getElementById("catalogStatus").textContent = "Catalog unavailable (songs-db.json)";
   }
@@ -880,7 +915,6 @@ function wireSocialCards() {
   document.querySelectorAll("#socialCardsGrid .card").forEach(card => {
     const platform = card.dataset.platform || "Post";
     const targetId = card.dataset.target;
-    const audioPath = card.dataset.audio || "";
     const ta = document.getElementById(targetId);
     if (!ta) return;
 
@@ -891,14 +925,14 @@ function wireSocialCards() {
       if (act === "speak") {
         speakText(ta.value);
       } else if (act === "dlAudio") {
-        downloadMp3File(ta.value, "antipop-" + platform.toLowerCase().replace(/[^a-z0-9]+/g, "-"), audioPath);
+        downloadMp3File(ta.value, "antipop-" + platform.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
       } else if (act === "edit") {
         ta.readOnly = false;
         ta.focus();
         setStatus("Editing " + platform);
       } else if (act === "save") {
         ta.readOnly = true;
-        ta.value = scrubCopy(ta.value);
+        ta.value = sanitizePublicText(ta.value);
         setStatus("Saved " + platform);
       } else if (act === "copy") {
         copyVal(targetId, platform);
@@ -942,7 +976,7 @@ function wireUI() {
     await loadBibleCorpus();
     const cur = syncSong();
     await generateFreshDispatchFromBible(cur);
-    await downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro", "strayd/audio/djIntro.mp3");
+    await downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro");
   });
   document.getElementById("stopSpeechBtn").addEventListener("click", () => {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -951,8 +985,8 @@ function wireUI() {
 
   document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
   document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
-  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro", "strayd/audio/djIntro.mp3"));
-  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-press-release", "strayd/audio/press.mp3"));
+  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro"));
+  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-press-release"));
   document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ Intro"));
   document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Press Release"));
 
