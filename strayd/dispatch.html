@@ -213,6 +213,15 @@ function artUrl(s,t){
   return"https://martinstrayd.github.io/artist/"+encodeURI(r.replace(/^\.?\//,""));
 }
 
+function smartTrimStr(s,lim){
+  s=String(s||"").trim();
+  if(s.length<=lim)return s;
+  let cut=s.slice(0,lim);
+  const sp=cut.lastIndexOf(" ");
+  if(sp>Math.floor(lim*0.6))cut=cut.slice(0,sp);
+  return cut.replace(/\s+https?:\/\/\S*$/,"").trim();
+}
+
 function syncSong(){
   const idx=$("songSel")?Number($("songSel").value||0):0;
   const s=SONGS[idx]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
@@ -221,9 +230,18 @@ function syncSong(){
   const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"unstoppable creative overdrive and modern life");
   const u=artUrl(s,t);
   setTxt("songTitle",t);
-  setTxt("songMeta",a+" - "+SONGS.length+" songs - ANTIPOP");
-  if($("bigArt"))$("bigArt").src=u;
-  document.querySelectorAll("img[data-th]").forEach(im=>{im.src=u;});
+  setTxt("songMeta",a+" - "+SONGS.length+" songs - Agent Anna / DJ Bananna");
+  if($("bigArt")){
+    $("bigArt").onerror=function(){
+      this.onerror=null;
+      this.src="https://martinstrayd.github.io/artist/store-art/Martin%20Strayd.png";
+    };
+    $("bigArt").src=u;
+  }
+  document.querySelectorAll("img[data-th]").forEach(im=>{
+    im.onerror=function(){this.onerror=null;this.src="https://martinstrayd.github.io/artist/store-art/Martin%20Strayd.png";};
+    im.src=u;
+  });
   META.track=t;META.artist=a;META.topic=topic;
   return{idx,t,a,topic};
 }
@@ -231,30 +249,30 @@ function syncSong(){
 function buildDefaults(t,a,topic,dt){
   const dStr=dt||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   const press=[
-    "FOR IMMEDIATE RELEASE - "+dStr,
-    "ANTIPOP PREMIERES '"+t+"' BY "+a.toUpperCase()+" AS TODAY'S SINGLE OF THE DAY",
+    "FOR IMMEDIATE RELEASE",
+    dStr,
     "",
-    "GLOBAL DAILY SINGLES LAUNCH CAMPAIGN: Broadcast by ANNA and hosted by Veg Anna, station ANTIPOP today officially premieres '"+t+"' by "+a+" as its featured Single of the Day across a 100+ song catalog.",
+    a+" Spotlights '"+t+"' as Daily Single as 10+ Radio Countries Spin Catalog",
     "",
-    "SONG STORY: Centered on "+topic+", '"+t+"' highlights "+a+"'s songwriting and daily release momentum on ANTIPOP.",
+    dStr+" - Australian lyricist, songwriter, and composer "+a+" today spotlights '"+t+"' as a featured daily single release, riding active airplay across more than 10 radio countries as the newly built Agent Anna promo and press desk, hosted by DJ Bananna (Veg Anna), steps up to push the wave.",
     "",
-    "WORLD RADIO COUNTRIES: "+a+"'s music reaches world radio listeners across "+COUNTRIES+".",
+    "Spanning four decades of songwriting and a growing daily singles catalog of more than 100 tracks, '"+t+"' centers on "+topic+" with direct, story-driven songwriting built to connect with everyday listeners. Rather than waiting on legacy gatekeepers, each daily single spotlight pairs track context with DJ Bananna commentary and direct listener access.",
     "",
-    "ABOUT "+a.toUpperCase()+": "+a+" is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.",
+    "More than 10 radio stations worldwide are already playing "+a+"'s music across "+COUNTRIES+", giving the catalog real international momentum while the Agent Anna dispatch desk helps push the wave across social channels, press, and artist links.",
     "",
-    "OWNERSHIP AND SHARING: Buyers who get MP3 and cover art bundles own them directly and may share them freely with friends for non-commercial listening; commercial resale is prohibited.",
+    "About "+a+": "+a+" is an Australian lyricist, songwriter, and composer with four decades of songwriting experience. Earlier in his career, he worked backstage in Hollywood as a celebrity guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack, bringing seasoned, hands-on musical craft into an independent catalog spanning rock, anti-pop, reggae, blues, and electronic grooves.",
     "",
-    "CALL TO ACTION: Hub: "+HUB_URL+" | Bundle: "+BUNDLE_URL+" | Apple Music: "+APPLE_URL+" | YouTube: "+YT_URL
+    "Ownership and Links: Buyers who get "+a+"'s MP3 and cover art bundles own them directly and may share them freely with friends for non-commercial listening; commercial resale is strictly prohibited. Hub: "+HUB_URL+" | Bundle: "+BUNDLE_URL+" | Apple Music: "+APPLE_URL+" | YouTube: "+YT_URL
   ].join("\n");
   return{
-    djIntro:scrub("You are locked into ANTIPOP, broadcast by ANNA with host Veg Anna, spinning '"+t+"' by "+a+" on "+topic+"."),
+    djIntro:scrub("DJ Bananna on the Agent Anna desk: '"+t+"' by "+a+" is today's daily single push around "+topic+", riding active radio play across ten-plus countries."),
     press:scrub(press),
-    x:scrub("Major labels release once a quarter. "+a+" drops a new single every single day on ANTIPOP. Hear '"+t+"' ("+topic+"): "+APPLE_URL+" #martinstrayd").slice(0,275),
-    tiktok:scrub("POV: You found the one song that sounds like "+topic+" running at 200 mph. '"+t+"' by "+a+" is today's daily single drop on ANTIPOP. Bundle: "+BUNDLE_URL+" #martinstrayd #antipop #dailysingle").slice(0,2200),
-    instagram:scrub("With '"+t+"', "+a+" turns "+topic+" into today's story on ANTIPOP. Direct MP3 and cover art bundle at "+BUNDLE_URL+" with free non-commercial friend sharing (no resale). #martinstrayd #antipop #newmusic").slice(0,2200),
-    facebook:scrub("Listeners across "+COUNTRIES+" are tuning into '"+t+"' by "+a+" on ANTIPOP around "+topic+". Explore the catalog hub at "+HUB_URL+" #martinstrayd #antipop #worldradio").slice(0,63206),
-    ytTitle:scrub("Inside '"+t+"' by "+a+" | ANTIPOP Daily Single").slice(0,95),
-    ytDesc:scrub(t+" by "+a+" on ANTIPOP ("+topic+"). Apple Music: "+APPLE_URL+" | Bundle (free non-commercial sharing with friends, no resale): "+BUNDLE_URL+" | Hub: "+HUB_URL+" #martinstrayd #antipop").slice(0,5000)
+    x:smartTrimStr(scrub("Four decades of songwriting and Hollywood guitar-tech roots for Sex Pistols and The Knack vets, now driving '"+t+"' by "+a+": "+BUNDLE_URL+" #MartinStrayd #DailySingle"),275),
+    tiktok:smartTrimStr(scrub("Why does '"+t+"' by "+a+" hit like a late-night confession built on 40 years of songwriting? DJ Bananna flags today's daily single around "+topic+". Bundle: "+BUNDLE_URL+" #Songwriting #IndieMusic #DailySingle"),2200),
+    instagram:smartTrimStr(scrub("'"+t+"' by "+a+" brings "+topic+" into focus with DJ Bananna. Buyers who get the MP3 and cover art bundle at "+BUNDLE_URL+" own it directly and can share freely with friends for non-commercial listening (no resale). #Songwriting #ArtistOwned #DailySingle"),2200),
+    facebook:smartTrimStr(scrub("Listeners across "+COUNTRIES+" are already hearing "+a+" on radio, and '"+t+"' is today's daily single focus with DJ Bananna. What hooks you first in a new track, the hook or the story? Explore "+HUB_URL+" #Songwriters #GlobalRadio"),63206),
+    ytTitle:smartTrimStr(scrub("'"+t+"' by "+a+" | Daily Single Spotlight with DJ Bananna"),95),
+    ytDesc:smartTrimStr(scrub("'"+t+"' by "+a+" is spotlighted today with DJ Bananna on the Agent Anna desk. Written by Australian songwriter "+a+" (four decades of songwriting; former Hollywood guitar tech for Steve Jones of the Sex Pistols and Doug Fieger of The Knack) across a 100+ song catalog. Hub: "+HUB_URL+" | Bundle (free non-commercial friend sharing, no commercial resale): "+BUNDLE_URL+" | Apple Music: "+APPLE_URL+" #MartinStrayd #DailySingle"),5000)
   };
 }
 
@@ -265,24 +283,23 @@ function applyDispatch(data){
   AUDIO_MAP=(data&&typeof data.audio==="object"&&data.audio)?data.audio:{};
   META.date=scrub((data&&data.date)||"");
   const out={
-    djIntro:scrub(d.djIntro||fb.djIntro),
+    djIntro:smartTrimStr(scrub(d.djIntro||fb.djIntro),900),
     press:scrub(d.press||fb.press),
-    x:scrub(d.x||fb.x).slice(0,280),
-    tiktok:scrub(d.tiktok||fb.tiktok).slice(0,2200),
-    instagram:scrub(d.instagram||fb.instagram).slice(0,2200),
-    facebook:scrub(d.facebook||fb.facebook).slice(0,63206),
-    ytTitle:scrub(d.ytTitle||fb.ytTitle).slice(0,100),
-    ytDesc:scrub(d.ytDesc||fb.ytDesc).slice(0,5000)
+    x:smartTrimStr(scrub(d.x||fb.x),275),
+    tiktok:smartTrimStr(scrub(d.tiktok||fb.tiktok),2200),
+    instagram:smartTrimStr(scrub(d.instagram||fb.instagram),2200),
+    facebook:smartTrimStr(scrub(d.facebook||fb.facebook),63206),
+    ytTitle:smartTrimStr(scrub(d.ytTitle||fb.ytTitle),95),
+    ytDesc:smartTrimStr(scrub(d.ytDesc||fb.ytDesc),5000)
   };
   setVal("djBox",out.djIntro);
   setVal("pressBox",out.press);
   CH.forEach(([id,,lim])=>{
-    const v=String(out[id]||"").slice(0,lim);
+    const v=smartTrimStr(String(out[id]||""),lim);
     setVal("t_"+id,v);
     setTxt("c_"+id,v.length+" / "+lim);
   });
 }
-
 async function loadSongs(){
   const raw=await fetchRepo("strayd/songs-db.json");
   try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
