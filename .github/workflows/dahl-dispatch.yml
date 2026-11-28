@@ -29,7 +29,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install edge-tts for real MP3 generation
-        run: pip install -q edge-tts
+        run: pip install -q -U edge-tts
       - name: Run Dahl generator and synthesize real MP3 files in selected voice
         env:
           DAHL_API_KEY: ${{ secrets.DAHL_KEY }}
@@ -204,9 +204,24 @@ jobs:
                   if not spoken:
                       continue
                   mp3_file = audio_dir / f"{k}.mp3"
-                  comm = edge_tts.Communicate(spoken, tts_voice)
-                  await comm.save(str(mp3_file))
-                  audio_urls[k] = f"strayd/audio/{k}.mp3"
+                  rendered = False
+                  for v_try in [tts_voice, "en-US-JennyNeural"]:
+                      for attempt in range(3):
+                          try:
+                              comm = edge_tts.Communicate(spoken, v_try)
+                              await comm.save(str(mp3_file))
+                              if mp3_file.exists() and mp3_file.stat().st_size > 512:
+                                  rendered = True
+                                  break
+                          except Exception as ex:
+                              print(f"TTS retry ({k}, voice={v_try}, try={attempt+1}): {ex}")
+                              await asyncio.sleep(1.5 * (attempt + 1))
+                      if rendered:
+                          break
+                  if rendered:
+                      audio_urls[k] = f"strayd/audio/{k}.mp3"
+                  else:
+                      print(f"WARN: skipped {k}.mp3 after retries")
 
           asyncio.run(render_all_mp3())
           payload["voice"] = tts_voice
