@@ -301,21 +301,48 @@ function applyDispatch(data){
   });
 }
 async function loadSongs(){
-  const raw=await fetchRepo("strayd/songs-db.json");
-  try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
-  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"unstoppable creative overdrive and modern life"}];
+  setTxt("st","Loading catalog...");
+  let raw="";
+  try{raw=await fetchRepo("strayd/songs-db.json");}catch{}
+  SONGS=[];
+  if(raw){
+    try{
+      const d=JSON.parse(raw);
+      if(Array.isArray(d))SONGS=d;
+      else if(d&&Array.isArray(d.songs))SONGS=d.songs;
+      else if(d&&Array.isArray(d.tracks))SONGS=d.tracks;
+      else if(d&&typeof d==="object")SONGS=Object.values(d).filter(v=>v&&typeof v==="object"&&(v.title||v.name));
+    }catch(e){setTxt("st","Catalog JSON parse fallback: "+e.message);}
+  }
+  if(!SONGS.length){
+    SONGS=[
+      {title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"unstoppable creative overdrive and modern life"},
+      {title:"Paradise (Thailand)",artist:"Martin Strayd",topic:"coastal escape, daily rhythm, and creative momentum"}
+    ];
+  }
   const sel=$("songSel");
   if(sel){
     sel.innerHTML="";
-    SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});
+    SONGS.forEach((x,i)=>{
+      const o=document.createElement("option");
+      o.value=String(i);
+      o.textContent=(i+1)+" - "+(x.title||x.name||"Track");
+      sel.appendChild(o);
+    });
   }
   syncSong();
+  setTxt("st","Catalog ready ("+SONGS.length+" songs)");
 }
 
 async function loadLatest(){
   setTxt("st","Loading dispatch...");
-  const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
-  if(!raw){applyDispatch({});setTxt("st","Loaded default dispatch");return;}
+  let raw="";
+  try{raw=await fetchRepo("strayd/last-dahl-dispatch.json");}catch{}
+  if(!raw){
+    applyDispatch({});
+    setTxt("st","Ready ("+SONGS.length+" songs, default dispatch)");
+    return;
+  }
   try{
     const j=JSON.parse(raw);
     if(j&&j.track&&$("songSel")){
@@ -324,9 +351,11 @@ async function loadLatest(){
     }
     applyDispatch(j);
     setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(j&&j.voice?" | MP3 voice: "+j.voice:""));
-  }catch(e){applyDispatch({});setTxt("st","Load fallback: "+e.message);}
+  }catch(e){
+    applyDispatch({});
+    setTxt("st","Load fallback: "+e.message);
+  }
 }
-
 async function saveDispatch(){
   try{
     const cur=syncSong();
