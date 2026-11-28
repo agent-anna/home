@@ -660,6 +660,7 @@ function isV4CoreFile(path) {
 
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
+        if (isAssistant && typeof window.autoCommitChatFileBlocks === "function") { window.autoCommitChatFileBlocks(String(text || "")); }
     }
 
     function updateMessage(id, text) {
@@ -671,6 +672,7 @@ function isV4CoreFile(path) {
         messagePayloadStore[id] = readableText;
         const container = document.getElementById("chat-container");
         if (container) container.scrollTop = container.scrollHeight;
+        if (typeof window.autoCommitChatFileBlocks === "function") { clearTimeout(window._annaAutoSaveTimer); window._annaAutoSaveTimer = setTimeout(() => window.autoCommitChatFileBlocks(String(text || "")), 1200); }
     }
 
     function deleteMessage(id) {
