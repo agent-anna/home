@@ -920,18 +920,80 @@ function splitForMp3(text, maxChunk) {
   return parts.slice(0, 4);
 }
 
+function resolveRepoMp3Path(audioKey) {
+  const safeKey = String(audioKey || "").replace(/[^a-zA-Z0-9_-]/g, "");
+  if (LAST_DISPATCH && LAST_DISPATCH.audio && typeof LAST_DISPATCH.audio === "object") {
+    const mapped = LAST_DISPATCH.audio[safeKey];
+    if (typeof mapped === "string" && mapped.trim()) {
+      return mapped.trim().replace(/^\/+/, "");
+    }
+  }
+  return safeKey ? ("strayd/audio/" + safeKey + ".mp3") : "";
+}
+
+async function fetchRepoMp3Blob(audioKey) {
+  const repoPath = resolveRepoMp3Path(audioKey);
+  if (!repoPath) return null;
+  const pat = getPat();
+
+  if (pat) {
+    try {
+      const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(repoPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
+      const r = await fetch(apiUrl, {
+        headers: { Authorization: "Bearer " + pat, Accept: "application/vnd.github+json" },
+        cache: "no-store"
+      });
+      if (r.ok) {
+        const data = await r.json();
+        if (data && data.content) {
+          const cleanB64 = String(data.content).replace(/\s+/g, "");
+          const bin = atob(cleanB64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          if (bytes.byteLength > 512) return new Blob([bytes], { type: "audio/mpeg" });
+        }
+      }
+    } catch (_) {}
+  }
+
+  const urls = [
+    "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/" + encodeURI(repoPath) + "?t=" + Date.now(),
+    "https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/" + encodeURI(repoPath) + "?t=" + Date.now(),
+    "../" + encodeURI(repoPath) + "?t=" + Date.now()
+  ];
+  for (const u of urls) {
+    try {
+      const res = await fetch(u, { cache: "no-store" });
+      if (!res.ok) continue;
+      const ab = await res.arrayBuffer();
+      if (ab && ab.byteLength > 512) return new Blob([ab], { type: "audio/mpeg" });
+    } catch (_) {}
+  }
+  return null;
+}
+
 async function downloadMp3File(text, baseName, audioKey) {
   const clean = cleanForSpeech(text);
-  const streamUrl = (LAST_DISPATCH && LAST_DISPATCH.streamUrl) || "";
-  if (streamUrl && /^https?:\/\//i.test(streamUrl)) {
-    window.open(streamUrl, "_blank", "noopener,noreferrer");
-    setStatus("Opened stream source for " + (audioKey || baseName));
+  const profile = getSelectedVoiceProfile();
+  setStatus("Fetching repo MP3 (" + (audioKey || baseName) + ")...");
+  const blob = await fetchRepoMp3Blob(audioKey || baseName);
+  if (blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = baseName + ".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    setStatus("Downloaded " + baseName + ".mp3 from repo");
     return;
   }
   if (!clean) {
-    setStatus("No dispatch text to speak");
+    setStatus("No repo MP3 or text available");
     return;
   }
+  setStatus("Repo MP3 not found yet, speaking aloud with " + profile.label);
   speakText(clean);
 }
 async function advanceTrack(autoSpeak) {
