@@ -115,7 +115,7 @@ jobs:
 
               sys_msg = (
                   "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
-                  "Obey bible/000-bible.md strictly: ANNA is the broadcaster, ANTIPOP is the station, Veg Anna is the radio DJ and main host, Martin Strayd is the signal, the catalog is the empire.\n"
+                  "Obey bible/000-bible.md strictly: the Daily Very Show is the live broadcast hosted by DJ ANNA and Veg ANNA, Martin Strayd is the signal, the catalog is the empire.\n"
                   "Zero em-dashes or en-dashes (no U+2014 or U+2013), zero repeated symbol runs, keep single title intact.\n"
                   "press: Full 3/4-page press release (6 paragraphs, 380+ words) for ANTIPOP hosted by Veg Anna and broadcast by ANNA, covering today's single, daily singles campaign across 100+ songs, all 10 world radio countries, Martin Strayd's history, MP3/art ownership (free non-commercial friend sharing; commercial resale prohibited), and CTA + links.\n"
                   "Socials: ZERO repeated sentences or template lines across platforms.\n"
@@ -174,12 +174,12 @@ jobs:
 
               p = parsed
               final_d = {
-                  "djIntro": smart_trim(p.get("djIntro") or f"DJ Bananna on the Agent Anna desk: '{title}' by {artist} is today's daily single push around {topic}.", 900),
-                  "press": p.get("press") or f"{today}\n\n{title} by {artist}\n\nDaily single spotlight around {topic}, with Agent Anna and DJ Bananna pushing momentum behind {artist}'s catalog. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url}",
+                  "djIntro": smart_trim(p.get("djIntro") or f"DJ ANNA and Veg ANNA on the Daily Very Show: '{title}' by {artist} is today's daily single push around {topic}.", 900),
+                  "press": p.get("press") or f"{today}\n\n{title} by {artist}\n\nDaily single spotlight around {topic}, with Veg ANNA and DJ ANNA on the Daily Very Show pushing momentum behind {artist}'s catalog. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url}",
                   "x": smart_trim(cap_tags(p.get("x") or f"'{title}' by {artist} ({topic}) {bundle_url} #MartinStrayd", 2), 275),
-                  "tiktok": smart_trim(cap_tags(p.get("tiktok") or f"'{title}' by {artist} on {topic} with DJ Bananna. {bundle_url} #Songwriting #IndieMusic #DailySingle", 5), 2200),
-                  "instagram": smart_trim(cap_tags(p.get("instagram") or f"'{title}' by {artist} explores {topic} with DJ Bananna. {bundle_url} #Songwriting #ArtistOwned #DailySingle", 5), 2200),
-                  "facebook": smart_trim(cap_tags(p.get("facebook") or f"'{title}' by {artist} ({topic}) is today's single focus with DJ Bananna. {hub_url} #Songwriters", 3), 63206),
+                  "tiktok": smart_trim(cap_tags(p.get("tiktok") or f"'{title}' by {artist} on {topic} with Veg ANNA on the Daily Very Show. {bundle_url} #Songwriting #IndieMusic #DailySingle", 5), 2200),
+                  "instagram": smart_trim(cap_tags(p.get("instagram") or f"'{title}' by {artist} explores {topic} with Veg ANNA on the Daily Very Show. {bundle_url} #Songwriting #ArtistOwned #DailySingle", 5), 2200),
+                  "facebook": smart_trim(cap_tags(p.get("facebook") or f"'{title}' by {artist} ({topic}) is today's single focus with Veg ANNA on the Daily Very Show. {hub_url} #Songwriters", 3), 63206),
                   "ytTitle": smart_trim(scrub(re.sub(r"#[A-Za-z0-9_]+", "", p.get("ytTitle") or f"{title} - {artist} | Daily Single")), 95),
                   "ytDesc": smart_trim(cap_tags(p.get("ytDesc") or f"'{title}' by {artist} ({topic}). Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} #MartinStrayd #DailySingle", 3), 5000),
               }
