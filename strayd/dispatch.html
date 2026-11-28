@@ -294,28 +294,30 @@ function hashSeed(input) {
 }
 
 function getSelectedSong() {
+  const customTopic = (document.getElementById("topicInput").value || "").trim();
   if (!SONGS.length) {
     return {
       idx: 0,
       title: "",
       artist: "Martin Strayd",
-      topic: scrub((document.getElementById("topicInput").value || "").trim()),
+      topic: scrub(customTopic),
       cover: ""
     };
   }
   const sel = document.getElementById("songSel");
   const idx = sel ? parseInt(sel.value || "0", 10) : 0;
   const s = SONGS[idx] || SONGS[0];
-  const customTopic = (document.getElementById("topicInput").value || "").trim();
+  const am = (s.platforms && s.platforms.appleMusic) || {};
+  const fallbackTopic = s.topic || s.theme || s.mood || s.genre || am.genre || "";
+  const coverUrl = s.artUrl || s.cover || s.artwork || am.artworkUrlHighRes || am.artworkUrl || "";
   return {
     idx: isNaN(idx) ? 0 : idx,
     title: scrub(s.title || s.name || ""),
     artist: scrub(s.artist || "Martin Strayd"),
-    topic: scrub(customTopic || s.topic || s.theme || s.mood || s.genre || ""),
-    cover: s.cover || s.artwork || ""
+    topic: scrub(customTopic || fallbackTopic),
+    cover: coverUrl
   };
 }
-
 function syncSong() {
   const cur = getSelectedSong();
   const img = document.getElementById("coverImg");
