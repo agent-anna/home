@@ -46,7 +46,7 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <div class="bar">
 <button id="loadBtn" class="pri" type="button">Load Live Dispatch</button>
 <button id="saveGhBtn" class="ok" type="button">Save Edits to GitHub</button>
-<button id="runActBtn" type="button">Generate New Dispatch</button>
+<button id="runActBtn" type="button">Generate New Dispatch</button><button id="renderMp3Btn" type="button">Render MP3s in Selected Voice</button>
 <button id="stopSpkBtn" type="button">Stop Speech</button>
 <span id="st" role="status" aria-live="polite">Ready</span>
 </div>
@@ -300,7 +300,7 @@ async function loadLatest(){
       if(i>=0)$("songSel").value=String(i);
     }
     applyDispatch(j);
-    setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(BIBLE_RULES?" (Bible synced)":""));
+    setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(j&&j.voice?" | MP3 voice: "+j.voice:"")+(BIBLE_RULES?" (Bible synced)":""));
   }catch(e){applyDispatch({});setTxt("st","Recovered: "+e.message);}
 }
 
@@ -338,19 +338,48 @@ async function loadSongs(){
   syncSong();
 }
 
-async function triggerAction(){
+async function triggerAction(mode){
   const pat=getPat();
-  if(!pat){setTxt("st","Paste GitHub PAT first to run Dahl generator");return;}
+  if(!pat){setTxt("st","Paste GitHub PAT first to run GitHub Action");return;}
   const{idx,topic}=syncSong();
+  const edgeVoice=mapToEdgeVoice(getSelectedVoice());
+  const runMode=(mode==="render_mp3_only")?"render_mp3_only":"full";
   try{
     const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{
       method:"POST",
       headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
-      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic)}})
+      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic),voice:edgeVoice,mode:runMode}})
     });
     if(!r.ok)throw new Error("HTTP "+r.status);
-    setTxt("st","Dahl Action started for song "+(idx+1)+" - wait ~25s then click Load Live Dispatch");
+    setTxt("st","GitHub Action started ("+runMode+", voice="+edgeVoice+") - wait ~25s then click Load Live Dispatch");
   }catch(e){setTxt("st","Action failed: "+e.message);}
+}
+
+function mapToEdgeVoice(v){
+  const n=((v&&v.name)||"").toLowerCase();
+  const l=((v&&v.lang)||"").toLowerCase();
+  if(/jenny/.test(n))return"en-US-JennyNeural";
+  if(/aria/.test(n))return"en-US-AriaNeural";
+  if(/sonia/.test(n))return"en-GB-SoniaNeural";
+  if(/libby/.test(n))return"en-GB-LibbyNeural";
+  if(/natasha/.test(n))return"en-AU-NatashaNeural";
+  if(/clara/.test(n))return"en-CA-ClaraNeural";
+  if(/guy/.test(n))return"en-US-GuyNeural";
+  if(/ryan/.test(n))return"en-GB-RyanNeural";
+  if(/william/.test(n))return"en-AU-WilliamNeural";
+  if(/zira|samantha|victoria|hazel|susan|heera|female|woman/.test(n)){
+    if(l.startsWith("en-gb"))return"en-GB-SoniaNeural";
+    if(l.startsWith("en-au"))return"en-AU-NatashaNeural";
+    return"en-US-JennyNeural";
+  }
+  if(/david|mark|george|daniel|james|male|man/.test(n)){
+    if(l.startsWith("en-gb"))return"en-GB-RyanNeural";
+    if(l.startsWith("en-au"))return"en-AU-WilliamNeural";
+    return"en-US-GuyNeural";
+  }
+  if(l.startsWith("en-gb"))return"en-GB-SoniaNeural";
+  if(l.startsWith("en-au"))return"en-AU-NatashaNeural";
+  return"en-US-JennyNeural";
 }
 
 function getSelectedVoice(){
@@ -448,7 +477,7 @@ if($("voiceSel"))$("voiceSel").onchange=()=>{const v=getSelectedVoice();const m=
 if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
 if($("loadBtn"))$("loadBtn").onclick=loadLatest;
 if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
-if($("runActBtn"))$("runActBtn").onclick=triggerAction;
+if($("runActBtn"))$("runActBtn").onclick=()=>triggerAction("full");if($("renderMp3Btn"))$("renderMp3Btn").onclick=()=>triggerAction("render_mp3_only");
 if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
 if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
