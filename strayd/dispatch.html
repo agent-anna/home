@@ -81,7 +81,7 @@
   }
   textarea[readonly] { opacity: 0.92; background: #10151d; }
   textarea { min-height: 115px; resize: vertical; }
-  textarea.press-area { min-height: 250px; }
+  textarea.press-area { min-height: 260px; }
   .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
   .btn {
     background: var(--panel-2);
@@ -120,7 +120,7 @@
       </div>
       <div>
         <h1 id="catalogStatus">Loading catalog...</h1>
-        <div class="sub" id="stationLine">Live bible/ &amp; catalog dispatch</div>
+        <div class="sub" id="stationLine">ANTIPOP Daily Single Launcher • DJ ANNA &amp; Veg Anna</div>
 
         <div class="field">
           <label for="songSel">Song</label>
@@ -134,7 +134,7 @@
 
         <div class="field">
           <label for="topicInput">Topic / Angle</label>
-          <input id="topicInput" type="text" placeholder="Optional angle or hook..." />
+          <input id="topicInput" type="text" placeholder="Optional custom angle or story hook..." />
         </div>
 
         <div class="field">
@@ -163,7 +163,7 @@
       </div>
     </div>
     <label for="djIntroText">On-Air FM DJ Script (Spoken TTS Ready)</label>
-    <textarea id="djIntroText" placeholder="Spoken FM DJ script generated from bible/ &amp; selected single..."></textarea>
+    <textarea id="djIntroText" placeholder="Fresh on-air FM DJ intro..."></textarea>
   </div>
 
   <div class="card">
@@ -175,8 +175,8 @@
         <button class="btn" id="copyPressBtn" type="button">Copy</button>
       </div>
     </div>
-    <label for="pressText">Single of the Day Press Release (Driven by bible/ &amp; Single Data)</label>
-    <textarea id="pressText" class="press-area" placeholder="Press release generated from bible/ &amp; selected single..."></textarea>
+    <label for="pressText">Editorial Single of the Day Release</label>
+    <textarea id="pressText" class="press-area" placeholder="Editorial press release for today's single..."></textarea>
   </div>
 
   <div class="social-grid" id="socialCardsGrid">
@@ -403,7 +403,7 @@ async function loadBibleCorpus() {
     : "Bible source: no bible/ files loaded yet (add GitHub PAT and click Load).";
 }
 
-function sanitizePublicText(str) {
+function cleanText(str) {
   return String(str || "")
     .replace(/https?:\/\/music\.apple\.com\/\S+/gi, "")
     .replace(/https?:\/\/tinyurl\.com\/\S+/gi, "")
@@ -423,8 +423,30 @@ function sanitizePublicText(str) {
     .trim();
 }
 
+function isInternalMetaLine(line) {
+  return /(knowledge\/|lightweight pointers|never duplicate|workflow order|authoritative bible|character limits|hashtag counts|posting cadence|spoken radio filler|bible\/[a-z0-9_.-]+\.md|rules[A-Z0-9]*\b)/i.test(line);
+}
+
+function extractStoryNotes() {
+  const combined = Object.values(BIBLE_DOCS).join("\n");
+  const lines = combined
+    .split(/\r?\n/)
+    .map(l => cleanText(l.replace(/^[-*•\d.)\s]+/, "")))
+    .filter(l =>
+      l.length > 26 &&
+      l.length < 185 &&
+      !/^===/.test(l) &&
+      !/https?:\/\//i.test(l) &&
+      !isInternalMetaLine(l)
+    );
+  if (!lines.length) return [];
+  const step = Math.max(1, Math.floor(lines.length / 5));
+  const start = (NONCE * step) % lines.length;
+  return [0, 1, 2, 3, 4].map(k => lines[(start + k * step) % lines.length]).filter(Boolean);
+}
+
 function scrubSpoken(str) {
-  return sanitizePublicText(str)
+  return cleanText(str)
     .replace(/https?:\/\/\S+/gi, "")
     .replace(/[=*_~#`]{2,}/g, " ")
     .replace(/[\u2013\u2014]/g, ", ")
@@ -432,31 +454,12 @@ function scrubSpoken(str) {
     .trim();
 }
 
-function smartTrimStr(str, maxLen) {
-  const s = sanitizePublicText(str);
+function capText(str, maxLen) {
+  const s = cleanText(str);
   if (s.length <= maxLen) return s;
   const cut = s.slice(0, maxLen - 1);
   const sp = cut.lastIndexOf(" ");
   return (sp > 20 ? cut.slice(0, sp) : cut).trim();
-}
-
-function extractBibleFacts() {
-  const combined = Object.values(BIBLE_DOCS).join("\n");
-  const lines = combined
-    .split(/\r?\n/)
-    .map(l => sanitizePublicText(l.replace(/^[-*•\d.)\s]+/, "")))
-    .filter(l =>
-      l.length > 24 &&
-      l.length < 190 &&
-      !/^===/.test(l) &&
-      !/https?:\/\//i.test(l) &&
-      !/\.md\b/i.test(l) &&
-      !/rules[A-Z0-9]*\b/i.test(l)
-    );
-  if (!lines.length) return [];
-  const step = Math.max(1, Math.floor(lines.length / 5));
-  const start = (NONCE * step) % lines.length;
-  return [0, 1, 2, 3, 4].map(k => lines[(start + k * step) % lines.length]).filter(Boolean);
 }
 
 function getSelectedSong() {
@@ -465,7 +468,7 @@ function getSelectedSong() {
       idx: 0,
       title: "",
       artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
-      topic: sanitizePublicText((document.getElementById("topicInput").value || "").trim()),
+      topic: cleanText((document.getElementById("topicInput").value || "").trim()),
       cover: "",
       cleanLink: "",
       genre: ""
@@ -476,15 +479,15 @@ function getSelectedSong() {
   const s = SONGS[idx] || SONGS[0];
   const am = (s && s.platforms && s.platforms.appleMusic) || {};
   const customTopic = (document.getElementById("topicInput").value || "").trim();
-  const genre = sanitizePublicText(am.genre || s.genre || "");
+  const genre = cleanText(am.genre || s.genre || "");
   const rawPortal = String(s.portalUrl || (RECORD_BRAIN && RECORD_BRAIN.salesPortal) || "").trim();
   const cleanLink = rawPortal && !/music\.apple\.com|tinyurl\.com|strayd\.com/i.test(rawPortal) ? rawPortal : "";
 
   return {
     idx: isNaN(idx) ? 0 : idx,
-    title: sanitizePublicText(s.title || s.name || ""),
-    artist: sanitizePublicText(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
-    topic: sanitizePublicText(customTopic || s.topic || s.theme || s.mood || ""),
+    title: cleanText(s.title || s.name || ""),
+    artist: cleanText(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
+    topic: cleanText(customTopic || s.topic || s.theme || s.mood || ""),
     cover: am.artworkUrlHighRes || s.artUrl || s.cover || s.artwork || s.art || "",
     cleanLink,
     genre
@@ -508,14 +511,14 @@ function syncSong() {
 }
 
 function writeDispatchFields(out) {
-  document.getElementById("djIntroText").value = sanitizePublicText(out.djIntro || "");
-  document.getElementById("pressText").value = sanitizePublicText(out.press || "");
-  document.getElementById("xText").value = smartTrimStr(out.x || "", 275);
-  document.getElementById("tiktokText").value = smartTrimStr(out.tiktok || "", 2200);
-  document.getElementById("igText").value = smartTrimStr(out.instagram || "", 2200);
-  document.getElementById("fbText").value = smartTrimStr(out.facebook || "", 63206);
-  document.getElementById("ytTitleText").value = smartTrimStr(out.ytTitle || "", 95);
-  document.getElementById("ytDescText").value = smartTrimStr(out.ytDesc || "", 5000);
+  document.getElementById("djIntroText").value = cleanText(out.djIntro || "");
+  document.getElementById("pressText").value = cleanText(out.press || "");
+  document.getElementById("xText").value = capText(out.x || "", 275);
+  document.getElementById("tiktokText").value = capText(out.tiktok || "", 2200);
+  document.getElementById("igText").value = capText(out.instagram || "", 2200);
+  document.getElementById("fbText").value = capText(out.facebook || "", 63206);
+  document.getElementById("ytTitleText").value = capText(out.ytTitle || "", 95);
+  document.getElementById("ytDescText").value = capText(out.ytDesc || "", 5000);
 }
 
 async function generateFreshDispatchFromBible(cur) {
@@ -547,75 +550,83 @@ async function generateFreshDispatchFromBible(cur) {
     } catch (_) {}
   }
 
-  const facts = extractBibleFacts();
-  const f0 = facts[0] || "";
-  const f1 = facts[1] || "";
-  const f2 = facts[2] || "";
-  const f3 = facts[3] || "";
-  const angleNote = cur.topic ? (" Angle: " + cur.topic + ".") : (cur.genre ? (" Sound: " + cur.genre + ".") : "");
-  const ctaLink = cur.cleanLink ? (" " + cur.cleanLink) : "";
+  const notes = extractStoryNotes();
+  const n0 = notes[0] || "";
+  const n1 = notes[1] || "";
+  const n2 = notes[2] || "";
+  const angle = cur.topic || "";
+  const link = cur.cleanLink ? (" " + cur.cleanLink) : "";
 
   const djOpeners = [
-    "On ANTIPOP with DJ ANNA, today's featured single is " + cur.title + " by " + cur.artist + ".",
-    "Veg Anna on the ANTIPOP broadcast with today's single drop: " + cur.title + " from " + cur.artist + ".",
-    "Today's single on ANTIPOP is " + cur.title + " by " + cur.artist + "."
+    "You are on ANTIPOP with DJ ANNA. Today's single of the day is \"" + cur.title + "\" from " + cur.artist + ".",
+    "Veg Anna in the ANTIPOP booth right now with today's single drop: \"" + cur.title + "\" by " + cur.artist + ".",
+    "Fresh single on ANTIPOP today: \"" + cur.title + "\" by " + cur.artist + ", hosted with DJ ANNA."
   ];
 
   const djIntro =
     djOpeners[NONCE % djOpeners.length] +
-    angleNote +
-    (f0 ? (" " + f0) : "") +
-    (f1 ? (" " + f1) : "");
+    (angle ? (" Today's angle hits " + angle + ".") : "") +
+    (n0 ? (" " + n0) : "") +
+    (n1 ? (" " + n1) : "");
 
-  const press =
-    "SINGLE OF THE DAY: \"" + cur.title + "\" - " + cur.artist + "\n" +
-    META.date + "\n\n" +
-    "WHO & WHAT: " + cur.artist + " presents \"" + cur.title + "\" as today's single on ANTIPOP" + (cur.topic ? (", focused on " + cur.topic) : "") + ".\n\n" +
-    "WHY & CURRENT DISPATCH: " + (f0 || angleNote || ("Featured single release from " + cur.artist + ".")) + (f1 ? ("\n" + f1) : "") + (f2 ? ("\n" + f2) : "") + "\n\n" +
-    "CALL TO ACTION: Listen to today's single and share it across your channels" + (cur.cleanLink ? (" at" + ctaLink) : ".") + (f3 ? ("\n\n" + f3) : "");
-
-  const xVariants = [
-    "SINGLE OF THE DAY: \"" + cur.title + "\" - " + cur.artist + "." + angleNote + (f0 ? (" " + smartTrimStr(f0, 90)) : "") + ctaLink,
-    "Today's single drop: \"" + cur.title + "\" by " + cur.artist + "." + (f1 ? (" " + smartTrimStr(f1, 100)) : angleNote) + ctaLink,
-    "On ANTIPOP: \"" + cur.title + "\" - " + cur.artist + "." + angleNote + ctaLink
+  const headlines = [
+    cur.artist + " Unveils Daily Single \"" + cur.title + "\" on ANTIPOP",
+    "Single of the Day: " + cur.artist + " Drops \"" + cur.title + "\"",
+    "\"" + cur.title + "\" Leads Today's ANTIPOP Single Spotlight for " + cur.artist
   ];
 
-  const tiktokCopy =
-    "Today's single is \"" + cur.title + "\" by " + cur.artist + "." +
-    angleNote +
-    (f0 ? (" " + f0) : "") +
-    " Tap in for today's drop." + ctaLink;
+  const press =
+    headlines[NONCE % headlines.length] + "\n" +
+    META.date + "\n\n" +
+    cur.artist + " has released \"" + cur.title + "\" as today's featured single on ANTIPOP, with DJ ANNA and Veg Anna leading the daily broadcast spotlight" + (angle ? (" around " + angle) : "") + ".\n\n" +
+    (n0 ? (n0 + "\n\n") : "") +
+    (n1 ? (n1 + "\n\n") : "") +
+    (n2 ? (n2 + "\n\n") : "") +
+    "Listeners and curators can tune in to \"" + cur.title + "\" and pass it along as today's single pick" + (cur.cleanLink ? (" at" + link) : ".") + "\n\n" +
+    "Artist: " + cur.artist + "\n" +
+    "Featured Single: " + cur.title;
 
-  const igCopy =
-    "\"" + cur.title + "\" - " + cur.artist + "\n" +
-    "Single of the Day\n\n" +
-    (f0 ? (f0 + "\n") : "") +
-    (f1 ? (f1 + "\n") : "") +
-    (cur.topic ? ("Focus: " + cur.topic + "\n") : "") +
-    "Hear today's single and follow the drop." + ctaLink;
+  const xPosts = [
+    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "." + (angle ? (" " + angle + ".") : "") + (n0 ? (" " + capText(n0, 95)) : "") + link,
+    "\"" + cur.title + "\" - " + cur.artist + " is today's single pick on ANTIPOP." + (n1 ? (" " + capText(n1, 105)) : "") + link,
+    "New single spotlight: \"" + cur.title + "\" from " + cur.artist + "." + (angle ? (" " + angle + ".") : "") + link
+  ];
 
-  const fbCopy =
-    "SINGLE OF THE DAY: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
-    (f0 ? (f0 + "\n") : "") +
-    (f2 ? (f2 + "\n") : "") +
-    (cur.topic ? ("\nAngle: " + cur.topic) : "") +
-    "\nTune in to today's single and share it with listeners." + ctaLink;
+  const tiktokPost =
+    "\"" + cur.title + "\" by " + cur.artist + " is today's single on ANTIPOP." +
+    (angle ? (" " + angle + ".") : "") +
+    (n0 ? (" " + n0) : "") +
+    " Hear today's single and stay tuned for the next drop." + link;
+
+  const igPost =
+    "\"" + cur.title + "\" - " + cur.artist + "\nSingle of the Day\n\n" +
+    (angle ? (angle + "\n") : "") +
+    (n0 ? (n0 + "\n") : "") +
+    (n1 ? (n1 + "\n") : "") +
+    "\nOn air now with DJ ANNA and Veg Anna." + link;
+
+  const fbPost =
+    "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
+    (n0 ? (n0 + "\n") : "") +
+    (n2 ? (n2 + "\n") : "") +
+    (angle ? ("\nFocus: " + angle) : "") +
+    "\nListen to today's single and share it with listeners who back independent music." + link;
 
   const ytTitle = "\"" + cur.title + "\" - " + cur.artist + " | Single of the Day";
   const ytDesc =
     "Single of the Day: \"" + cur.title + "\" by " + cur.artist + "\n\n" +
-    (f0 ? (f0 + "\n") : "") +
-    (f1 ? (f1 + "\n") : "") +
-    (cur.topic ? ("Angle: " + cur.topic + "\n") : "") +
-    (cur.cleanLink ? ("\nListen:" + ctaLink) : "");
+    (angle ? ("Focus: " + angle + "\n\n") : "") +
+    (n0 ? (n0 + "\n") : "") +
+    (n1 ? (n1 + "\n") : "") +
+    (cur.cleanLink ? ("\nListen:" + link) : "");
 
   writeDispatchFields({
     djIntro,
     press,
-    x: xVariants[NONCE % xVariants.length],
-    tiktok: tiktokCopy,
-    instagram: igCopy,
-    facebook: fbCopy,
+    x: xPosts[NONCE % xPosts.length],
+    tiktok: tiktokPost,
+    instagram: igPost,
+    facebook: fbPost,
     ytTitle,
     ytDesc
   });
@@ -863,7 +874,7 @@ function copyVal(id, label) {
 function postSocialCard(platform, id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const text = sanitizePublicText(el.value || "");
+  const text = cleanText(el.value || "");
   if (!text) {
     setStatus("Nothing to post for " + platform);
     return;
@@ -897,7 +908,7 @@ async function loadCatalogAndDispatch() {
     SONGS.forEach((s, i) => {
       const opt = document.createElement("option");
       opt.value = String(i);
-      opt.textContent = (i + 1) + ". " + sanitizePublicText(s.title || s.name || ("Track " + (i + 1)));
+      opt.textContent = (i + 1) + ". " + cleanText(s.title || s.name || ("Track " + (i + 1)));
       sel.appendChild(opt);
     });
     sel.value = "0";
@@ -932,7 +943,7 @@ function wireSocialCards() {
         setStatus("Editing " + platform);
       } else if (act === "save") {
         ta.readOnly = true;
-        ta.value = sanitizePublicText(ta.value);
+        ta.value = cleanText(ta.value);
         setStatus("Saved " + platform);
       } else if (act === "copy") {
         copyVal(targetId, platform);
