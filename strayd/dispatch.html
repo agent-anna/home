@@ -378,7 +378,7 @@ function mapToEdgeVoice(v){
   if(/william/.test(n))return"en-AU-WilliamNeural";
   if(/david|mark|george|daniel|james|male|man/.test(n))return l.startsWith("en-gb")?"en-GB-RyanNeural":(l.startsWith("en-au")?"en-AU-WilliamNeural":"en-US-LunaNeural");
   return"en-US-LunaNeural";
-});
+}
   if(prevIdx!==""&&Number(prevIdx)<VOICES.length)sel.value=prevIdx;
 }
 
