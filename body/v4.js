@@ -2771,3 +2771,25 @@ async function annaSaveToGitHub(filePath, content, commitMsg) {
   return ok;
 }
 window.annaSaveToGitHub = annaSaveToGitHub;
+async function autoCommitChatFileBlocks(rawText) {
+  if (!rawText || typeof window.annaSaveToGitHub !== "function") return;
+  const re = /```file:([^\r\n`]+)\r?\n([\s\S]*?)```/gi;
+  let m;
+  while ((m = re.exec(String(rawText))) !== null) {
+    const target = String(m[1] || "").trim().replace(/^\/+/, "");
+    const cleanBody = String(m[2] || "").replace(/[\u2014\u2013]/g, ", ");
+    if (!target || !cleanBody) continue;
+    const saved = await window.annaSaveToGitHub(
+      target,
+      cleanBody,
+      "ANNA auto-save: " + target
+    );
+    appendMessage(
+      "System Telemetry",
+      saved ? ("SAVED TO GITHUB: " + target) : ("SAVE SKIPPED OR FAILED: " + target),
+      "msg_auto_save_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+      false
+    );
+  }
+}
+window.autoCommitChatFileBlocks = autoCommitChatFileBlocks;
