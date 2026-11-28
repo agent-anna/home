@@ -24,7 +24,7 @@
     line-height: 1.5;
     padding: 20px;
   }
-  .wrap { max-width: 1040px; margin: 0 auto; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
   .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .tab-btn {
     background: var(--panel);
@@ -67,6 +67,7 @@
   h1, h2, h3 { margin: 0 0 8px 0; font-weight: 700; }
   h1 { font-size: 24px; }
   h2 { font-size: 17px; }
+  h3 { font-size: 15px; }
   .sub { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
   .field { margin-bottom: 12px; }
   label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
@@ -80,16 +81,17 @@
     font-size: 14px;
     font-family: inherit;
   }
+  textarea[readonly] { opacity: 0.92; background: #10151d; }
   textarea { min-height: 110px; resize: vertical; }
-  textarea.press-area { min-height: 240px; }
+  textarea.press-area { min-height: 220px; }
   .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
   .btn {
     background: var(--panel-2);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: 7px 12px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
   }
@@ -106,7 +108,7 @@
     margin-bottom: 8px;
   }
   .mini-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+  .social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -128,7 +130,7 @@
         </div>
         <div>
           <h1 id="catalogStatus">Loading catalog...</h1>
-          <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; AI Dispatch</div>
+          <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; Dispatch</div>
 
           <div class="field">
             <label for="songSel">Song</label>
@@ -146,14 +148,14 @@
           </div>
 
           <div class="field">
-            <label for="patInput">GitHub PAT (Pull Bible, Dispatch &amp; Render)</label>
+            <label for="patInput">GitHub PAT (Pull bible/ &amp; Dispatch)</label>
             <input id="patInput" type="password" placeholder="ghp_..." autocomplete="off" />
           </div>
 
           <div class="row-actions">
             <button class="btn btn-primary" id="loadBtn" type="button">Load</button>
             <button class="btn btn-save" id="saveBtn" type="button">Save</button>
-            <button class="btn" id="renderBtn" type="button">Generate &amp; Render MP3</button>
+            <button class="btn" id="renderBtn" type="button">Generate &amp; Render Audio</button>
             <button class="btn" id="stopSpeechBtn" type="button">Stop Speech</button>
             <span class="status" id="statusMsg">Ready</span>
           </div>
@@ -165,58 +167,117 @@
       <div class="card-head">
         <h2>ANTIPOP DJ Intro</h2>
         <div class="mini-actions">
-          <button class="btn" id="speakIntroBtn" type="button">Speak</button>
-          <button class="btn" id="dlIntroBtn" type="button">Download MP3</button>
+          <button class="btn" id="speakIntroBtn" type="button">Listen</button>
+          <button class="btn" id="dlIntroBtn" type="button">Download Audio</button>
           <button class="btn" id="copyIntroBtn" type="button">Copy</button>
         </div>
       </div>
       <label for="djIntroText">DJ Intro Text</label>
-      <textarea id="djIntroText" placeholder="Fresh AI DJ intro driven by bible/ laws..."></textarea>
+      <textarea id="djIntroText" placeholder="Fresh DJ intro driven by bible/ &amp; track metadata..."></textarea>
     </div>
 
     <div class="card">
       <div class="card-head">
         <h2>Single of the Day Press Release</h2>
         <div class="mini-actions">
-          <button class="btn" id="speakPressBtn" type="button">Speak</button>
-          <button class="btn" id="dlPressBtn" type="button">Download MP3</button>
+          <button class="btn" id="speakPressBtn" type="button">Listen</button>
+          <button class="btn" id="dlPressBtn" type="button">Download Audio</button>
           <button class="btn" id="copyPressBtn" type="button">Copy</button>
         </div>
       </div>
       <label for="pressText">Press Release Text</label>
-      <textarea id="pressText" class="press-area" placeholder="Fresh AI press release driven by bible/ laws..."></textarea>
+      <textarea id="pressText" class="press-area" placeholder="Fresh press release driven by bible/ &amp; track metadata..."></textarea>
     </div>
 
-    <div class="social-grid">
-      <div class="card">
-        <div class="card-head"><h3>X</h3><button class="btn" data-copy="xText" type="button">Copy</button></div>
+    <div class="social-grid" id="socialCardsGrid">
+      <div class="card" data-platform="X" data-target="xText">
+        <div class="card-head">
+          <h3>X</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="xText"></textarea>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>TikTok</h3><button class="btn" data-copy="tiktokText" type="button">Copy</button></div>
+
+      <div class="card" data-platform="TikTok" data-target="tiktokText">
+        <div class="card-head">
+          <h3>TikTok</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="tiktokText"></textarea>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>Instagram</h3><button class="btn" data-copy="igText" type="button">Copy</button></div>
+
+      <div class="card" data-platform="Instagram" data-target="igText">
+        <div class="card-head">
+          <h3>Instagram</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="igText"></textarea>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>Facebook</h3><button class="btn" data-copy="fbText" type="button">Copy</button></div>
+
+      <div class="card" data-platform="Facebook" data-target="fbText">
+        <div class="card-head">
+          <h3>Facebook</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="fbText"></textarea>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>YouTube Title</h3><button class="btn" data-copy="ytTitleText" type="button">Copy</button></div>
+
+      <div class="card" data-platform="YouTube Title" data-target="ytTitleText">
+        <div class="card-head">
+          <h3>YouTube Title</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="ytTitleText"></textarea>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>YouTube Description</h3><button class="btn" data-copy="ytDescText" type="button">Copy</button></div>
+
+      <div class="card" data-platform="YouTube Description" data-target="ytDescText">
+        <div class="card-head">
+          <h3>YouTube Description</h3>
+          <div class="mini-actions">
+            <button class="btn" data-act="listen" type="button">Listen</button>
+            <button class="btn" data-act="edit" type="button">Edit</button>
+            <button class="btn" data-act="save" type="button">Save</button>
+            <button class="btn" data-act="copy" type="button">Copy</button>
+            <button class="btn btn-primary" data-act="send" type="button">Send</button>
+          </div>
+        </div>
         <textarea id="ytDescText"></textarea>
       </div>
     </div>
   </section>
 
   <section id="view-studio" class="card hidden">
-    <h2>Bible &amp; Broadcast Rules</h2>
+    <h2>Bible Rules (bible/)</h2>
     <p class="sub" id="studioSummary">Loading live laws from bible/...</p>
     <div id="bibleRulesView" style="white-space:pre-line;"></div>
   </section>
@@ -275,7 +336,12 @@ let SONGS = [];
 let BIBLE_DOCS = {};
 let RECORD_BRAIN = null;
 let NONCE = 1;
+let ACTIVE_AUDIO = null;
 const META = { date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) };
+
+function setStatus(msg) {
+  document.getElementById("statusMsg").textContent = msg;
+}
 
 function getPat() {
   const el = document.getElementById("patInput");
@@ -292,8 +358,10 @@ function decodeBase64Utf8(b64) {
 }
 
 async function fetchRepoFile(repoPath) {
-  const pat = getPat();
   const cleanPath = String(repoPath || "").replace(/^\/+/, "");
+  if (!cleanPath.startsWith("bible/") && !cleanPath.startsWith("strayd/")) return "";
+
+  const pat = getPat();
   if (pat) {
     try {
       const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(cleanPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
@@ -313,16 +381,12 @@ async function fetchRepoFile(repoPath) {
   }
 
   const bases = [
-    "./",
     "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/",
     "https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/"
   ];
   for (const base of bases) {
     try {
-      const target = base === "./"
-        ? (cleanPath.startsWith("strayd/") ? cleanPath.slice("strayd/".length) : "../" + cleanPath)
-        : (base + cleanPath);
-      const r = await fetch(target + (target.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      const r = await fetch(base + encodeURI(cleanPath) + "?t=" + Date.now(), { cache: "no-store" });
       if (r.ok) return await r.text();
     } catch (_) {}
   }
@@ -359,7 +423,7 @@ async function loadBibleCorpus() {
   const loadedKeys = Object.keys(BIBLE_DOCS);
   document.getElementById("bibleRulesView").textContent = loadedKeys.length
     ? loadedKeys.map(k => "=== bible/" + k + " ===\n" + BIBLE_DOCS[k]).join("\n\n")
-    : "No bible/ markdown files loaded yet (add GitHub PAT and click Load).";
+    : "No bible/ markdown files loaded yet.";
 }
 
 function scrub(str) {
@@ -384,23 +448,43 @@ function getSelectedSong() {
   if (!SONGS.length) {
     return {
       idx: 0,
+      id: "",
       title: "",
       artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
       topic: scrub((document.getElementById("topicInput").value || "").trim()),
-      cover: ""
+      cover: "",
+      portalUrl: "",
+      appleUrl: "",
+      genre: ""
     };
   }
   const sel = document.getElementById("songSel");
   const idx = sel ? parseInt(sel.value || "0", 10) : 0;
   const s = SONGS[idx] || SONGS[0];
+  const am = (s && s.platforms && s.platforms.appleMusic) || {};
   const customTopic = (document.getElementById("topicInput").value || "").trim();
+  const autoTopic = [am.genre, s.promoStatus, s.id].filter(Boolean).join(" | ");
   return {
     idx: isNaN(idx) ? 0 : idx,
+    id: s.id || "",
     title: scrub(s.title || s.name || ""),
     artist: scrub(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
-    topic: scrub(customTopic || s.topic || s.theme || s.mood || s.genre || s.notes || ""),
-    cover: s.cover || s.artwork || s.art || ""
+    topic: scrub(customTopic || s.topic || s.theme || s.mood || autoTopic || ""),
+    cover: am.artworkUrlHighRes || s.artUrl || s.cover || s.artwork || s.art || "",
+    portalUrl: s.portalUrl || (RECORD_BRAIN && RECORD_BRAIN.salesPortal) || "",
+    appleUrl: am.url || "",
+    genre: am.genre || ""
   };
+}
+
+function refreshSocialSummary() {
+  document.getElementById("pressPreview").textContent = document.getElementById("pressText").value;
+  document.getElementById("socialSummary").textContent =
+    "X:\n" + document.getElementById("xText").value +
+    "\n\nTikTok:\n" + document.getElementById("tiktokText").value +
+    "\n\nInstagram:\n" + document.getElementById("igText").value +
+    "\n\nFacebook:\n" + document.getElementById("fbText").value +
+    "\n\nYouTube:\n" + document.getElementById("ytTitleText").value + "\n" + document.getElementById("ytDescText").value;
 }
 
 function syncSong() {
@@ -418,8 +502,8 @@ function syncSong() {
   }
   const bibleCount = Object.keys(BIBLE_DOCS).length;
   document.getElementById("studioSummary").textContent = cur.title
-    ? ("Active track: " + cur.title + " (" + cur.artist + ") | Bible rules loaded: " + bibleCount + " files | Run #" + NONCE)
-    : ("Bible rules loaded: " + bibleCount + " files | Run #" + NONCE);
+    ? ("Track " + (cur.idx + 1) + "/" + SONGS.length + ": " + cur.title + " (" + cur.artist + ") | bible/ docs: " + bibleCount + " | Run #" + NONCE)
+    : ("bible/ docs: " + bibleCount + " | Run #" + NONCE);
   return cur;
 }
 
@@ -432,14 +516,7 @@ function writeDispatchFields(out) {
   document.getElementById("fbText").value = smartTrimStr(out.facebook || "", 63206);
   document.getElementById("ytTitleText").value = smartTrimStr(out.ytTitle || "", 95);
   document.getElementById("ytDescText").value = smartTrimStr(out.ytDesc || "", 5000);
-
-  document.getElementById("pressPreview").textContent = document.getElementById("pressText").value;
-  document.getElementById("socialSummary").textContent =
-    "X:\n" + document.getElementById("xText").value +
-    "\n\nTikTok:\n" + document.getElementById("tiktokText").value +
-    "\n\nInstagram:\n" + document.getElementById("igText").value +
-    "\n\nFacebook:\n" + document.getElementById("fbText").value +
-    "\n\nYouTube:\n" + document.getElementById("ytTitleText").value + "\n" + document.getElementById("ytDescText").value;
+  refreshSocialSummary();
 }
 
 async function generateFreshDispatchFromBible(cur, existingData) {
@@ -447,11 +524,6 @@ async function generateFreshDispatchFromBible(cur, existingData) {
     writeDispatchFields({ djIntro: "", press: "", x: "", tiktok: "", instagram: "", facebook: "", ytTitle: "", ytDesc: "" });
     return;
   }
-
-  const bibleContext = Object.entries(BIBLE_DOCS)
-    .map(([file, text]) => "[" + file + "]\n" + text.slice(0, 1800))
-    .join("\n\n")
-    .slice(0, 9000);
 
   const pat = getPat();
   if (pat) {
@@ -493,17 +565,18 @@ async function generateFreshDispatchFromBible(cur, existingData) {
     }
   }
 
-  const summarySource = bibleContext || (RECORD_BRAIN ? JSON.stringify(RECORD_BRAIN) : "");
-  const topicLine = cur.topic ? ("Focus: " + cur.topic + ".") : ("Track #" + (cur.idx + 1) + ".");
+  const linksLine = [cur.portalUrl, cur.appleUrl].filter(Boolean).join(" | ");
+  const focusLine = cur.topic ? ("Focus: " + cur.topic + ".") : ("Catalog #" + (cur.id || (cur.idx + 1)) + ".");
+  const bibleCount = Object.keys(BIBLE_DOCS).length;
   writeDispatchFields({
-    djIntro: cur.title + " by " + cur.artist + " on ANTIPOP (run #" + NONCE + "). " + topicLine,
-    press: META.date + "\n\n" + cur.title + " — " + cur.artist + "\n\n" + topicLine + (summarySource ? ("\n\nBible laws active (" + Object.keys(BIBLE_DOCS).length + " docs).") : ""),
-    x: cur.title + " — " + cur.artist + ". " + topicLine,
-    tiktok: cur.title + " (" + cur.artist + ") — " + topicLine,
-    instagram: cur.title + " by " + cur.artist + "\n" + topicLine,
-    facebook: cur.title + " by " + cur.artist + " — " + topicLine,
+    djIntro: cur.title + " by " + cur.artist + " on ANTIPOP (run #" + NONCE + "). " + focusLine,
+    press: META.date + "\n\n" + cur.title + " — " + cur.artist + "\n\n" + focusLine + (bibleCount ? ("\n\nbible/ active (" + bibleCount + " docs).") : "") + (linksLine ? ("\nLinks: " + linksLine) : ""),
+    x: cur.title + " — " + cur.artist + ". " + focusLine + (linksLine ? (" " + linksLine) : ""),
+    tiktok: cur.title + " (" + cur.artist + ") — " + focusLine + (linksLine ? (" " + linksLine) : ""),
+    instagram: cur.title + " by " + cur.artist + "\n" + focusLine + (linksLine ? ("\n" + linksLine) : ""),
+    facebook: cur.title + " by " + cur.artist + " — " + focusLine + (linksLine ? (" " + linksLine) : ""),
     ytTitle: cur.title + " — " + cur.artist,
-    ytDesc: cur.title + " by " + cur.artist + ". " + topicLine
+    ytDesc: cur.title + " by " + cur.artist + ". " + focusLine + (linksLine ? ("\n" + linksLine) : "")
   });
 }
 
@@ -607,30 +680,76 @@ function resolveSpeechProfile(selVal, sysVoices) {
   };
 }
 
+function buildFallbackToneWavBlob(text, pitchFactor) {
+  const sampleRate = 22050;
+  const seconds = Math.min(4, Math.max(1.2, Math.min(400, String(text || "").length) * 0.025));
+  const numSamples = Math.floor(sampleRate * seconds);
+  const buffer = new ArrayBuffer(44 + numSamples * 2);
+  const view = new DataView(buffer);
+  const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
+
+  writeStr(0, "RIFF");
+  view.setUint32(4, 36 + numSamples * 2, true);
+  writeStr(8, "WAVE");
+  writeStr(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, "data");
+  view.setUint32(40, numSamples * 2, true);
+
+  const baseFreq = 220 * (pitchFactor || 1);
+  for (let i = 0; i < numSamples; i++) {
+    const t = i / sampleRate;
+    const env = Math.min(1, t * 12) * Math.min(1, (seconds - t) * 12);
+    const sample = Math.sin(2 * Math.PI * baseFreq * t) * 0.22 * env;
+    view.setInt16(44 + i * 2, Math.max(-32767, Math.min(32767, Math.floor(sample * 32767))), true);
+  }
+  return new Blob([buffer], { type: "audio/wav" });
+}
+
 function speakText(text) {
   const clean = scrub(text);
-  if (!clean) return;
-  if (!("speechSynthesis" in window)) {
-    setStatus("Speech synthesis unavailable in browser");
+  if (!clean) {
+    setStatus("Nothing to speak");
     return;
   }
-  window.speechSynthesis.cancel();
-  const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
   const selVal = document.getElementById("voiceSel").value || "";
-  const sysVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
   const profile = resolveSpeechProfile(selVal, sysVoices);
 
-  chunks.forEach(ch => {
-    const part = ch.trim();
-    if (!part) return;
-    const u = new SpeechSynthesisUtterance(part);
-    if (profile.voice) u.voice = profile.voice;
-    u.lang = profile.lang;
-    u.rate = profile.rate;
-    u.pitch = profile.pitch;
-    window.speechSynthesis.speak(u);
-  });
-  setStatus("Speaking (" + profile.label + ")...");
+  if ("speechSynthesis" in window && sysVoices.length > 0) {
+    window.speechSynthesis.cancel();
+    const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
+    chunks.forEach(ch => {
+      const part = ch.trim();
+      if (!part) return;
+      const u = new SpeechSynthesisUtterance(part);
+      if (profile.voice) u.voice = profile.voice;
+      u.lang = profile.lang;
+      u.rate = profile.rate;
+      u.pitch = profile.pitch;
+      u.onend = () => setStatus("Finished speaking (" + profile.label + ")");
+      window.speechSynthesis.speak(u);
+    });
+    setStatus("Speaking (" + profile.label + ")...");
+    return;
+  }
+
+  try {
+    if (ACTIVE_AUDIO) { ACTIVE_AUDIO.pause(); ACTIVE_AUDIO = null; }
+    const wavBlob = buildFallbackToneWavBlob(clean, profile.pitch);
+    const url = URL.createObjectURL(wavBlob);
+    ACTIVE_AUDIO = new Audio(url);
+    ACTIVE_AUDIO.onended = () => { URL.revokeObjectURL(url); setStatus("Audio finished (" + profile.label + ")"); };
+    ACTIVE_AUDIO.play().then(() => setStatus("Playing audio cue (" + profile.label + ")")).catch(() => setStatus("Audio ready (" + profile.label + ")"));
+  } catch (_) {
+    setStatus("Audio playback unavailable in this browser");
+  }
 }
 
 async function downloadAudioFile(text, baseName) {
@@ -640,7 +759,7 @@ async function downloadAudioFile(text, baseName) {
     return;
   }
   const selVal = document.getElementById("voiceSel").value || "";
-  const sysVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
   const profile = resolveSpeechProfile(selVal, sysVoices);
   const voiceKey = profile.edgeVoiceName
     ? profile.edgeVoiceName.replace(/Neural$/i, "")
@@ -660,19 +779,42 @@ async function downloadAudioFile(text, baseName) {
     setTimeout(() => URL.revokeObjectURL(url), 4000);
     setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
   } catch (_) {
-    setStatus("Remote MP3 service busy; speaking via " + profile.label);
-    speakText(clean);
+    const wavBlob = buildFallbackToneWavBlob(clean, profile.pitch);
+    const url = URL.createObjectURL(wavBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = baseName + ".wav";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    setStatus("Saved fallback " + baseName + ".wav (" + profile.label + ")");
   }
 }
 
-function setStatus(msg) {
-  document.getElementById("statusMsg").textContent = msg;
-}
-
-function copyVal(id) {
+function copyVal(id, label) {
   const el = document.getElementById(id);
   if (!el) return;
-  navigator.clipboard.writeText(el.value || "").then(() => setStatus("Copied"));
+  navigator.clipboard.writeText(el.value || "").then(() => setStatus("Copied " + (label || id)));
+}
+
+function sendSocialPost(platform, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = scrub(el.value || "");
+  if (!text) {
+    setStatus("Nothing to send for " + platform);
+    return;
+  }
+  if (navigator.share) {
+    navigator.share({ text }).then(() => setStatus("Shared " + platform)).catch(() => {
+      navigator.clipboard.writeText(text).catch(() => {});
+      setStatus("Copied " + platform + " post ready to paste");
+    });
+  } else {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setStatus("Copied " + platform + " post ready to send");
+  }
 }
 
 async function loadCatalogAndDispatch() {
@@ -696,7 +838,7 @@ async function loadCatalogAndDispatch() {
       opt.textContent = (i + 1) + ". " + scrub(s.title || s.name || ("Track " + (i + 1)));
       sel.appendChild(opt);
     });
-    if (SONGS.length > 1) sel.value = "1";
+    sel.value = "0";
     document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Dispatch (" + SONGS.length + " songs)";
   } else {
     document.getElementById("catalogStatus").textContent = "Catalog unavailable (songs-db.json)";
@@ -711,6 +853,37 @@ async function loadCatalogAndDispatch() {
   const cur = syncSong();
   await generateFreshDispatchFromBible(cur, latestData);
   setStatus("Ready");
+}
+
+function wireSocialCards() {
+  document.querySelectorAll("#socialCardsGrid .card").forEach(card => {
+    const platform = card.dataset.platform || "Post";
+    const targetId = card.dataset.target;
+    const ta = document.getElementById(targetId);
+    if (!ta) return;
+
+    card.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === "listen") {
+        speakText(ta.value);
+      } else if (act === "edit") {
+        ta.readOnly = false;
+        ta.focus();
+        setStatus("Editing " + platform);
+      } else if (act === "save") {
+        ta.readOnly = true;
+        ta.value = scrub(ta.value);
+        refreshSocialSummary();
+        setStatus("Saved " + platform);
+      } else if (act === "copy") {
+        copyVal(targetId, platform);
+      } else if (act === "send") {
+        sendSocialPost(platform, targetId);
+      }
+    });
+  });
 }
 
 function wireUI() {
@@ -752,6 +925,7 @@ function wireUI() {
   document.getElementById("saveBtn").addEventListener("click", () => {
     localStorage.setItem("antipop_voice_v1", voiceEl.value);
     if (patEl.value.trim()) localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim());
+    refreshSocialSummary();
     setStatus("Saved locally");
   });
   document.getElementById("renderBtn").addEventListener("click", async () => {
@@ -764,6 +938,7 @@ function wireUI() {
   });
   document.getElementById("stopSpeechBtn").addEventListener("click", () => {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    if (ACTIVE_AUDIO) { ACTIVE_AUDIO.pause(); ACTIVE_AUDIO = null; }
     setStatus("Speech stopped");
   });
 
@@ -771,9 +946,10 @@ function wireUI() {
   document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
   document.getElementById("dlIntroBtn").addEventListener("click", () => downloadAudioFile(document.getElementById("djIntroText").value, "antipop-dj-intro"));
   document.getElementById("dlPressBtn").addEventListener("click", () => downloadAudioFile(document.getElementById("pressText").value, "antipop-press-release"));
-  document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText"));
-  document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText"));
-  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copyVal(b.dataset.copy)));
+  document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ Intro"));
+  document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Press Release"));
+
+  wireSocialCards();
 }
 
 if ("speechSynthesis" in window) {
