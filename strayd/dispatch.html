@@ -620,5 +620,5 @@ if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
 if($("dlPress"))$("dlPress").onclick=()=>dlMp3("press","press-release-antipop");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
-populateVoices();if('speechSynthesis'in window){speechSynthesis.onvoiceschanged=populateVoices;}buildCards();(async()=>{await loadSongs();await loadLatest();})();
+populateVoices();if('speechSynthesis'in window){speechSynthesis.onvoiceschanged=populateVoices;}buildCards();(async()=>{await loadSongs();if($("songSel"))$("songSel").value="0";applyDispatch({});})();
 </script></body></html>
