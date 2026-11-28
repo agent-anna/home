@@ -128,7 +128,7 @@
         </div>
         <div>
           <h1 id="catalogStatus">Loading catalog...</h1>
-          <div class="sub" id="stationLine">Martin Strayd — ANTIPOP (Hosted by Veg Anna, Broadcast by DJ ANNA)</div>
+          <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; AI Dispatch</div>
 
           <div class="field">
             <label for="songSel">Song</label>
@@ -146,7 +146,7 @@
           </div>
 
           <div class="field">
-            <label for="patInput">GitHub PAT (Save &amp; Render)</label>
+            <label for="patInput">GitHub PAT (Pull Bible, Dispatch &amp; Render)</label>
             <input id="patInput" type="password" placeholder="ghp_..." autocomplete="off" />
           </div>
 
@@ -171,7 +171,7 @@
         </div>
       </div>
       <label for="djIntroText">DJ Intro Text</label>
-      <textarea id="djIntroText" placeholder="DJ intro..."></textarea>
+      <textarea id="djIntroText" placeholder="Fresh AI DJ intro driven by bible/ laws..."></textarea>
     </div>
 
     <div class="card">
@@ -184,7 +184,7 @@
         </div>
       </div>
       <label for="pressText">Press Release Text</label>
-      <textarea id="pressText" class="press-area" placeholder="6-paragraph press release..."></textarea>
+      <textarea id="pressText" class="press-area" placeholder="Fresh AI press release driven by bible/ laws..."></textarea>
     </div>
 
     <div class="social-grid">
@@ -216,9 +216,9 @@
   </section>
 
   <section id="view-studio" class="card hidden">
-    <h2>Studio Notes</h2>
-    <p class="sub">ANTIPOP broadcast studio hosted by Veg Anna and broadcast by DJ ANNA. Direct MP3 + artwork bundle ownership includes free non-commercial friend sharing; commercial resale is prohibited.</p>
-    <p class="sub" id="studioSummary"></p>
+    <h2>Bible &amp; Broadcast Rules</h2>
+    <p class="sub" id="studioSummary">Loading live laws from bible/...</p>
+    <div id="bibleRulesView" style="white-space:pre-line;"></div>
   </section>
 
   <section id="view-press" class="card hidden">
@@ -233,39 +233,134 @@
 </div>
 
 <script>
-const TEAM_VOICE_CATALOG = [
-  ["en-US-LunaNeural", "Luna (en-US)", "female", "en-US"],
-  ["en-US-AriaNeural", "Aria (en-US)", "female", "en-US"],
-  ["en-US-SteffanNeural", "Steffan (en-US)", "male", "en-US"],
-  ["en-US-RogerNeural", "Roger (en-US)", "male", "en-US"],
-  ["en-GB-SoniaNeural", "Sonia (en-GB)", "female", "en-GB"],
-  ["en-GB-RyanNeural", "Ryan (en-GB)", "male", "en-GB"],
-  ["en-AU-NatashaNeural", "Natasha (en-AU)", "female", "en-AU"],
-  ["en-CA-LiamNeural", "Liam (en-CA)", "male", "en-CA"],
-  ["en-IN-NeerjaNeural", "Neerja (en-IN)", "female", "en-IN"],
-  ["en-IN-AaravNeural", "Aarav (en-IN)", "male", "en-IN"],
-  ["th-TH-PremwadeeNeural", "Premwadee (th-TH)", "female", "th-TH"],
-  ["th-TH-NiwatNeural", "Niwat (th-TH)", "male", "th-TH"],
-  ["ja-JP-NanamiNeural", "Nanami (ja-JP)", "female", "ja-JP"],
-  ["ja-JP-KeitaNeural", "Keita (ja-JP)", "male", "ja-JP"],
-  ["ko-KR-SunHiNeural", "SunHi (ko-KR)", "female", "ko-KR"],
-  ["ko-KR-InJoonNeural", "InJoon (ko-KR)", "male", "ko-KR"],
-  ["es-ES-ElviraNeural", "Elvira (es-ES)", "female", "es-ES"],
-  ["es-ES-AlvaroNeural", "Alvaro (es-ES)", "male", "es-ES"],
-  ["fr-FR-DeniseNeural", "Denise (fr-FR)", "female", "fr-FR"],
-  ["fr-FR-HenriNeural", "Henri (fr-FR)", "male", "fr-FR"],
-  ["de-DE-KatjaNeural", "Katja (de-DE)", "female", "de-DE"],
-  ["de-DE-ConradNeural", "Conrad (de-DE)", "male", "de-DE"],
-  ["it-IT-IsabellaNeural", "Isabella (it-IT)", "female", "it-IT"],
-  ["it-IT-DiegoNeural", "Diego (it-IT)", "male", "it-IT"],
-  ["pt-BR-FranciscaNeural", "Francisca (pt-BR)", "female", "pt-BR"],
-  ["ar-EG-SalmaNeural", "Salma (ar-EG)", "female", "ar-EG"]
+const REPO_OWNER = "agent-anna";
+const REPO_NAME = "home";
+const REPO_BRANCH = "main";
+
+const EDGE_VOICE_CATALOG = [
+  ["en-US-LunaNeural","Luna (en-US)"],["en-US-AriaNeural","Aria (en-US)"],["en-US-JennyNeural","Jenny (en-US)"],
+  ["en-US-MichelleNeural","Michelle (en-US)"],["en-US-MonicaNeural","Monica (en-US)"],["en-US-AnaNeural","Ana (en-US)"],
+  ["en-US-EmmaNeural","Emma (en-US)"],["en-US-AvaNeural","Ava (en-US)"],["en-US-SteffanNeural","Steffan (en-US)"],
+  ["en-US-RogerNeural","Roger (en-US)"],["en-GB-SoniaNeural","Sonia (en-GB)"],["en-GB-LibbyNeural","Libby (en-GB)"],
+  ["en-GB-MaisieNeural","Maisie (en-GB)"],["en-GB-RyanNeural","Ryan (en-GB)"],["en-GB-ThomasNeural","Thomas (en-GB)"],
+  ["en-AU-NatashaNeural","Natasha (en-AU)"],["en-AU-FreyaNeural","Freya (en-AU)"],["en-AU-ElsieNeural","Elsie (en-AU)"],
+  ["en-CA-ClaraNeural","Clara (en-CA)"],["en-CA-LiamNeural","Liam (en-CA)"],["en-IN-NeerjaNeural","Neerja (en-IN)"],
+  ["en-IN-AaravNeural","Aarav (en-IN)"],["en-IE-EmilyNeural","Emily (en-IE)"],["en-NZ-MollyNeural","Molly (en-NZ)"],
+  ["en-ZA-LeahNeural","Leah (en-ZA)"],["th-TH-PremwadeeNeural","Premwadee (th-TH)"],["th-TH-AcharaNeural","Achara (th-TH)"],
+  ["th-TH-NiwatNeural","Niwat (th-TH)"],["ja-JP-NanamiNeural","Nanami (ja-JP)"],["ja-JP-AoiNeural","Aoi (ja-JP)"],
+  ["ja-JP-MayuNeural","Mayu (ja-JP)"],["ja-JP-KeitaNeural","Keita (ja-JP)"],["ko-KR-SunHiNeural","SunHi (ko-KR)"],
+  ["ko-KR-JiMinNeural","JiMin (ko-KR)"],["ko-KR-InJoonNeural","InJoon (ko-KR)"],["zh-CN-XiaoxiaoNeural","Xiaoxiao (zh-CN)"],
+  ["zh-CN-XiaoyiNeural","Xiaoyi (zh-CN)"],["zh-CN-YunxiNeural","Yunxi (zh-CN)"],["zh-TW-HsiaoChenNeural","HsiaoChen (zh-TW)"],
+  ["zh-TW-YunJheNeural","YunJhe (zh-TW)"],["es-ES-ElviraNeural","Elvira (es-ES)"],["es-ES-AlvaroNeural","Alvaro (es-ES)"],
+  ["es-MX-DaliaNeural","Dalia (es-MX)"],["es-MX-JorgeNeural","Jorge (es-MX)"],["es-AR-ElenaNeural","Elena (es-AR)"],
+  ["es-CO-SalomeNeural","Salome (es-CO)"],["fr-FR-DeniseNeural","Denise (fr-FR)"],["fr-FR-EloiseNeural","Eloise (fr-FR)"],
+  ["fr-FR-HenriNeural","Henri (fr-FR)"],["fr-CA-SylvieNeural","Sylvie (fr-CA)"],["de-DE-KatjaNeural","Katja (de-DE)"],
+  ["de-DE-AmalaNeural","Amala (de-DE)"],["de-DE-ConradNeural","Conrad (de-DE)"],["it-IT-ElsaNeural","Elsa (it-IT)"],
+  ["it-IT-IsabellaNeural","Isabella (it-IT)"],["it-IT-DiegoNeural","Diego (it-IT)"],["pt-BR-FranciscaNeural","Francisca (pt-BR)"],
+  ["pt-BR-BrendaNeural","Brenda (pt-BR)"],["pt-PT-RaquelNeural","Raquel (pt-PT)"],["nl-NL-ColetteNeural","Colette (nl-NL)"],
+  ["nl-NL-FennaNeural","Fenna (nl-NL)"],["sv-SE-SofieNeural","Sofie (sv-SE)"],["da-DK-ChristelNeural","Christel (da-DK)"],
+  ["nb-NO-PernilleNeural","Pernille (nb-NO)"],["fi-FI-NooraNeural","Noora (fi-FI)"],["pl-PL-ZofiaNeural","Zofia (pl-PL)"],
+  ["ru-RU-SvetlanaNeural","Svetlana (ru-RU)"],["ru-RU-DariyaNeural","Dariya (ru-RU)"],["ar-EG-SalmaNeural","Salma (ar-EG)"],
+  ["ar-SA-ZariyahNeural","Zariyah (ar-SA)"],["hi-IN-SwaraNeural","Swara (hi-IN)"],["id-ID-GadisNeural","Gadis (id-ID)"],
+  ["ms-MY-YasminNeural","Yasmin (ms-MY)"],["vi-VN-HoaiMyNeural","HoaiMy (vi-VN)"],["fil-PH-BlessicaNeural","Blessica (fil-PH)"]
 ];
 
+const MALE_EDGE_NAMES = new Set([
+  "SteffanNeural","RogerNeural","RyanNeural","ThomasNeural","LiamNeural","AaravNeural",
+  "NiwatNeural","KeitaNeural","InJoonNeural","YunxiNeural","YunJheNeural","AlvaroNeural",
+  "JorgeNeural","HenriNeural","ConradNeural","DiegoNeural"
+]);
+
 let SONGS = [];
-let AUDIO_MAP = {};
+let BIBLE_DOCS = {};
+let RECORD_BRAIN = null;
 let NONCE = 1;
 const META = { date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) };
+
+function getPat() {
+  const el = document.getElementById("patInput");
+  return ((el && el.value) || localStorage.getItem("antipop_gh_pat_v1") || "").trim();
+}
+
+function decodeBase64Utf8(b64) {
+  const clean = String(b64 || "").replace(/\s+/g, "");
+  if (!clean) return "";
+  const bin = atob(clean);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+async function fetchRepoFile(repoPath) {
+  const pat = getPat();
+  const cleanPath = String(repoPath || "").replace(/^\/+/, "");
+  if (pat) {
+    try {
+      const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(cleanPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
+      const r = await fetch(apiUrl, {
+        headers: { Authorization: "Bearer " + pat, Accept: "application/vnd.github+json" },
+        cache: "no-store"
+      });
+      if (r.ok) {
+        const meta = await r.json();
+        if (meta && meta.content) return decodeBase64Utf8(meta.content);
+        if (meta && meta.download_url) {
+          const dr = await fetch(meta.download_url + (meta.download_url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+          if (dr.ok) return await dr.text();
+        }
+      }
+    } catch (_) {}
+  }
+
+  const bases = [
+    "./",
+    "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/",
+    "https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/"
+  ];
+  for (const base of bases) {
+    try {
+      const target = base === "./"
+        ? (cleanPath.startsWith("strayd/") ? cleanPath.slice("strayd/".length) : "../" + cleanPath)
+        : (base + cleanPath);
+      const r = await fetch(target + (target.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      if (r.ok) return await r.text();
+    } catch (_) {}
+  }
+  return "";
+}
+
+async function loadBibleCorpus() {
+  const indexText = await fetchRepoFile("bible/00-bible-index.md");
+  const docNames = ["00-bible-index.md"];
+  const matches = indexText.match(/bible\/[A-Za-z0-9_.-]+\.md/g) || [];
+  matches.forEach(m => {
+    const base = m.split("/").pop();
+    if (base && !docNames.includes(base)) docNames.push(base);
+  });
+  ["dispatch-essentials.md", "04-voice-and-broadcast-law.md", "06-dj-anna-persona.md", "07-platform-cadence-and-hashtags.md"].forEach(base => {
+    if (!docNames.includes(base)) docNames.push(base);
+  });
+
+  const entries = await Promise.all(docNames.slice(0, 12).map(async name => {
+    const txt = await fetchRepoFile("bible/" + name);
+    return [name, (txt || "").trim()];
+  }));
+
+  BIBLE_DOCS = {};
+  entries.forEach(([k, v]) => {
+    if (v && v.length > 2) BIBLE_DOCS[k] = v;
+  });
+
+  const brainRaw = await fetchRepoFile("strayd/record-brain.json");
+  if (brainRaw) {
+    try { RECORD_BRAIN = JSON.parse(brainRaw.replace(/^\uFEFF/, "")); } catch (_) {}
+  }
+
+  const loadedKeys = Object.keys(BIBLE_DOCS);
+  document.getElementById("bibleRulesView").textContent = loadedKeys.length
+    ? loadedKeys.map(k => "=== bible/" + k + " ===\n" + BIBLE_DOCS[k]).join("\n\n")
+    : "No bible/ markdown files loaded yet (add GitHub PAT and click Load).";
+}
 
 function scrub(str) {
   return String(str || "")
@@ -277,24 +372,6 @@ function scrub(str) {
     .trim();
 }
 
-function scrubDom(root) {
-  if (typeof document !== "undefined" && document.title) {
-    const cleanTitle = scrub(document.title);
-    if (cleanTitle !== document.title) document.title = cleanTitle;
-  }
-  const startNode = root || (typeof document !== "undefined" ? document.body : null);
-  if (!startNode || typeof NodeFilter === "undefined") return;
-  const walker = document.createTreeWalker(startNode, NodeFilter.SHOW_TEXT);
-  let node;
-  while ((node = walker.nextNode())) {
-    const parentTag = node.parentElement && node.parentElement.tagName;
-    if (parentTag === "SCRIPT" || parentTag === "STYLE" || parentTag === "TEXTAREA") continue;
-    if (/[\u2013\u2014]/.test(node.nodeValue)) {
-      node.nodeValue = scrub(node.nodeValue);
-    }
-  }
-}
-
 function smartTrimStr(str, maxLen) {
   const s = scrub(str);
   if (s.length <= maxLen) return s;
@@ -303,40 +380,29 @@ function smartTrimStr(str, maxLen) {
   return (sp > 20 ? cut.slice(0, sp) : cut).trim();
 }
 
-function hashSeed(input) {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619) >>> 0;
-  }
-  return h >>> 0;
-}
-
 function getSelectedSong() {
-  const customTopic = (document.getElementById("topicInput").value || "").trim();
   if (!SONGS.length) {
     return {
       idx: 0,
       title: "",
-      artist: "Martin Strayd",
-      topic: scrub(customTopic),
+      artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
+      topic: scrub((document.getElementById("topicInput").value || "").trim()),
       cover: ""
     };
   }
   const sel = document.getElementById("songSel");
   const idx = sel ? parseInt(sel.value || "0", 10) : 0;
   const s = SONGS[idx] || SONGS[0];
-  const am = (s.platforms && s.platforms.appleMusic) || {};
-  const fallbackTopic = s.topic || s.theme || s.mood || s.genre || am.genre || "";
-  const coverUrl = s.artUrl || s.cover || s.artwork || am.artworkUrlHighRes || am.artworkUrl || "";
+  const customTopic = (document.getElementById("topicInput").value || "").trim();
   return {
     idx: isNaN(idx) ? 0 : idx,
     title: scrub(s.title || s.name || ""),
-    artist: scrub(s.artist || "Martin Strayd"),
-    topic: scrub(customTopic || fallbackTopic),
-    cover: coverUrl
+    artist: scrub(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
+    topic: scrub(customTopic || s.topic || s.theme || s.mood || s.genre || s.notes || ""),
+    cover: s.cover || s.artwork || s.art || ""
   };
 }
+
 function syncSong() {
   const cur = getSelectedSong();
   const img = document.getElementById("coverImg");
@@ -350,127 +416,95 @@ function syncSong() {
     img.classList.add("hidden");
     ph.classList.remove("hidden");
   }
+  const bibleCount = Object.keys(BIBLE_DOCS).length;
   document.getElementById("studioSummary").textContent = cur.title
-    ? ("Active single: " + cur.title + " by " + cur.artist + " | Host: Veg Anna | Broadcaster: DJ ANNA.")
-    : "No track loaded from songs-db.json.";
-  scrubDom();
+    ? ("Active track: " + cur.title + " (" + cur.artist + ") | Bible rules loaded: " + bibleCount + " files | Run #" + NONCE)
+    : ("Bible rules loaded: " + bibleCount + " files | Run #" + NONCE);
   return cur;
 }
 
-function buildDefaults(title, artist, topic, dateStr) {
-  if (!title) {
-    return { djIntro: "", press: "", x: "", tiktok: "", instagram: "", facebook: "", ytTitle: "", ytDesc: "" };
-  }
-  const dLabel = scrub(dateStr || META.date);
-  const angleText = topic || "today's single release";
-  const seed = hashSeed([dLabel, title, artist, angleText, NONCE].join("|"));
-  const openings = [
-    "You are tuned to ANTIPOP, broadcast by DJ ANNA and hosted live by Veg Anna, spinning " + title + " from " + artist + ".",
-    "DJ ANNA brings the signal onto ANTIPOP with Veg Anna at the mic for today's single: " + title + " by " + artist + ".",
-    "Live across ANTIPOP with DJ ANNA on the broadcast desk and Veg Anna hosting, here is " + title + " by " + artist + ".",
-    "Veg Anna welcomes you into ANTIPOP, powered by DJ ANNA, featuring " + title + " from " + artist + "."
-  ];
-  const middles = [
-    "We are diving straight into " + angleText + " as part of our daily single run across the catalog.",
-    "Tonight's focus centers on " + angleText + ", keeping independent music moving every single day.",
-    "Built around " + angleText + ", this track carries the momentum of our daily single series straight to your speakers.",
-    "Hear how " + angleText + " shapes the sound as we roll out another daily release on ANTIPOP."
-  ];
-  const djIntro = smartTrimStr(
-    openings[seed % openings.length] + " " + middles[(seed >>> 3) % middles.length] +
-    " Every direct MP3 and artwork bundle includes free non-commercial sharing with friends, with commercial resale strictly prohibited.",
-    900
-  );
+function writeDispatchFields(out) {
+  document.getElementById("djIntroText").value = scrub(out.djIntro || "");
+  document.getElementById("pressText").value = scrub(out.press || "");
+  document.getElementById("xText").value = smartTrimStr(out.x || "", 275);
+  document.getElementById("tiktokText").value = smartTrimStr(out.tiktok || "", 2200);
+  document.getElementById("igText").value = smartTrimStr(out.instagram || "", 2200);
+  document.getElementById("fbText").value = smartTrimStr(out.facebook || "", 63206);
+  document.getElementById("ytTitleText").value = smartTrimStr(out.ytTitle || "", 95);
+  document.getElementById("ytDescText").value = smartTrimStr(out.ytDesc || "", 5000);
 
-  const p1 = dLabel + ", ANTIPOP, broadcast by DJ ANNA and hosted by Veg Anna, spotlights \"" + title + "\" by " + artist + " as today's featured single. Focused on " + angleText + ", the release anchors a daily singles campaign built to keep fresh music in rotation every day of the year.";
-  const p2 = "Across the broader catalog of more than one hundred songs, Martin Strayd shapes tracks grounded in lived experience, melody, and direct listener connection rather than factory formulas. Each daily single gives listeners a clear entry point into a wider body of work that grows one release at a time.";
-  const p3 = "ANTIPOP reaches audiences across ten world radio markets, connecting independent listeners from Southeast Asia and North America to Europe and Oceania under a single broadcast voice. Veg Anna guides each feature on air while DJ ANNA keeps the daily rotation moving without interruption.";
-  const p4 = "Martin Strayd's history spans independent songwriting, studio experimentation, and hands-on release building outside traditional label gatekeepers. Instead of locking songs behind fleeting streams alone, each release is presented as a lasting work meant to stay in the listener's hands.";
-  const p5 = "Listeners who pick up a direct MP3 and artwork bundle receive genuine ownership of the audio and cover art for personal listening and free non-commercial sharing with friends. Commercial resale, redistribution for profit, or unauthorized commercial licensing is strictly prohibited.";
-  const p6 = "Tune in to ANTIPOP with Veg Anna and DJ ANNA for daily single drops, explore the catalog at kundacafe.com, and grab direct MP3 and artwork bundles to share freely with friends in non-commercial circles.";
-  const press = [p1, p2, p3, p4, p5, p6].join("\n\n");
-
-  const xLines = [
-    "Veg Anna & DJ ANNA on ANTIPOP: \"" + title + "\" by " + artist + " (" + angleText + "). Direct MP3 + art bundles can be shared free with friends (no commercial resale).",
-    "Daily single on ANTIPOP with Veg Anna: \"" + title + "\" from " + artist + ", exploring " + angleText + ". Free non-commercial friend sharing included; no resale.",
-    "DJ ANNA & Veg Anna spin \"" + title + "\" by " + artist + " on ANTIPOP today. Own the MP3 + art bundle, share free with friends, no commercial resale."
-  ];
-  const x = smartTrimStr(xLines[(seed >>> 5) % xLines.length], 275);
-
-  const tiktok = smartTrimStr(
-    "Veg Anna on ANTIPOP with DJ ANNA: \"" + title + "\" by " + artist + " is today's single, digging into " + angleText + ". " +
-    "Direct MP3 and artwork bundles are yours to keep and share free with friends for non-commercial listening; commercial resale is not allowed.",
-    2200
-  );
-
-  const instagram = smartTrimStr(
-    "ANTIPOP Daily Single, Hosted by Veg Anna, broadcast by DJ ANNA.\n" +
-    "Track: " + title + " (" + artist + ")\n" +
-    "Angle: " + angleText + "\n" +
-    "Direct MP3 + artwork bundles include free non-commercial sharing with friends. Commercial resale is prohibited.",
-    2200
-  );
-
-  const facebook = smartTrimStr(
-    "Veg Anna and DJ ANNA are live on ANTIPOP with today's single: \"" + title + "\" by " + artist + ", centered on " + angleText + ". " +
-    "This release is part of our ongoing daily singles push across a 100+ song catalog and 10 world radio markets. " +
-    "When you get a direct MP3 and artwork bundle, you can share it freely with friends for non-commercial enjoyment, while commercial resale is prohibited.",
-    63206
-  );
-
-  const ytTitle = smartTrimStr(title + ", " + artist + " | ANTIPOP (Veg Anna & DJ ANNA)", 95);
-  const ytDesc = smartTrimStr(
-    "ANTIPOP daily single broadcast by DJ ANNA and hosted by Veg Anna: \"" + title + "\" by " + artist + " (" + angleText + "). " +
-    "Direct MP3 and artwork bundles include free non-commercial sharing with friends; commercial resale is prohibited.",
-    5000
-  );
-
-  return { djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc };
+  document.getElementById("pressPreview").textContent = document.getElementById("pressText").value;
+  document.getElementById("socialSummary").textContent =
+    "X:\n" + document.getElementById("xText").value +
+    "\n\nTikTok:\n" + document.getElementById("tiktokText").value +
+    "\n\nInstagram:\n" + document.getElementById("igText").value +
+    "\n\nFacebook:\n" + document.getElementById("fbText").value +
+    "\n\nYouTube:\n" + document.getElementById("ytTitleText").value + "\n" + document.getElementById("ytDescText").value;
 }
 
-function applyDispatch(data) {
-  const cur = syncSong();
-  const fb = buildDefaults(cur.title, cur.artist, cur.topic, (data && data.date) || META.date);
-  const d = (data && typeof data.dispatch === "object" && data.dispatch) ? data.dispatch : {};
-  const st = String((data && data.api_status) || "");
-  const isThinFallback =
-    /fast_fallback|bananna/i.test(st) ||
-    /dj\s*bananna|dj\s*veg\s*anna/i.test(JSON.stringify(d)) ||
-    String(d.press || "").trim().length < 380;
+async function generateFreshDispatchFromBible(cur, existingData) {
+  if (!cur.title) {
+    writeDispatchFields({ djIntro: "", press: "", x: "", tiktok: "", instagram: "", facebook: "", ytTitle: "", ytDesc: "" });
+    return;
+  }
 
-  AUDIO_MAP = (data && typeof data.audio === "object" && data.audio) ? data.audio : {};
-  if (data && data.date) META.date = scrub(data.date);
+  const bibleContext = Object.entries(BIBLE_DOCS)
+    .map(([file, text]) => "[" + file + "]\n" + text.slice(0, 1800))
+    .join("\n\n")
+    .slice(0, 9000);
 
-  const pickRich = (val, fbVal, minLen) => {
-    const s = scrub(val || "");
-    if (!s || isThinFallback || (minLen && s.length < minLen)) return fbVal;
-    return s;
-  };
+  const pat = getPat();
+  if (pat) {
+    try {
+      await fetch("https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/actions/workflows/dahl-dispatch.yml/dispatches", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + pat,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ref: REPO_BRANCH,
+          inputs: {
+            track: cur.title,
+            artist: cur.artist,
+            topic: cur.topic || "fresh single focus",
+            nonce: String(NONCE)
+          }
+        })
+      });
+    } catch (_) {}
+  }
 
-  const out = {
-    djIntro: smartTrimStr(pickRich(d.djIntro, fb.djIntro, 35), 900),
-    press: pickRich(d.press, fb.press, 380),
-    x: smartTrimStr(pickRich(d.x, fb.x, 45), 275),
-    tiktok: smartTrimStr(pickRich(d.tiktok, fb.tiktok, 80), 2200),
-    instagram: smartTrimStr(pickRich(d.instagram, fb.instagram, 80), 2200),
-    facebook: smartTrimStr(pickRich(d.facebook, fb.facebook, 80), 63206),
-    ytTitle: smartTrimStr(pickRich(d.ytTitle, fb.ytTitle, 12), 95),
-    ytDesc: smartTrimStr(pickRich(d.ytDesc, fb.ytDesc, 100), 5000)
-  };
+  if (existingData && existingData.dispatch && typeof existingData.dispatch === "object" && existingData.track === cur.title) {
+    const d = existingData.dispatch;
+    if (d.press && String(d.press).trim().length > 120) {
+      writeDispatchFields({
+        djIntro: d.djIntro || "",
+        press: d.press || "",
+        x: d.x || "",
+        tiktok: d.tiktok || "",
+        instagram: d.instagram || "",
+        facebook: d.facebook || "",
+        ytTitle: d.ytTitle || "",
+        ytDesc: d.ytDesc || ""
+      });
+      return;
+    }
+  }
 
-  document.getElementById("djIntroText").value = out.djIntro;
-  document.getElementById("pressText").value = out.press;
-  document.getElementById("xText").value = out.x;
-  document.getElementById("tiktokText").value = out.tiktok;
-  document.getElementById("igText").value = out.instagram;
-  document.getElementById("fbText").value = out.facebook;
-  document.getElementById("ytTitleText").value = out.ytTitle;
-  document.getElementById("ytDescText").value = out.ytDesc;
-
-  document.getElementById("pressPreview").textContent = out.press;
-  document.getElementById("socialSummary").textContent =
-    "X:\n" + out.x + "\n\nTikTok:\n" + out.tiktok + "\n\nInstagram:\n" + out.instagram +
-    "\n\nFacebook:\n" + out.facebook + "\n\nYouTube:\n" + out.ytTitle + "\n" + out.ytDesc;
+  const summarySource = bibleContext || (RECORD_BRAIN ? JSON.stringify(RECORD_BRAIN) : "");
+  const topicLine = cur.topic ? ("Focus: " + cur.topic + ".") : ("Track #" + (cur.idx + 1) + ".");
+  writeDispatchFields({
+    djIntro: cur.title + " by " + cur.artist + " on ANTIPOP (run #" + NONCE + "). " + topicLine,
+    press: META.date + "\n\n" + cur.title + " — " + cur.artist + "\n\n" + topicLine + (summarySource ? ("\n\nBible laws active (" + Object.keys(BIBLE_DOCS).length + " docs).") : ""),
+    x: cur.title + " — " + cur.artist + ". " + topicLine,
+    tiktok: cur.title + " (" + cur.artist + ") — " + topicLine,
+    instagram: cur.title + " by " + cur.artist + "\n" + topicLine,
+    facebook: cur.title + " by " + cur.artist + " — " + topicLine,
+    ytTitle: cur.title + " — " + cur.artist,
+    ytDesc: cur.title + " by " + cur.artist + ". " + topicLine
+  });
 }
 
 function populateVoices() {
@@ -480,20 +514,18 @@ function populateVoices() {
   const seen = new Set();
   const options = [];
 
-  TEAM_VOICE_CATALOG.forEach(([voiceId, label, gender, lang]) => {
-    const key = "team:" + voiceId;
-    if (!seen.has(key)) {
-      seen.add(key);
-      const tag = gender === "male" ? "[Male]" : "[Female]";
-      options.push({ value: key, label: tag + " " + label + " (" + lang + ")" });
-    }
-  });
-
   sysVoices.forEach(v => {
     const key = "sys:" + v.name + "|" + v.lang;
     if (!seen.has(key)) {
       seen.add(key);
-      options.push({ value: "sys:" + v.name, label: "[Local] " + v.name + " (" + v.lang + ")" });
+      options.push({ value: "sys:" + v.name, label: v.name + " (" + v.lang + ")" });
+    }
+  });
+  EDGE_VOICE_CATALOG.forEach(([edgeName, label]) => {
+    const key = "edge:" + edgeName;
+    if (!seen.has(key)) {
+      seen.add(key);
+      options.push({ value: "edge:" + edgeName, label: label + " [" + edgeName + "]" });
     }
   });
 
@@ -512,26 +544,67 @@ function populateVoices() {
   }
 }
 
-function resolveTeamLocalVoice(voiceId, sysVoices) {
-  const entry = TEAM_VOICE_CATALOG.find(item => item[0] === voiceId);
-  if (!entry) return null;
-  const [, label, gender, lang] = entry;
-  const shortName = label.split(" ")[0].toLowerCase();
-  const langPrefix = lang.split("-")[0].toLowerCase();
-  const exactLang = sysVoices.filter(v => String(v.lang || "").toLowerCase() === lang.toLowerCase());
-  const prefixLang = sysVoices.filter(v => String(v.lang || "").toLowerCase().startsWith(langPrefix));
-  const pool = exactLang.length ? exactLang : prefixLang;
-  if (!pool.length) return null;
-
-  const byName = pool.find(v => String(v.name || "").toLowerCase().includes(shortName));
-  if (byName) return byName;
-
-  const maleRx = /\b(male|man|steffan|roger|ryan|thomas|liam|aarav|niwat|keita|injoon|alvaro|henri|conrad|diego)\b/i;
-  const femaleRx = /\b(female|woman|luna|aria|jenny|michelle|sonia|natasha|clara|neerja|premwadee|nanami|sunhi|elvira|denise|katja|isabella|francisca|salma)\b/i;
-  if (gender === "male") {
-    return pool.find(v => maleRx.test(v.name || "")) || null;
+function resolveSpeechProfile(selVal, sysVoices) {
+  if (selVal.startsWith("sys:")) {
+    const targetName = selVal.slice(4);
+    const voice = sysVoices.find(v => v.name === targetName) || null;
+    const isMale = /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i.test(targetName);
+    return {
+      voice,
+      edgeVoiceName: "",
+      lang: (voice && voice.lang) || "en-US",
+      pitch: isMale ? 0.88 : 1.06,
+      rate: isMale ? 0.96 : 1.0,
+      label: voice ? voice.name : targetName
+    };
   }
-  return pool.find(v => femaleRx.test(v.name || "")) || null;
+
+  if (selVal.startsWith("edge:")) {
+    const edgeName = selVal.slice(5);
+    const catalogEntry = EDGE_VOICE_CATALOG.find(([id]) => id === edgeName);
+    const labelText = catalogEntry ? catalogEntry[1] : edgeName;
+    const localeMatch = labelText.match(/\(([^)]+)\)/) || edgeName.match(/^([a-z]{2,3}-[A-Z]{2})/);
+    const targetLang = localeMatch ? localeMatch[1] : "en-US";
+    const langPrefix = targetLang.split("-")[0].toLowerCase();
+    const shortName = labelText.split(" ")[0].toLowerCase();
+    const isMale = MALE_EDGE_NAMES.has(edgeName);
+
+    const exactLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase() === targetLang.toLowerCase());
+    const prefixLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase().startsWith(langPrefix + "-"));
+    const pool = exactLangVoices.length ? exactLangVoices : prefixLangVoices;
+
+    const byName = pool.find(v => String(v.name || "").toLowerCase().includes(shortName));
+    const genderRx = isMale
+      ? /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i
+      : /\b(female|woman|aria|luna|jenny|michelle|sonia|natasha|clara|samantha|victoria|zira|premwadee|nanami|sunhi|elvira|denise|katja|isabella|francisca|salma)\b/i;
+
+    const voice =
+      byName ||
+      pool.find(v => genderRx.test(v.name || "")) ||
+      pool[0] ||
+      sysVoices.find(v => /^en/i.test(v.lang || "")) ||
+      sysVoices[0] ||
+      null;
+
+    return {
+      voice,
+      edgeVoiceName: edgeName,
+      lang: targetLang,
+      pitch: isMale ? 0.86 : 1.05,
+      rate: isMale ? 0.96 : 1.0,
+      label: labelText + " [" + edgeName + "]"
+    };
+  }
+
+  const fallbackVoice = sysVoices.find(v => /^en/i.test(v.lang || "")) || sysVoices[0] || null;
+  return {
+    voice: fallbackVoice,
+    edgeVoiceName: "",
+    lang: (fallbackVoice && fallbackVoice.lang) || "en-US",
+    pitch: 1.02,
+    rate: 0.98,
+    label: fallbackVoice ? fallbackVoice.name : "Default"
+  };
 }
 
 function speakText(text) {
@@ -542,42 +615,55 @@ function speakText(text) {
     return;
   }
   window.speechSynthesis.cancel();
+  const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
   const selVal = document.getElementById("voiceSel").value || "";
   const sysVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  let chosen = null;
+  const profile = resolveSpeechProfile(selVal, sysVoices);
 
-  if (selVal.startsWith("sys:")) {
-    const targetName = selVal.slice(4);
-    chosen = sysVoices.find(v => v.name === targetName) || null;
-    if (!chosen) {
-      setStatus("Selected local voice not found: " + targetName);
-      return;
-    }
-  } else if (selVal.startsWith("team:")) {
-    const voiceId = selVal.slice(5);
-    chosen = resolveTeamLocalVoice(voiceId, sysVoices);
-    if (!chosen) {
-      setStatus("No matching local voice for " + voiceId + " (no fallback used)");
-      return;
-    }
-  } else {
-    setStatus("Select a team or local voice first");
-    return;
-  }
-
-  const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
   chunks.forEach(ch => {
     const part = ch.trim();
     if (!part) return;
     const u = new SpeechSynthesisUtterance(part);
-    u.voice = chosen;
-    u.rate = 0.98;
-    u.pitch = 1.04;
+    if (profile.voice) u.voice = profile.voice;
+    u.lang = profile.lang;
+    u.rate = profile.rate;
+    u.pitch = profile.pitch;
     window.speechSynthesis.speak(u);
   });
-  setStatus("Speaking with " + (chosen.name || selVal));
+  setStatus("Speaking (" + profile.label + ")...");
 }
 
+async function downloadAudioFile(text, baseName) {
+  const clean = scrub(text).slice(0, 450);
+  if (!clean) {
+    setStatus("No text to render audio");
+    return;
+  }
+  const selVal = document.getElementById("voiceSel").value || "";
+  const sysVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const profile = resolveSpeechProfile(selVal, sysVoices);
+  const voiceKey = profile.edgeVoiceName
+    ? profile.edgeVoiceName.replace(/Neural$/i, "")
+    : (profile.voice && profile.voice.name ? profile.voice.name : "Brian");
+
+  try {
+    const resp = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(voiceKey) + "&text=" + encodeURIComponent(clean));
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = baseName + ".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
+  } catch (_) {
+    setStatus("Remote MP3 service busy; speaking via " + profile.label);
+    speakText(clean);
+  }
+}
 
 function setStatus(msg) {
   document.getElementById("statusMsg").textContent = msg;
@@ -590,12 +676,14 @@ function copyVal(id) {
 }
 
 async function loadCatalogAndDispatch() {
-  setStatus("Loading...");
+  setStatus("Loading bible/ & catalog...");
+  await loadBibleCorpus();
+
   try {
-    const r = await fetch("songs-db.json?t=" + Date.now(), { cache: "no-store" });
-    if (r.ok) {
-      const raw = await r.json();
-      SONGS = Array.isArray(raw) ? raw : (raw.songs || raw.tracks || []);
+    const rawCatalog = await fetchRepoFile("strayd/songs-db.json");
+    if (rawCatalog) {
+      const parsed = JSON.parse(rawCatalog.replace(/^\uFEFF/, ""));
+      SONGS = Array.isArray(parsed) ? parsed : (parsed.songs || parsed.tracks || []);
     }
   } catch (_) {}
 
@@ -616,11 +704,12 @@ async function loadCatalogAndDispatch() {
 
   let latestData = null;
   try {
-    const lr = await fetch("last-dahl-dispatch.json?t=" + Date.now(), { cache: "no-store" });
-    if (lr.ok) latestData = await lr.json();
+    const lr = await fetchRepoFile("strayd/last-dahl-dispatch.json");
+    if (lr) latestData = JSON.parse(lr.replace(/^\uFEFF/, ""));
   } catch (_) {}
 
-  applyDispatch(latestData);
+  const cur = syncSong();
+  await generateFreshDispatchFromBible(cur, latestData);
   setStatus("Ready");
 }
 
@@ -646,13 +735,15 @@ function wireUI() {
     });
   });
 
-  document.getElementById("songSel").addEventListener("change", () => {
+  document.getElementById("songSel").addEventListener("change", async () => {
     NONCE++;
-    applyDispatch(null);
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur, null);
   });
-  document.getElementById("topicInput").addEventListener("input", () => {
+  document.getElementById("topicInput").addEventListener("input", async () => {
     NONCE++;
-    applyDispatch(null);
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur, null);
   });
   document.getElementById("loadBtn").addEventListener("click", () => {
     NONCE++;
@@ -663,10 +754,13 @@ function wireUI() {
     if (patEl.value.trim()) localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim());
     setStatus("Saved locally");
   });
-  document.getElementById("renderBtn").addEventListener("click", () => {
+  document.getElementById("renderBtn").addEventListener("click", async () => {
     NONCE++;
-    applyDispatch(null);
-    setStatus("Generated fresh DJ ANNA & Veg Anna dispatch");
+    setStatus("Pulling bible/ & generating fresh dispatch...");
+    await loadBibleCorpus();
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur, null);
+    await downloadAudioFile(document.getElementById("djIntroText").value, "antipop-dj-intro");
   });
   document.getElementById("stopSpeechBtn").addEventListener("click", () => {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -675,6 +769,8 @@ function wireUI() {
 
   document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
   document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
+  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadAudioFile(document.getElementById("djIntroText").value, "antipop-dj-intro"));
+  document.getElementById("dlPressBtn").addEventListener("click", () => downloadAudioFile(document.getElementById("pressText").value, "antipop-press-release"));
   document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText"));
   document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText"));
   document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copyVal(b.dataset.copy)));
