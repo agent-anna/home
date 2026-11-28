@@ -1,4 +1,4 @@
-name: Agent Anna Dahl Dispatch
+﻿name: Agent Anna Dahl Dispatch
 on:
   workflow_dispatch:
     inputs:
@@ -18,6 +18,10 @@ on:
         description: "full or render_mp3_only"
         required: false
         default: "full"
+      seed:
+        description: "Dynamic seed for non-repeating generation"
+        required: false
+        default: ""
 permissions:
   contents: write
 jobs:
@@ -37,9 +41,10 @@ jobs:
           ANGLE: ${{ github.event.inputs.angle || '' }}
           TTS_VOICE: ${{ github.event.inputs.voice || 'en-US-LunaNeural' }}
           RUN_MODE: ${{ github.event.inputs.mode || 'full' }}
+          RUN_SEED: ${{ github.event.inputs.seed || '' }}
         run: |
           python3 - << 'PY'
-          import asyncio, datetime, hashlib, json, os, pathlib, re, urllib.request
+          import asyncio, datetime, hashlib, json, os, pathlib, random, re, urllib.request
           import edge_tts
 
           key = (os.environ.get("DAHL_API_KEY") or "").strip()
@@ -52,13 +57,15 @@ jobs:
           if not re.match(r"^[a-z]{2}-[A-Z]{2}-[A-Za-z0-9]+Neural$", tts_voice):
               tts_voice = "en-US-LunaNeural"
           run_mode = (os.environ.get("RUN_MODE") or "full").strip().lower()
+          run_seed = (os.environ.get("RUN_SEED") or "").strip()
           today = datetime.date.today().strftime("%B %d, %Y")
 
           def scrub(s):
               s = str(s or "")
               s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.I).strip()
-              s = s.replace("\u2014", ", ").replace("\u2013", "-")
+              s = s.replace("\u2014", ", ").replace("\u2013", ", ")
               s = re.sub(r"[:\-=*#~]{4,}", " ", s)
+              s = re.sub(r"\bDJ\s+Bananna\b", "Veg Anna", s, flags=re.I)
               s = re.sub(r"\s+,", ",", s)
               return re.sub(r"[ \t]{2,}", " ", s).strip()
 
@@ -80,6 +87,18 @@ jobs:
               t = re.sub(r"#[A-Za-z0-9_]+", " ", t)
               return re.sub(r"\s+", " ", t).strip()
 
+          def parse_bible_lines(files):
+              lines = []
+              for fp in files:
+                  p = pathlib.Path(fp)
+                  if not p.exists():
+                      continue
+                  for raw in p.read_text(encoding="utf-8", errors="ignore").splitlines():
+                      ln = scrub(re.sub(r"^[-*#\d.)\s]+", "", raw))
+                      if 22 <= len(ln) <= 220 and not ln.startswith("http"):
+                          lines.append(ln)
+              return lines
+
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
           existing = {}
           if out_path.exists():
@@ -91,11 +110,20 @@ jobs:
           if run_mode == "render_mp3_only" and isinstance(existing.get("dispatch"), dict) and existing["dispatch"]:
               payload = existing
               final_d = {k: scrub(v) for k, v in existing["dispatch"].items()}
-              api_status = existing.get("api_status") or "rendered_selected_voice"
           else:
-              b000 = pathlib.Path("bible/000-bible.md").read_text(encoding="utf-8", errors="ignore")[:4200] if pathlib.Path("bible/000-bible.md").exists() else ""
-              prof = pathlib.Path("bible/resources/artist-and-radio-profile.md").read_text(encoding="utf-8", errors="ignore")[:1600] if pathlib.Path("bible/resources/artist-and-radio-profile.md").exists() else ""
-              play = pathlib.Path("bible/resources/platform-playbooks.md").read_text(encoding="utf-8", errors="ignore")[:1000] if pathlib.Path("bible/resources/platform-playbooks.md").exists() else ""
+              bible_files = [
+                  "bible/000-bible.md",
+                  "bible/resources/artist-and-radio-profile.md",
+                  "bible/resources/platform-playbooks.md",
+                  "bible/06-dj-anna-persona.md",
+                  "bible/04-voice-and-broadcast-law.md",
+                  "bible/07-platform-cadence-and-hashtags.md"
+              ]
+              b_blob = "\n".join(
+                  f"=== {f} ===\n" + pathlib.Path(f).read_text(encoding="utf-8", errors="ignore")[:3000]
+                  for f in bible_files if pathlib.Path(f).exists()
+              )
+              bible_lines = parse_bible_lines(bible_files)
 
               songs_path = pathlib.Path("strayd/songs-db.json")
               songs = []
@@ -105,46 +133,48 @@ jobs:
                       songs = raw if isinstance(raw, list) else (raw.get("songs") or raw.get("tracks") or [])
                   except Exception:
                       songs = []
-              track = songs[idx] if songs and 0 <= idx < len(songs) else {"title": "Adhd I Can Do That (Travillen Disorder)", "artist": "Martin Strayd"}
-              title = scrub(track.get("title") or track.get("name") or "Adhd I Can Do That (Travillen Disorder)")
+              track = songs[idx] if songs and 0 <= idx < len(songs) else {}
+              title = scrub(track.get("title") or track.get("name") or f"Track {idx + 1}")
               artist = scrub(track.get("artist") or "Martin Strayd")
-              topic = scrub(track.get("topic") or track.get("theme") or track.get("mood") or track.get("genre") or angle or "unstoppable creative overdrive and modern life")
+              topic = scrub(angle or track.get("topic") or track.get("theme") or track.get("mood") or track.get("genre") or title)
 
-              seed_src = f"{today}|{idx}|{title}|{topic}|{angle}|{os.environ.get('GITHUB_RUN_ID','')}"
-              variant = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest(), 16) % 4
+              seed_src = f"{today}|{idx}|{title}|{topic}|{run_seed}|{os.environ.get('GITHUB_RUN_ID','')}"
+              seed_hex = hashlib.sha256(seed_src.encode("utf-8")).hexdigest()
+              rng = random.Random(int(seed_hex[:16], 16))
+              variant = int(seed_hex, 16) % 997
 
               sys_msg = (
                   "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
-                  "Obey bible/000-bible.md strictly: ANNA is the broadcaster, ANTIPOP is the station, Veg Anna is the radio DJ and main host, Martin Strayd is the signal, the catalog is the empire.\n"
-                  "Zero em-dashes or en-dashes (no U+2014 or U+2013), zero repeated symbol runs, keep single title intact.\n"
-                  "press: Full 3/4-page press release (6 paragraphs, 380+ words) for ANTIPOP hosted by Veg Anna and broadcast by ANNA, covering today's single, daily singles campaign across 100+ songs, all 10 world radio countries, Martin Strayd's history, MP3/art ownership (free non-commercial friend sharing; commercial resale prohibited), and CTA + links.\n"
-                  "Socials: ZERO repeated sentences or template lines across platforms.\n"
-                  + b000 + "\n" + prof + "\n" + play
+                  "Follow the bible strictly: ANNA is the broadcaster, ANTIPOP / ANTIPOPROCK is the station, Veg Anna is the radio DJ and main host, Martin Strayd is the signal, the catalog is the empire.\n"
+                  "Bring high-energy classic FM/MTV DJ warmth (Casey Kasem style excitement for daily drops and world radio).\n"
+                  "Zero em-dashes or en-dashes (no U+2014 or U+2013). Never repeat sentences or hooks across platforms. Every song and seed must feel fresh and distinct for radio TTS.\n"
+                  "press: Full 3/4-page single-of-the-day media release (6 paragraphs, 380+ words) tailored to 2026-2027 music press, international radio, film/TV/soundtrack, newspapers, and talent/sync agents, covering today's single, daily singles campaign across 100+ songs, all 10 world radio countries, Martin Strayd's history, MP3/cover art ownership (free non-commercial friend sharing allowed; commercial resale prohibited), and clear calls to action + links.\n"
+                  + b_blob[:6500]
               )
-              usr_msg = f"Date: {today}\nVariant: {variant}\nSingle of the Day: {title}\nArtist: {artist}\nTopic: {topic}"
+              usr_msg = f"Date: {today}\nSeed: {variant}\nSingle of the Day: {title}\nArtist: {artist}\nAngle: {topic}"
 
               raw_txt = ""
-              api_status = "fallback_ready"
+              api_status = "bible_synthesized"
               if key:
                   try:
                       req = urllib.request.Request(
                           "https://inference.dahl.global/v1/chat/completions",
                           data=json.dumps({
                               "model": "MiniMaxAI/MiniMax-M2.7",
-                              "max_tokens": 2000,
+                              "max_tokens": 2400,
                               "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]
                           }).encode("utf-8"),
                           headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
                           method="POST"
                       )
-                      with urllib.request.urlopen(req, timeout=40) as resp:
+                      with urllib.request.urlopen(req, timeout=45) as resp:
                           body = json.loads(resp.read().decode("utf-8"))
                           choices = body.get("choices") or []
                           if choices:
                               raw_txt = ((choices[0].get("message") or {}).get("content") or "")
                               api_status = f"http_{resp.status}"
                   except Exception as e:
-                      api_status = f"fast_fallback_{type(e).__name__}"
+                      api_status = f"bible_fallback_{type(e).__name__}"
 
               no_think = re.sub(r"<think>[\s\S]*?</think>", "", raw_txt, flags=re.I).strip()
               fenced = re.sub(r"^```(?:json)?\s*|\s*```$", "", no_think, flags=re.I).strip()
@@ -158,12 +188,15 @@ jobs:
                   except Exception:
                       parsed = {}
 
-              apple_url = "https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
-              bundle_url = "https://tinyurl.com/martinstrayd"
-              hub_url = "https://strayd.com"
+              def pick_lines(n):
+                  if not bible_lines:
+                      return [f"{artist} with {title} on {topic}."] * n
+                  pool = list(bible_lines)
+                  rng.shuffle(pool)
+                  return pool[:n]
 
               def smart_trim(s, limit):
-                  s = str(s or "").strip()
+                  s = scrub(s)
                   if len(s) <= limit:
                       return s
                   cut = s[:limit]
@@ -172,23 +205,46 @@ jobs:
                       cut = cut[:sp]
                   return re.sub(r"\s+https?://\S*$", "", cut).strip()
 
+              links_found = re.findall(r"https?://[^\s)\]>\"']+", b_blob)
+              uniq_links = []
+              for u in links_found:
+                  u2 = u.rstrip(".,;")
+                  if u2 not in uniq_links:
+                      uniq_links.append(u2)
+              link_line = " ".join(uniq_links[:4])
+              title_words = [w for w in re.findall(r"[A-Za-z0-9']+", title) if len(w) > 2]
+              word_focus = ", ".join(title_words[:4]) if title_words else title
+
               p = parsed
+              intro_notes = pick_lines(2)
+              press_notes = pick_lines(5)
+              x_notes = pick_lines(1)
+              tt_notes = pick_lines(2)
+              ig_notes = pick_lines(2)
+              fb_notes = pick_lines(2)
+              yt_notes = pick_lines(2)
+
               final_d = {
-                  "djIntro": smart_trim(p.get("djIntro") or f"DJ Bananna on the Agent Anna desk: '{title}' by {artist} is today's daily single push around {topic}.", 900),
-                  "press": p.get("press") or f"{today}\n\n{title} by {artist}\n\nDaily single spotlight around {topic}, with Agent Anna and DJ Bananna pushing momentum behind {artist}'s catalog. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url}",
-                  "x": smart_trim(cap_tags(p.get("x") or f"'{title}' by {artist} ({topic}) {bundle_url} #MartinStrayd", 2), 275),
-                  "tiktok": smart_trim(cap_tags(p.get("tiktok") or f"'{title}' by {artist} on {topic} with DJ Bananna. {bundle_url} #Songwriting #IndieMusic #DailySingle", 5), 2200),
-                  "instagram": smart_trim(cap_tags(p.get("instagram") or f"'{title}' by {artist} explores {topic} with DJ Bananna. {bundle_url} #Songwriting #ArtistOwned #DailySingle", 5), 2200),
-                  "facebook": smart_trim(cap_tags(p.get("facebook") or f"'{title}' by {artist} ({topic}) is today's single focus with DJ Bananna. {hub_url} #Songwriters", 3), 63206),
-                  "ytTitle": smart_trim(scrub(re.sub(r"#[A-Za-z0-9_]+", "", p.get("ytTitle") or f"{title} - {artist} | Daily Single")), 95),
-                  "ytDesc": smart_trim(cap_tags(p.get("ytDesc") or f"'{title}' by {artist} ({topic}). Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} #MartinStrayd #DailySingle", 3), 5000),
+                  "djIntro": smart_trim(p.get("djIntro") or f"Veg Anna on ANTIPOP with ANNA broadcasting '{title}' by {artist}, zeroing in on {topic} and {word_focus}. " + " ".join(intro_notes), 950),
+                  "press": p.get("press") or (
+                      f"{today} | {artist} Daily Single Release: '{title}'\n\n"
+                      f"Today's single '{title}' from {artist} centers on {topic}, spotlighting {word_focus} across the daily singles rollout. " + press_notes[0] + "\n\n"
+                      + press_notes[1] + "\n\n" + press_notes[2] + "\n\n" + press_notes[3] + "\n\n" + press_notes[4] + "\n\n"
+                      + (f"Links: {link_line}" if link_line else "")
+                  ),
+                  "x": smart_trim(cap_tags(p.get("x") or f"'{title}' ({artist}) on {topic}: {x_notes[0]} {link_line}", 2), 275),
+                  "tiktok": smart_trim(cap_tags(p.get("tiktok") or f"'{title}' by {artist} digs into {word_focus} and {topic}. {tt_notes[0]} {tt_notes[1]} {link_line}", 5), 2200),
+                  "instagram": smart_trim(cap_tags(p.get("instagram") or f"'{title}' by {artist} ({topic}). {ig_notes[0]} {ig_notes[1]} {link_line}", 5), 2200),
+                  "facebook": smart_trim(cap_tags(p.get("facebook") or f"'{title}' by {artist} on {topic}. {fb_notes[0]} {fb_notes[1]} {link_line}", 3), 63206),
+                  "ytTitle": smart_trim(scrub(re.sub(r"#[A-Za-z0-9_]+", "", p.get("ytTitle") or f"{title} - {artist} ({topic})")), 95),
+                  "ytDesc": smart_trim(cap_tags(p.get("ytDesc") or f"'{title}' by {artist} ({topic}). {yt_notes[0]} {yt_notes[1]} {link_line}", 3), 5000),
               }
               payload = {
                   "date": today,
                   "track": title,
                   "artist": artist,
                   "topic": topic,
-                  "variant": variant,
+                  "seed": variant,
                   "api_status": api_status,
                   "dispatch": final_d,
                   "clean_text": scrub(fenced)
@@ -239,7 +295,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json strayd/audio/*.mp3
           if ! git diff --staged --quiet; then
-            git commit -m "feat(dispatch): render MP3 files in selected voice and commit dispatch"
+            git commit -m "feat(dispatch): dynamic bible context + seed for Dahl and MP3 synthesis"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
