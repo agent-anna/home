@@ -2759,3 +2759,15 @@ window.autoCommitEthBlocks = autoCommitEthBlocks;
 document.addEventListener("DOMContentLoaded", () => {
   setInterval(() => autoCommitEthBlocks("tick"), 15000);
 });
+async function annaSaveToGitHub(filePath, content, commitMsg) {
+  const cleanPath = String(filePath || "").replace(/^\/+/, "");
+  if (!cleanPath || !canWritePath(cleanPath)) return false;
+  const ok = await writeFileToGitHub(
+    cleanPath,
+    String(content || ""),
+    commitMsg || ("ANNA save: " + cleanPath)
+  );
+  setMoodState("standby");
+  return ok;
+}
+window.annaSaveToGitHub = annaSaveToGitHub;
