@@ -13,5 +13,10 @@
     "ytTitle": "",
     "ytDesc": ""
   },
-  "clean_text": ""
+  "clean_text": "",
+  "voice": "en-US-GuyNeural",
+  "audio": {
+    "djIntro": "strayd/audio/djIntro.mp3",
+    "press": "strayd/audio/press.mp3"
+  }
 }
