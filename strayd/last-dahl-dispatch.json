@@ -4,7 +4,7 @@
   "artist": "Martin Strayd",
   "topic": "unstoppable creative overdrive and modern life",
   "variant": 2,
-  "api_status": "fast_fallback_TimeoutError",
+  "api_status": "http_200",
   "dispatch": {
     "djIntro": "DJ Bananna on the Agent Anna desk: 'Adhd I Can Do That (Travillen Disorder)' by Martin Strayd is today's daily single push around unstoppable creative overdrive and modern life.",
     "press": "November 28, 2026\n\nAdhd I Can Do That (Travillen Disorder) by Martin Strayd\n\nDaily single spotlight around unstoppable creative overdrive and modern life, with Agent Anna and DJ Bananna pushing momentum behind Martin Strayd's catalog. Hub: https://strayd.com | Bundle: https://tinyurl.com/martinstrayd | Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317",
@@ -15,8 +15,8 @@
     "ytTitle": "Adhd I Can Do That (Travillen Disorder) - Martin Strayd | Daily Single",
     "ytDesc": "'Adhd I Can Do That (Travillen Disorder)' by Martin Strayd (unstoppable creative overdrive and modern life). Hub: https://strayd.com | Bundle: https://tinyurl.com/martinstrayd | Apple Music: https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317 #MartinStrayd #DailySingle"
   },
-  "clean_text": "",
-  "voice": "en-US-LunaNeural",
+  "clean_text": "{\n \"djIntro\": \"Welcome back to ANTIPOP, global listeners. Veg Anna in the mix, broadcasting live across the signal and through ANNA today. This is the moment we drop a new single that hits the nerve of modern creative life. Martin Strayd just released Adhd I Can Do That (Travillen Disorder) and it is a relentless, kinetic anthem about channeling the chaos of an overactive mind into unstoppable output. If you have ever felt your brain sprint ten steps ahead while your body catches up,",
+  "voice": "en-US-GuyNeural",
   "audio": {
     "djIntro": "strayd/audio/djIntro.mp3",
     "press": "strayd/audio/press.mp3",
