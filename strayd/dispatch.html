@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veg Anna Radio - Dispatch Command</title><style>
+<title>Veg Anna Radio - Dispatch Console</title><style>
 :root{--bg:#0b0f17;--card:#131a26;--card2:#192232;--tx:#eef3fb;--mu:#9fb0c8;--ac:#38bdf8;--ok:#4ade80;--bd:rgba(255,255,255,.14)}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:16px}
 .wrap{max-width:1200px;margin:0 auto}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
@@ -12,16 +12,16 @@
 label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:4px}
 select,input,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-family:inherit}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
-.dj-ta{min-height:105px;line-height:1.6;padding:12px}
-.press-ta{min-height:360px;line-height:1.65;padding:14px}
-.soc-ta{min-height:170px;line-height:1.55;padding:12px}
+.dj-ta{min-height:115px;line-height:1.6;padding:12px}
+.press-ta{min-height:460px;line-height:1.65;padding:14px}
+.soc-ta{min-height:185px;line-height:1.55;padding:12px}
 .soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .scard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .sleft{display:flex;align-items:center;gap:10px;font-weight:600}
 .sleft img{width:42px;height:42px;border-radius:8px;object-fit:cover}
 .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-button{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer}
+button,a.btn{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer;text-decoration:none;display:inline-block}
 button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;padding:8px 14px}
 button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding:8px 14px}
 #st{color:var(--ac);font-size:.85rem}</style></head>
@@ -40,25 +40,17 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <div class="ctrl">
 <div><label for="songSel">Select Song</label><select id="songSel"></select></div>
 <div><label for="voiceSel">Voice</label><select id="voiceSel"></select></div>
-<div><label for="angleIn">Topic / DJ Angle</label><input id="angleIn" placeholder="Single topic or DJ angle..."/></div>
-<div><label for="patIn">GitHub PAT (For Save, Bible Push &amp; Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+<div><label for="angleIn">Topic / Story Angle</label><input id="angleIn" placeholder="Song topic or story angle..."/></div>
+<div><label for="patIn">GitHub PAT (For Save &amp; Dahl Run)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
 </div>
 <div class="bar">
-<button id="loadBtn" class="pri" type="button">Load Dispatch</button>
-<button id="saveGhBtn" class="ok" type="button">Save Dispatch to GitHub</button>
-<button id="runActBtn" type="button">Trigger Dahl Action</button>
-<button id="pullBibleBtn" type="button">Read 000-Bible</button>
-<button id="pushBibleBtn" type="button">Push Essentials to 000-Bible</button>
+<button id="loadBtn" class="pri" type="button">Load Live Dispatch</button>
+<button id="saveGhBtn" class="ok" type="button">Save Edits to GitHub</button>
+<button id="runActBtn" type="button">Generate New Dispatch</button>
+<button id="stopSpkBtn" type="button">Stop Speech</button>
 <span id="st" role="status" aria-live="polite">Ready</span>
 </div>
 </div>
-</section>
-<section class="box" aria-label="000-Bible Constitution">
-<div class="shead" style="margin-bottom:8px">
-<h2 style="margin:0;font-size:1.05rem">bible/000-bible.md Rules</h2>
-</div>
-<label for="bibleBox">Editable 000-Bible Rules</label>
-<textarea id="bibleBox" class="dj-ta" placeholder="Load or edit bible/000-bible.md..."></textarea>
 </section>
 <section class="box" aria-label="DJ Intro">
 <div class="shead" style="margin-bottom:8px">
@@ -70,19 +62,20 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 </div>
 </div>
 <label for="djBox">DJ Intro Text</label>
-<textarea id="djBox" class="dj-ta" placeholder="DJ intro..."></textarea>
+<textarea id="djBox" class="dj-ta" placeholder="ANNA live radio intro..."></textarea>
 </section>
 <section class="box" aria-label="Press Release">
 <div class="shead" style="margin-bottom:8px">
-<h2 style="margin:0;font-size:1.05rem">Single of the Day Press Release</h2>
+<h2 style="margin:0;font-size:1.05rem">Single of the Day Press Release (3/4-Page Media Release)</h2>
 <div class="bar">
 <button id="spkPress" type="button">Speak</button>
 <button id="dlPress" type="button">Download Audio</button>
+<button id="dlPressTxt" type="button">Download .TXT</button>
 <button id="cpyPress" type="button">Copy</button>
 </div>
 </div>
 <label for="pressBox">Press Release Text</label>
-<textarea id="pressBox" class="press-ta" placeholder="Single of the day press release..."></textarea>
+<textarea id="pressBox" class="press-ta" placeholder="Full single of the day press release..."></textarea>
 </section>
 <section id="socGrid" class="soc-grid" aria-label="Social Media Posts"></section>
 </div>
@@ -90,13 +83,20 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 const $=id=>document.getElementById(id);
 const setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
 const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v||"");};
-const CH=[["x","X",280],["tiktok","TikTok",2200],["instagram","Instagram",2200],["facebook","Facebook",63206],["ytTitle","YouTube Title",100],["ytDesc","YouTube Description",5000]];
-const CITIES="Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand";
+const CH=[
+  ["x","X",280,"https://x.com/intent/tweet?text="],
+  ["tiktok","TikTok",2200,"https://www.tiktok.com/upload"],
+  ["instagram","Instagram",2200,"https://www.instagram.com/"],
+  ["facebook","Facebook",63206,"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fstrayd.com&quote="],
+  ["ytTitle","YouTube Title",100,"https://studio.youtube.com/"],
+  ["ytDesc","YouTube Description",5000,"https://studio.youtube.com/"]
+];
+const COUNTRIES="Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand, and United Kingdom";
 const APPLE_URL="https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317";
 const BUNDLE_URL="https://tinyurl.com/martinstrayd";
 const HUB_URL="https://strayd.com";
 const YT_URL="https://www.youtube.com/@martinstrayd";
-let SONGS=[],VOICES=[],META={date:"",track:"",artist:"",topic:""};
+let SONGS=[],VOICES=[],BIBLE_RULES="",META={date:"",track:"",artist:"",topic:""};
 
 const scrub=s=>String(s||"")
   .replace(/<think>[\s\S]*?<\/think>/gi,"")
@@ -112,7 +112,7 @@ function buildCards(){
   const grid=$("socGrid");
   if(!grid)return;
   grid.innerHTML="";
-  CH.forEach(([id,lbl,lim])=>{
+  CH.forEach(([id,lbl,lim,postBase])=>{
     const art=document.createElement("article");
     art.className="scard";
     art.setAttribute("aria-label",lbl);
@@ -124,41 +124,32 @@ function buildCards(){
     img.setAttribute("data-th","");
     img.alt=lbl+" cover art";
     const h2=document.createElement("h2");
-    h2.style.margin="0";
-    h2.style.fontSize="1rem";
-    h2.textContent=lbl;
-    left.appendChild(img);
-    left.appendChild(h2);
+    h2.style.margin="0";h2.style.fontSize="1rem";h2.textContent=lbl;
+    left.appendChild(img);left.appendChild(h2);
     const cnt=document.createElement("span");
-    cnt.id="c_"+id;
-    cnt.style.color="var(--mu)";
-    cnt.style.fontSize=".8rem";
-    cnt.textContent="0 / "+lim;
-    head.appendChild(left);
-    head.appendChild(cnt);
+    cnt.id="c_"+id;cnt.style.color="var(--mu)";cnt.style.fontSize=".8rem";cnt.textContent="0 / "+lim;
+    head.appendChild(left);head.appendChild(cnt);
     const lab=document.createElement("label");
-    lab.htmlFor="t_"+id;
-    lab.textContent=lbl+" Post";
+    lab.htmlFor="t_"+id;lab.textContent=lbl+" Post";
     const ta=document.createElement("textarea");
-    ta.id="t_"+id;
-    ta.className="soc-ta";
-    ta.maxLength=lim;
+    ta.id="t_"+id;ta.className="soc-ta";ta.maxLength=lim;
     ta.addEventListener("input",()=>{cnt.textContent=ta.value.length+" / "+lim;});
     const bar=document.createElement("div");
     bar.className="bar";
     const bSpk=document.createElement("button");
-    bSpk.type="button";
-    bSpk.textContent="Speak";
-    bSpk.onclick=()=>speakTxt(ta.value,false);
+    bSpk.type="button";bSpk.textContent="Speak";bSpk.onclick=()=>speakTxt(ta.value,false);
     const bDl=document.createElement("button");
-    bDl.type="button";
-    bDl.textContent="Download Audio";
-    bDl.onclick=()=>dlAudio(ta.value,id+"-anna");
+    bDl.type="button";bDl.textContent="Download Audio";bDl.onclick=()=>dlAudio(ta.value,id+"-anna");
     const bCpy=document.createElement("button");
-    bCpy.type="button";
-    bCpy.textContent="Copy";
-    bCpy.onclick=()=>cpyTxt(ta.value,lbl);
-    bar.appendChild(bSpk);bar.appendChild(bDl);bar.appendChild(bCpy);
+    bCpy.type="button";bCpy.textContent="Copy";bCpy.onclick=()=>cpyTxt(ta.value,lbl);
+    const bPost=document.createElement("button");
+    bPost.type="button";bPost.className="pri";bPost.textContent="Post to "+lbl;
+    bPost.onclick=()=>{
+      cpyTxt(ta.value,lbl);
+      const u=(id==="x"||id==="facebook")?(postBase+encodeURIComponent(ta.value)):postBase;
+      window.open(u,"_blank","noopener");
+    };
+    bar.appendChild(bSpk);bar.appendChild(bDl);bar.appendChild(bCpy);bar.appendChild(bPost);
     art.appendChild(head);art.appendChild(lab);art.appendChild(ta);art.appendChild(bar);
     grid.appendChild(art);
   });
@@ -228,7 +219,7 @@ function syncSong(){
   const s=SONGS[idx]||{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd"};
   const t=scrub(s.title||s.name||"Adhd I Can Do That (Travillen Disorder)");
   const a=scrub(s.artist||"Martin Strayd");
-  const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"single drop and neurodivergent focus");
+  const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"unstoppable creative overdrive and modern life");
   const u=artUrl(s,t);
   setTxt("songTitle",t);
   setTxt("songMeta",a+" - "+SONGS.length+" songs - Veg Anna Radio Dispatch");
@@ -242,23 +233,33 @@ function buildDefaults(t,a,topic,dt){
   const dStr=dt||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   const press=[
     "FOR IMMEDIATE RELEASE - "+dStr,
-    "Single of the Day on Veg Anna Radio: "+t+" by "+a,
+    "VEG ANNA RADIO LAUNCHES '"+t+"' BY "+a.toUpperCase()+" AS TODAY'S SINGLE OF THE DAY",
     "",
-    "Single Release and World Radio Cities: "+a+" launches "+t+" as today's single and licensed original music drop on Veg Anna Radio, with world radio stations playing his music across "+CITIES+".",
+    "GLOBAL DAILY SINGLES LAUNCH CAMPAIGN: Independent media network and broadcaster Veg Anna Radio today officially premieres '"+t+"' by "+a+" as its featured Single of the Day. The release anchors an ongoing daily singles launch campaign built around one artist, one new song per day, and continuous global discovery across an expanding catalog of more than 100 original studio recordings and licensed tracks.",
     "",
-    "About Martin Strayd: "+a+" is an Australian lyricist, songwriter, and composer, and a former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.",
+    "ABOUT THE SINGLE AND SONG STORY: Centered on "+topic+", '"+t+"' blends story-driven songwriting, sharp observation, and radio-ready production. Rather than treating music as a disposable one-day upload, Veg Anna Radio pairs each daily single with dedicated radio intros, cover artwork, and searchable catalog documentation so listeners and music programmers worldwide can explore the narrative behind every release.",
     "",
-    "Ownership and Links: Buyers who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Hub: "+HUB_URL+" | Bundle: "+BUNDLE_URL+" | Apple Music: "+APPLE_URL+" | YouTube: "+YT_URL
+    "WORLD RADIO BROADCAST FOOTPRINT: "+a+"'s catalog enjoys active world radio airplay reaching audiences across 10 countries: "+COUNTRIES+". Through continuous radio rotation and daily single premieres, international listeners experience each new release as part of a connected, living broadcast schedule.",
+    "",
+    "ABOUT "+a.toUpperCase()+": "+a+" is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock legends including Steve Jones of the Sex Pistols and Doug Fieger of The Knack before channeling his personal experiences into his own recording career. Operating independently without traditional major-label gatekeepers, his sprawling catalog spans radio rock, anti-pop, reggae, blues, and electronic dance floor remixes exploring modern life, freedom, rebellion, and love.",
+    "",
+    "DIRECT FAN OWNERSHIP AND NON-COMMERCIAL SHARING MODEL: Under the self-built artist-under-one-roof business model, listeners who purchase MP3 and cover art bundles own their files directly and are explicitly authorized to copy and share them freely with friends for non-commercial listening. Commercial resale, redistribution for profit, or unauthorized monetization of the audio files or artwork is strictly prohibited.",
+    "",
+    "MEDIA AND LISTENER CALL TO ACTION: Tune in to Veg Anna Radio to hear '"+t+"' in rotation, explore the 100+ song catalog, and support independent artist-owned music directly through the official links below:",
+    "Official Artist Portfolio and Hub: "+HUB_URL,
+    "Direct MP3 and Cover Art Bundle: "+BUNDLE_URL,
+    "Stream on Apple Music: "+APPLE_URL,
+    "Official YouTube Channel: "+YT_URL
   ].join("\n");
   return{
-    djIntro:scrub("You are locked into Veg Anna Radio with today's single from "+a+": "+t+", focused on "+topic+"."),
+    djIntro:scrub("Good evening, music lovers! Somewhere on Earth right now, someone is turning up their speakers and hearing '"+t+"' by "+a+" for the very first time. Built around "+topic+", this is today's brand-new daily single premiere on Veg Anna Radio. Let's spin it!"),
     press:scrub(press),
-    x:scrub("Veg Anna Radio spin: "+t+" by "+a+" locks into "+topic+". Hear it: "+APPLE_URL+" #martinstrayd").slice(0,275),
-    tiktok:scrub(t+" by "+a+" ("+topic+") on Veg Anna Radio. Grab MP3 + art at "+BUNDLE_URL+" and share freely with friends for non-commercial play #martinstrayd #veganaradio #dailysingle").slice(0,2200),
-    instagram:scrub("Today's single on Veg Anna Radio is "+t+" by "+a+", exploring "+topic+". Direct MP3 and cover art bundle at "+BUNDLE_URL+" with free non-commercial friend sharing. #martinstrayd #veganaradio #newrelease").slice(0,2200),
-    facebook:scrub("Veg Anna Radio daily single spotlight: "+t+" by "+a+", diving into "+topic+". World radio cities playing his music include "+CITIES+". Full hub at "+HUB_URL+" #martinstrayd #veganaradio").slice(0,63206),
-    ytTitle:scrub(t+" - "+a+" | Veg Anna Radio").slice(0,95),
-    ytDesc:scrub(t+" by "+a+" on Veg Anna Radio. Topic: "+topic+". Apple Music: "+APPLE_URL+" | Bundle (free non-commercial sharing with friends, no resale): "+BUNDLE_URL+" | Hub: "+HUB_URL+" #martinstrayd #veganaradio").slice(0,5000)
+    x:scrub("Major labels release once a quarter. "+a+" drops a new single every single day. Hear today's shockwave '"+t+"' ("+topic+"): "+APPLE_URL+" #martinstrayd").slice(0,275),
+    tiktok:scrub("POV: You found the one song that sounds like "+topic+" running at 200 mph. '"+t+"' by "+a+" is today's daily single drop on Veg Anna Radio, built for late-night drives and creator edits. Full audio and art bundle: "+BUNDLE_URL+" #martinstrayd #newmusic #dailysingle #fyp #songrecommendation").slice(0,2200),
+    instagram:scrub("Some songs feel like a midnight confession you did not know you needed. With '"+t+"', "+a+" turns "+topic+" into a vivid, unfiltered chapter of his 100+ song independent catalog on Veg Anna Radio. Listeners who collect the direct MP3 and cover art bundle at "+BUNDLE_URL+" own it outright and can share it freely with friends for non-commercial listening. #martinstrayd #veganaradio #storytelling #independentartist #dailysingle").slice(0,2200),
+    facebook:scrub("Listeners tuning in from "+COUNTRIES+" are discovering today's Single of the Day on Veg Anna Radio: '"+t+"' by "+a+". What started as a bold song-a-day experiment has grown into a 100+ track independent catalog connecting radio audiences across ten nations. Explore the full catalog, stories, and direct artist hub at "+HUB_URL+" #martinstrayd #veganaradio #worldradio #independentmusic #dailysingle").slice(0,63206),
+    ytTitle:scrub("Inside '"+t+"' by "+a+" | Story, Sound & Veg Anna Radio Daily Single").slice(0,95),
+    ytDesc:scrub(t+" by "+a+" | Featured Single of the Day on Veg Anna Radio.\nTheme & Story: "+topic+". Discover "+a+", Australian lyricist, songwriter, composer, and former Hollywood celebrity guitar technician (Steve Jones of the Sex Pistols, Doug Fieger of The Knack), building a 100+ song independent daily singles catalog heard across "+COUNTRIES+".\nStream on Apple Music: "+APPLE_URL+"\nDirect MP3 & Cover Art Bundle (Own your copy and share freely with friends for non-commercial listening; commercial resale prohibited): "+BUNDLE_URL+"\nOfficial Artist Hub: "+HUB_URL+"\n#martinstrayd #veganaradio #dailysingle #independentmusic #newmusic").slice(0,5000)
   };
 }
 
@@ -267,9 +268,10 @@ function applyDispatch(data){
   const fb=buildDefaults(cur.t,cur.a,cur.topic,(data&&data.date)||"");
   const d=(data&&typeof data.dispatch==="object"&&data.dispatch)?data.dispatch:{};
   META.date=scrub((data&&data.date)||"");
+  const pressRaw=scrub(d.press||"");
   const out={
     djIntro:scrub(d.djIntro||fb.djIntro),
-    press:scrub(d.press||fb.press),
+    press:pressRaw.length>=1200?pressRaw:fb.press,
     x:scrub(d.x||fb.x).slice(0,280),
     tiktok:scrub(d.tiktok||fb.tiktok).slice(0,2200),
     instagram:scrub(d.instagram||fb.instagram).slice(0,2200),
@@ -286,26 +288,11 @@ function applyDispatch(data){
   });
 }
 
-async function loadBible(){
-  setTxt("st","Reading bible/000-bible.md...");
-  const raw=await fetchRepo("bible/000-bible.md");
-  setVal("bibleBox",scrub(raw));
-  setTxt("st",raw?"Loaded bible/000-bible.md":"bible/000-bible.md not found");
-}
-
-async function pushBible(){
-  try{
-    const txt=scrub($("bibleBox")&&$("bibleBox").value||"");
-    if(!txt)throw new Error("000-bible text is empty");
-    const res=await putRepo("bible/000-bible.md",txt,"chore(bible): update 000-bible.md from dispatch console");
-    setTxt("st","Pushed 000-bible.md -> "+(res.commit&&res.commit.sha?res.commit.sha.slice(0,7):"ok"));
-  }catch(e){setTxt("st","Bible push failed: "+e.message);}
-}
-
 async function loadLatest(){
-  setTxt("st","Loading dispatch...");
+  setTxt("st","Syncing bible rules and live dispatch...");
+  BIBLE_RULES=await fetchRepo("bible/000-bible.md");
   const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
-  if(!raw){applyDispatch({});setTxt("st","Ready with fresh dispatch");return;}
+  if(!raw){applyDispatch({});setTxt("st","Ready with grounded dispatch");return;}
   try{
     const j=JSON.parse(raw);
     if(j&&j.track&&$("songSel")){
@@ -313,7 +300,7 @@ async function loadLatest(){
       if(i>=0)$("songSel").value=String(i);
     }
     applyDispatch(j);
-    setTxt("st","Loaded "+((j&&j.track)||"dispatch"));
+    setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(BIBLE_RULES?" (Bible synced)":""));
   }catch(e){applyDispatch({});setTxt("st","Recovered: "+e.message);}
 }
 
@@ -335,14 +322,14 @@ async function saveDispatch(){
       }
     };
     const res=await putRepo("strayd/last-dahl-dispatch.json",JSON.stringify(payload,null,2),"edit(dispatch): save dispatch from dispatch.html");
-    setTxt("st","Saved dispatch -> "+(res.commit&&res.commit.sha?res.commit.sha.slice(0,7):"ok"));
+    setTxt("st","Saved to GitHub -> "+(res.commit&&res.commit.sha?res.commit.sha.slice(0,7):"ok"));
   }catch(e){setTxt("st","Save failed: "+e.message);}
 }
 
 async function loadSongs(){
   const raw=await fetchRepo("strayd/songs-db.json");
   try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
-  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"neurodivergent drive and high-speed focus"}];
+  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"unstoppable creative overdrive and modern life"}];
   const sel=$("songSel");
   if(sel){
     sel.innerHTML="";
@@ -353,7 +340,7 @@ async function loadSongs(){
 
 async function triggerAction(){
   const pat=getPat();
-  if(!pat){setTxt("st","Paste GitHub PAT first to trigger Dahl workflow");return;}
+  if(!pat){setTxt("st","Paste GitHub PAT first to run Dahl generator");return;}
   const{idx,topic}=syncSong();
   try{
     const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{
@@ -362,7 +349,7 @@ async function triggerAction(){
       body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic)}})
     });
     if(!r.ok)throw new Error("HTTP "+r.status);
-    setTxt("st","Triggered Dahl Action for song_index="+idx);
+    setTxt("st","Dahl Action started for song "+(idx+1)+" - wait ~25s then click Load Live Dispatch");
   }catch(e){setTxt("st","Action failed: "+e.message);}
 }
 
@@ -398,12 +385,12 @@ function cleanSpeech(t){return scrub(String(t||"")).replace(/https?:\/\/\S+/g," 
 
 function speakTxt(t,announceOnly){
   if(!("speechSynthesis"in window))return;
-  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,1500);
+  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2400);
   if(!sp)return;
   if(!VOICES.length)popV();
   try{speechSynthesis.cancel();}catch{}
   const voice=getSelectedVoice();
-  const parts=announceOnly?[sp]:(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,12);
+  const parts=announceOnly?[sp]:(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,18);
   parts.forEach(pt=>{
     const c=pt.trim();if(!c)return;
     const u=new SpeechSynthesisUtterance(c);
@@ -446,6 +433,13 @@ async function dlAudio(t,base){
   }
 }
 
+function dlTxtFile(t,base){
+  const b=new Blob([String(t||"")],{type:"text/plain;charset=utf-8"});
+  const u=URL.createObjectURL(b);const a=document.createElement("a");
+  a.href=u;a.download=base+".txt";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);setTxt("st","Downloaded "+base+".txt");
+}
+
 function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));setTxt("st","Copied "+lbl);}
 
 buildCards();
@@ -455,8 +449,7 @@ if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localS
 if($("loadBtn"))$("loadBtn").onclick=loadLatest;
 if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
 if($("runActBtn"))$("runActBtn").onclick=triggerAction;
-if($("pullBibleBtn"))$("pullBibleBtn").onclick=loadBible;
-if($("pushBibleBtn"))$("pushBibleBtn").onclick=pushBible;
+if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
 if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
 if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")&&$("djBox").value||"",false);
@@ -464,6 +457,7 @@ if($("dlDj"))$("dlDj").onclick=()=>dlAudio($("djBox")&&$("djBox").value||"","dj-
 if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ intro");
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
 if($("dlPress"))$("dlPress").onclick=()=>dlAudio($("pressBox")&&$("pressBox").value||"","press-release-anna");
+if($("dlPressTxt"))$("dlPressTxt").onclick=()=>dlTxtFile($("pressBox")&&$("pressBox").value||"","press-release-martinstrayd");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
-(async()=>{await loadSongs();await loadBible();await loadLatest();})();
+(async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
