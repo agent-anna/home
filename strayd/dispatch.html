@@ -347,36 +347,21 @@ function getSelectedVoice(){
 }
 
 function mapToEdgeVoice(v){
-  const n=((v&&v.name)||"").toLowerCase();
+  const n=(((v&&v.name)||"")+" "+((v&&v.voiceURI)||"")).toLowerCase();
   const l=((v&&v.lang)||"").toLowerCase();
+  if(/luna/.test(n))return"en-US-LunaNeural";
   if(/jenny/.test(n))return"en-US-JennyNeural";
-  if(/aria/.test(n))return"en-US-AriaNeural";
   if(/sonia/.test(n))return"en-GB-SoniaNeural";
   if(/natasha/.test(n))return"en-AU-NatashaNeural";
+  if(/aria/.test(n))return"en-US-AriaNeural";
+  if(/ana\b/.test(n))return"en-US-AnaNeural";
+  if(/zira|samantha|victoria|hazel|susan|libby|maisie|clara|ava|female|woman/.test(n))return l.startsWith("en-gb")?"en-GB-SoniaNeural":(l.startsWith("en-au")?"en-AU-NatashaNeural":"en-US-LunaNeural");
   if(/guy/.test(n))return"en-US-GuyNeural";
   if(/ryan/.test(n))return"en-GB-RyanNeural";
   if(/william/.test(n))return"en-AU-WilliamNeural";
-  if(/zira|samantha|victoria|hazel|susan|female|woman/.test(n))return l.startsWith("en-gb")?"en-GB-SoniaNeural":(l.startsWith("en-au")?"en-AU-NatashaNeural":"en-US-JennyNeural");
   if(/david|mark|george|daniel|james|male|man/.test(n))return l.startsWith("en-gb")?"en-GB-RyanNeural":(l.startsWith("en-au")?"en-AU-WilliamNeural":"en-US-GuyNeural");
-  return"en-US-JennyNeural";
-}
-
-function popV(){
-  if(!("speechSynthesis"in window))return;
-  const list=speechSynthesis.getVoices()||[];
-  if(!list.length)return;
-  VOICES=list.slice();
-  const sel=$("voiceSel");
-  if(!sel)return;
-  const prevIdx=sel.value;
-  sel.innerHTML="";
-  VOICES.forEach((v,i)=>{
-    const o=document.createElement("option");
-    o.value=String(i);
-    o.dataset.vname=v.name;
-    o.textContent=v.name+" ("+v.lang+")";
-    sel.appendChild(o);
-  });
+  return"en-US-LunaNeural";
+});
   if(prevIdx!==""&&Number(prevIdx)<VOICES.length)sel.value=prevIdx;
 }
 
@@ -454,7 +439,7 @@ if("speechSynthesis"in window){
 }
 if($("voiceSel"))$("voiceSel").onchange=()=>{
   const v=getSelectedVoice();
-  const m=v?("Voice: "+v.name+" -> "+mapToEdgeVoice(v)):"Default System Voice";
+  if(v)localStorage.setItem("anna_selected_voice",v.voiceURI||v.name||"");const m=v?("Voice: "+v.name+" -> "+mapToEdgeVoice(v)):"Default System Voice";
   setTxt("st",m);
   speakTxt(m,true);
 };
