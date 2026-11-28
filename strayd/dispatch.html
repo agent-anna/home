@@ -453,6 +453,29 @@ function fallbackCopy(str,done){
   }catch(e){
     setTxt("st","Copy blocked: "+(e&&e.message?e.message:"select text manually"));
   }
+};
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(str).then(done).catch(()=>{ fallbackCopy(str,done); });
+  }else{
+    fallbackCopy(str,done);
+  }
+}
+function fallbackCopy(str,done){
+  try{
+    const ta=document.createElement("textarea");
+    ta.value=str;
+    ta.setAttribute("readonly","");
+    ta.style.position="fixed";
+    ta.style.left="-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0,str.length);
+    document.execCommand("copy");
+    ta.remove();
+    done();
+  }catch(e){
+    setTxt("st","Copy blocked: "+(e&&e.message?e.message:"select text manually"));
+  }
 }
 
 buildCards();
