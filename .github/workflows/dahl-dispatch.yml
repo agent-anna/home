@@ -13,7 +13,7 @@ on:
       voice:
         description: "Edge TTS voice for MP3 export"
         required: false
-        default: "en-US-JennyNeural"
+        default: "en-US-LunaNeural"
       mode:
         description: "full or render_mp3_only"
         required: false
@@ -35,7 +35,7 @@ jobs:
           DAHL_API_KEY: ${{ secrets.DAHL_KEY }}
           SONG_INDEX: ${{ github.event.inputs.song_index || '0' }}
           ANGLE: ${{ github.event.inputs.angle || '' }}
-          TTS_VOICE: ${{ github.event.inputs.voice || 'en-US-JennyNeural' }}
+          TTS_VOICE: ${{ github.event.inputs.voice || 'en-US-LunaNeural' }}
           RUN_MODE: ${{ github.event.inputs.mode || 'full' }}
         run: |
           python3 - << 'PY'
@@ -48,9 +48,9 @@ jobs:
           except Exception:
               idx = 0
           angle = (os.environ.get("ANGLE") or "").strip()
-          tts_voice = (os.environ.get("TTS_VOICE") or "en-US-JennyNeural").strip()
+          tts_voice = (os.environ.get("TTS_VOICE") or "en-US-LunaNeural").strip()
           if not re.match(r"^[a-z]{2}-[A-Z]{2}-[A-Za-z0-9]+Neural$", tts_voice):
-              tts_voice = "en-US-JennyNeural"
+              tts_voice = "en-US-LunaNeural"
           run_mode = (os.environ.get("RUN_MODE") or "full").strip().lower()
           today = datetime.date.today().strftime("%B %d, %Y")
 
