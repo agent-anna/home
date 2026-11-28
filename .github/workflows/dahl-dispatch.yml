@@ -57,9 +57,10 @@ jobs:
               out = re.sub(r"#[A-Za-z0-9_]+", repl, txt)
               return re.sub(r"[ \t]{2,}", " ", out).strip()
 
-          b000 = pathlib.Path("bible/000-bible.md").read_text(encoding="utf-8", errors="ignore")[:4200] if pathlib.Path("bible/000-bible.md").exists() else ""
-          b07 = pathlib.Path("bible/07-platform-cadence-and-hashtags.md").read_text(encoding="utf-8", errors="ignore")[:1500] if pathlib.Path("bible/07-platform-cadence-and-hashtags.md").exists() else ""
-          res = pathlib.Path("bible/resources/dj-promo-and-seo-laws.md").read_text(encoding="utf-8", errors="ignore")[:1200] if pathlib.Path("bible/resources/dj-promo-and-seo-laws.md").exists() else ""
+          b000 = pathlib.Path("bible/000-bible.md").read_text(encoding="utf-8", errors="ignore")[:3800] if pathlib.Path("bible/000-bible.md").exists() else ""
+          prof = pathlib.Path("bible/resources/artist-and-radio-profile.md").read_text(encoding="utf-8", errors="ignore")[:1800] if pathlib.Path("bible/resources/artist-and-radio-profile.md").exists() else ""
+          play = pathlib.Path("bible/resources/platform-playbooks.md").read_text(encoding="utf-8", errors="ignore")[:1200] if pathlib.Path("bible/resources/platform-playbooks.md").exists() else ""
+          b07 = pathlib.Path("bible/07-platform-cadence-and-hashtags.md").read_text(encoding="utf-8", errors="ignore")[:1200] if pathlib.Path("bible/07-platform-cadence-and-hashtags.md").exists() else ""
 
           songs_path = pathlib.Path("strayd/songs-db.json")
           songs = []
@@ -79,10 +80,12 @@ jobs:
 
           sys_msg = (
               "Return ONLY valid JSON with keys: djIntro, press, x, tiktok, instagram, facebook, ytTitle, ytDesc.\n"
-              "Enforce every rule in bible/000-bible.md: zero em/en-dashes, no repeated symbol runs, single song title intact,\n"
-              "single-of-the-day press release listing WORLD RADIO COUNTRIES (not cities) + Martin Strayd bio + MP3/art ownership terms,\n"
-              "and distinct non-repeating platform-specific DJ/SEO copy per social channel.\n"
-              + b000 + "\n" + b07 + "\n" + res
+              "Follow bible/000-bible.md and its resource files strictly:\n"
+              "- Zero em-dashes or en-dashes (no — or –), zero repeated symbol runs, keep single song title intact.\n"
+              "- djIntro: Charming, energetic Casey Kasem / classic radio DJ voice from ANNA introducing today's single drop and world radio reach.\n"
+              "- press: Full 3/4-page single-of-the-day press release covering today's single, song topic, daily singles launch campaign across 100+ songs on Veg Anna Radio, all 10 world radio countries, Martin Strayd's background (Australian lyricist, songwriter, composer; former Hollywood celebrity guitar technician including Steve Jones of the Sex Pistols and Doug Fieger of The Knack), direct MP3 and cover art bundle ownership (free non-commercial sharing with friends allowed; commercial resale prohibited), and clear CTA + links.\n"
+              "- Socials (x, tiktok, instagram, facebook, ytTitle, ytDesc): Distinct per platform with zero repetition across channels or refreshes, curiosity-first hooks, SEO/AI keywords, and exact hashtag/character caps.\n"
+              + b000 + "\n" + prof + "\n" + play + "\n" + b07
           )
           usr_msg = f"Date: {today}\nVariant: {variant}\nSingle of the Day: {title}\nArtist: {artist}\nTopic: {topic}"
 
@@ -94,7 +97,7 @@ jobs:
                       "https://inference.dahl.global/v1/chat/completions",
                       data=json.dumps({
                           "model": "MiniMaxAI/MiniMax-M2.7",
-                          "max_tokens": 1500,
+                          "max_tokens": 1800,
                           "messages": [{"role": "system", "content": sys_msg}, {"role": "user", "content": usr_msg}]
                       }).encode("utf-8"),
                       headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "Agent-Anna-GH"},
@@ -121,59 +124,76 @@ jobs:
               except Exception:
                   parsed = {}
 
-          countries = "Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand"
+          countries = "Philippines, Australia, Ecuador, United States, Chile, Canada, Indonesia, France, Thailand, and United Kingdom"
           apple_url = "https://music.apple.com/us/album/adhd-i-can-do-that-travillen-disorder/1863323315?i=1863323317"
           bundle_url = "https://tinyurl.com/martinstrayd"
           hub_url = "https://strayd.com"
+          yt_url = "https://www.youtube.com/@martinstrayd"
 
+          dj_list = [
+              f"Oh, listen to this! Right now on Veg Anna Radio, somebody somewhere is hearing {title} by {artist} for the very first time, and it hits straight into {topic}. Let's turn it up and feel the world listen!",
+              f"Hey music lovers, it's ANNA on Veg Anna Radio! Today's brand-new single drop is {title} from {artist}, built around {topic}. Buckle up, because this daily song parade is just getting started!",
+              f"Welcome back to Veg Anna Radio, where every single day brings a fresh song to the world! Today we spotlight {title} by {artist} on {topic}. Let's spin it and see why listeners keep coming back!",
+              f"From one daily single straight into the next on Veg Anna Radio: {artist} delivers {title}, diving right into {topic}. Turn it up with ANNA and hear what everyone is talking about!"
+          ]
           x_list = [
-              f"Veg Anna Radio spin: {title} by {artist} locks into {topic}. Hear it: {apple_url} #martinstrayd",
-              f"Search spotlight: {title} ({artist}) on {topic}, spun daily via Veg Anna Radio. Stream: {apple_url} #martinstrayd",
-              f"DJ cue on Veg Anna Radio: {artist} brings {title} around {topic}. Listen here: {apple_url} #martinstrayd",
-              f"Daily single cue: {title} by {artist} hits {topic} on Veg Anna Radio. Stream now: {apple_url} #martinstrayd"
+              f"Nobody saw {title} coming today: {artist} brings {topic} to Veg Anna Radio. Stream: {apple_url} #martinstrayd",
+              f"Why are listeners searching {title} by {artist} on {topic}? Catch today's Veg Anna Radio drop: {apple_url} #martinstrayd",
+              f"That moment when {artist} turns {topic} into {title} on Veg Anna Radio. Hear it now: {apple_url} #martinstrayd",
+              f"Daily single shockwave on Veg Anna Radio: {title} ({artist}) hits {topic}. Listen here: {apple_url} #martinstrayd"
           ]
           tt_list = [
-              f"{title} by {artist} ({topic}) on Veg Anna Radio. Hear why listeners lock onto this daily single drop and grab MP3 + art at {bundle_url} (share freely with friends for non-commercial play) #martinstrayd #veganaradio #dailysingle",
-              f"{artist} takes on {topic} in {title} for today's Veg Anna Radio spin. Get direct MP3 and artwork ownership at {bundle_url}, non-commercial friend sharing allowed #martinstrayd #newmusic #songdrop",
-              f"Daily single check: {title} ({artist}) unpacks {topic} on Veg Anna Radio. MP3 + cover art bundle at {bundle_url}, share with friends for non-commercial listening #martinstrayd #veganaradio #musicdiscovery",
-              f"Why {title} by {artist} stands out around {topic} on Veg Anna Radio today. Bundle at {bundle_url} with free non-commercial sharing with friends #martinstrayd #dailysingle #artist"
+              f"{title} by {artist} ({topic}): hear the hook that makes this daily single drop on Veg Anna Radio impossible to scroll past. Grab MP3 + cover art at {bundle_url} and share with friends for non-commercial play #martinstrayd #veganaradio #dailysingle",
+              f"What happens when {artist} channels {topic} into {title} for today's Veg Anna Radio release? Get direct MP3 and artwork ownership at {bundle_url}, free non-commercial friend sharing allowed #martinstrayd #newmusic #songdrop",
+              f"Daily single countdown on Veg Anna Radio: {title} ({artist}) dives into {topic}. Own the MP3 + art bundle at {bundle_url} and share with friends for non-commercial listening #martinstrayd #musicdiscovery #artist",
+              f"Why is {title} by {artist} lighting up {topic} fans on Veg Anna Radio today? Direct bundle at {bundle_url}, non-commercial friend sharing welcome #martinstrayd #veganaradio #song"
           ]
           ig_list = [
-              f"Today's single on Veg Anna Radio is {title} by {artist}, exploring {topic}. Listeners who pick up the MP3 and cover art bundle at {bundle_url} own it directly and can share freely with friends for non-commercial play. #martinstrayd #veganaradio #dailysingle",
-              f"Inside {title}: {artist} shapes {topic} into today's Veg Anna Radio feature release. Direct MP3 and artwork bundle at {bundle_url} with non-commercial friend sharing permitted. #martinstrayd #newrelease #music",
-              f"Built for listeners following {topic}: {artist} drops {title} on Veg Anna Radio today. Own the MP3 and cover art bundle at {bundle_url}, share with friends for non-commercial listening. #martinstrayd #veganaradio #song",
-              f"A closer look at {title} by {artist} and its {topic} focus on Veg Anna Radio. Grab your MP3 and cover art bundle at {bundle_url}, free non-commercial friend sharing allowed. #martinstrayd #dailysingle #art"
+              f"Some songs capture a feeling the second the first line lands. Today's Veg Anna Radio single {title} by {artist} explores {topic} with real emotion and story. Own the MP3 and cover art bundle at {bundle_url} and share freely with friends for non-commercial play. #martinstrayd #veganaradio #dailysingle",
+              f"Behind {title}, {artist} turns {topic} into today's feature single on Veg Anna Radio. Get direct MP3 and cover art ownership at {bundle_url} with free non-commercial sharing with friends. #martinstrayd #newrelease #music",
+              f"For every listener who feels {topic} in real life, {artist} drops {title} on Veg Anna Radio today. Grab your MP3 and art bundle at {bundle_url} and share with friends for non-commercial listening. #martinstrayd #veganaradio #song",
+              f"Emotion, story, and a fresh daily single on Veg Anna Radio: {title} by {artist} around {topic}. Direct MP3 and cover art bundle at {bundle_url}, non-commercial friend sharing allowed. #martinstrayd #dailysingle #art"
           ]
           fb_list = [
-              f"Veg Anna Radio daily single spotlight: {title} by {artist}, diving into {topic}. World radio countries playing his music include {countries}. Full artist hub at {hub_url} #martinstrayd #veganaradio",
-              f"Listeners tuning into {title} by {artist} on Veg Anna Radio are exploring {topic}, with world radio airplay across {countries}. More at {hub_url} #martinstrayd #dailysingle",
-              f"Today's single release on Veg Anna Radio is {title} by {artist} ({topic}), with world radio countries including {countries}. Visit {hub_url} #martinstrayd #newmusic",
-              f"From {artist}, {title} lands as today's single on Veg Anna Radio around {topic}, with world radio play across {countries}. Hub: {hub_url} #martinstrayd #radio"
+              f"Join listeners across {countries} tuning into Veg Anna Radio for today's single from {artist}: {title}, exploring {topic}. Dive into the 100+ song catalog universe at {hub_url} #martinstrayd #veganaradio",
+              f"Today's daily single on Veg Anna Radio brings {artist} and {title} ({topic}) to our global radio community across {countries}. Explore more songs and stories at {hub_url} #martinstrayd #dailysingle",
+              f"From {artist}, {title} arrives as today's single on Veg Anna Radio around {topic}, connecting listeners across {countries}. Visit the artist hub at {hub_url} #martinstrayd #newmusic",
+              f"World radio listeners in {countries} are catching {title} by {artist} on Veg Anna Radio today, spotlighting {topic}. Full catalog and hub at {hub_url} #martinstrayd #radio"
           ]
           yt_titles = [
-              f"{title} - {artist} | Veg Anna Radio Daily Single",
-              f"{artist} - {title} (Official Daily Single | Veg Anna Radio)",
-              f"Veg Anna Radio: {title} by {artist} (Single Drop)",
-              f"{title} ({artist}) - Daily Single on Veg Anna Radio"
+              f"The Story Behind {title} - {artist} | Veg Anna Radio",
+              f"{artist} - {title} (Why This Daily Single Hits on Veg Anna Radio)",
+              f"Veg Anna Radio Daily Single: {title} by {artist}",
+              f"{title} ({artist}) - Inside Today's Single on Veg Anna Radio"
           ]
 
           base_press = (
               f"FOR IMMEDIATE RELEASE - {today}\n"
-              f"Single of the Day on Veg Anna Radio: {title} by {artist}\n\n"
-              f"Daily Single and World Radio Countries: {artist} launches {title} as today's single and licensed original music drop on Veg Anna Radio, with world radio stations playing his music across {countries}.\n\n"
-              f"About Martin Strayd: {artist} is an Australian lyricist, songwriter, and composer, and a former guitar technician for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.\n\n"
-              f"Ownership and Links: Listeners who get MP3 and cover art bundles own them directly and can share freely with friends for non-commercial play; commercial resale is prohibited. Hub: {hub_url} | Bundle: {bundle_url} | Apple Music: {apple_url} | YouTube: https://www.youtube.com/@martinstrayd"
+              f"DAILY SINGLE LAUNCH ON VEG ANNA RADIO: {artist} RELEASES '{title}' AS SINGLE OF THE DAY\n\n"
+              f"Single of the Day and Daily Singles Launch Campaign: {artist} officially launches {title} as today's single of the day on Veg Anna Radio, driving a continuous daily singles launch campaign across a 100+ song catalog of original studio recordings and licensed music. Each day introduces a fresh single to the world, giving listeners both live radio discovery and a direct window into the artist's expanding catalog universe.\n\n"
+              f"Song Story and World Radio Reach: Centered on {topic}, {title} delivers story-driven songwriting and energy built for global radio rotation. World radio stations playing his music reach listeners across {countries}, connecting international audiences with a new song drop every day.\n\n"
+              f"About Martin Strayd: {artist} is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack. Bringing seasoned studio and stage experience to an independent, artist-led media and catalog model, his work spans rock, alternative, anti-pop, reggae, blues, and dance remixes.\n\n"
+              f"Direct Ownership and Non-Commercial Sharing: Listeners who acquire MP3 and cover art bundles own them directly and may share them freely with friends for non-commercial listening. Commercial resale of the audio files or cover art is strictly prohibited.\n\n"
+              f"Call to Action and Official Links: Tune in to Veg Anna Radio, stream {title}, claim your direct MP3 and cover art bundle, and share the music with friends for non-commercial enjoyment.\n"
+              f"Artist Hub: {hub_url}\n"
+              f"MP3 and Cover Art Bundle: {bundle_url}\n"
+              f"Apple Music: {apple_url}\n"
+              f"YouTube: {yt_url}"
           )
 
+          press_val = scrub(parsed.get("press") or "")
+          if len(press_val) < 750:
+              press_val = scrub(base_press)
+
           final_d = {
-              "djIntro": scrub(parsed.get("djIntro") or f"You are locked into Veg Anna Radio with today's single from {artist}: {title}, focused on {topic}."),
-              "press": scrub(parsed.get("press") or base_press),
+              "djIntro": scrub(parsed.get("djIntro") or dj_list[variant]),
+              "press": press_val,
               "x": cap_tags(scrub(parsed.get("x") or x_list[variant]), 2)[:275],
               "tiktok": cap_tags(scrub(parsed.get("tiktok") or tt_list[variant]), 5)[:2200],
               "instagram": cap_tags(scrub(parsed.get("instagram") or ig_list[variant]), 5)[:2200],
               "facebook": cap_tags(scrub(parsed.get("facebook") or fb_list[variant]), 5)[:63206],
               "ytTitle": scrub(re.sub(r"#[A-Za-z0-9_]+", "", parsed.get("ytTitle") or yt_titles[variant]))[:95],
-              "ytDesc": cap_tags(scrub(parsed.get("ytDesc") or f"{title} by {artist} on Veg Anna Radio. Topic: {topic}. Apple Music: {apple_url} | MP3 and cover art bundle (free non-commercial sharing with friends, no resale): {bundle_url} | Hub: {hub_url} #martinstrayd #veganaradio"), 5)[:5000],
+              "ytDesc": cap_tags(scrub(parsed.get("ytDesc") or f"{title} by {artist} on Veg Anna Radio. Topic: {topic}. Stream on Apple Music: {apple_url} | Direct MP3 and cover art bundle (free non-commercial sharing with friends, no resale): {bundle_url} | Hub: {hub_url} #martinstrayd #veganaradio"), 5)[:5000],
           }
 
           out_path = pathlib.Path("strayd/last-dahl-dispatch.json")
@@ -191,7 +211,7 @@ jobs:
           git config user.email "agent-anna@users.noreply.github.com"
           git add strayd/last-dahl-dispatch.json
           if ! git diff --staged --quiet; then
-            git commit -m "fix(dispatch): use world radio countries instead of cities"
+            git commit -m "feat(dispatch): apply Bible #1-#18, Casey Kasem ANNA voice, 3/4-page press, and platform hooks"
             TOK="${PUSH_TOKEN:-$FALLBACK_TOKEN}"
             git push "https://x-access-token:${TOK}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
