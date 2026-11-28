@@ -470,44 +470,7 @@ function fallbackCopy(str,done){
   }catch(e){
     setTxt("st","Copy blocked: "+(e&&e.message?e.message:"select text manually"));
   }
-};
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(str).then(done).catch(()=>{ fallbackCopy(str,done); });
-  }else{
-    fallbackCopy(str,done);
-  }
 }
-function fallbackCopy(str,done){
-  try{
-    const ta=document.createElement("textarea");
-    ta.value=str;
-    ta.setAttribute("readonly","");
-    ta.style.position="fixed";
-    ta.style.left="-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    ta.setSelectionRange(0,str.length);
-    document.execCommand("copy");
-    ta.remove();
-    done();
-  }catch(e){
-    setTxt("st","Copy blocked: "+(e&&e.message?e.message:"select text manually"));
-  }
-}
-
-buildCards();
-if("speechSynthesis"in window){
-  popV();
-  speechSynthesis.onvoiceschanged=popV;
-  setTimeout(popV,300);
-  setTimeout(popV,1000);
-}
-if($("voiceSel"))$("voiceSel").onchange=()=>{
-  const v=getSelectedVoice();
-  if(v)localStorage.setItem("anna_selected_voice",v.voiceURI||v.name||"");const m=v?("Voice: "+v.name+" -> "+mapToEdgeVoice(v)):"Default System Voice";
-  setTxt("st",m);
-  speakTxt(m,true);
-};
 if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
 if($("loadBtn"))$("loadBtn").onclick=loadLatest;
 if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
@@ -521,5 +484,5 @@ if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
 if($("dlPress"))$("dlPress").onclick=()=>dlMp3("press","press-release-antipop");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
-(async()=>{await loadSongs();await loadLatest();})();
+buildCards();(async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
