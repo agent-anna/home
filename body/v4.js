@@ -2736,3 +2736,26 @@ async function sendMessage() {
     window.executeStfuProtocol = executeStfuProtocol;
     window.deleteMessage = deleteMessage;
 })();
+
+let ethBusy = false, ethHash = "";
+async function autoCommitEthBlocks(why) {
+  if (ethBusy) return;
+  const ta = document.querySelector("#ethBlockBox, textarea[data-eth-blocks]");
+  if (!ta) return;
+  const val = String(ta.value || "").trim();
+  if (!val || !/block|eth|0x|gas/i.test(val)) return;
+  let h = 2166136261;
+  for (let i = 0; i < val.length; i++) { h ^= val.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const id = (h >>> 0).toString(16);
+  if (id === ethHash) return;
+  ethBusy = true;
+  try {
+    const md = "# ETH Blocks\n\nUTC: " + new Date().toISOString() + "\n\n```text\n" + val + "\n```\n";
+    const ok = await writeFileToGitHub("body/logs/eth-blocks-live.md", md, "chore(eth): " + (why || "sync") + " " + id);
+    if (ok) ethHash = id;
+  } finally { ethBusy = false; setMoodState("standby"); }
+}
+window.autoCommitEthBlocks = autoCommitEthBlocks;
+document.addEventListener("DOMContentLoaded", () => {
+  setInterval(() => autoCommitEthBlocks("tick"), 15000);
+});
