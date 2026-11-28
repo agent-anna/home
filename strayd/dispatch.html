@@ -1,20 +1,20 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>ANTIPOP - Dispatch Console</title><style>
+<title>ANTIPOP - Dispatch</title><style>
 :root{--bg:#0b0f17;--card:#131a26;--card2:#192232;--tx:#eef3fb;--mu:#9fb0c8;--ac:#38bdf8;--ok:#4ade80;--bd:rgba(255,255,255,.14)}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:16px}
 .wrap{max-width:1200px;margin:0 auto}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .nav a{color:var(--tx);text-decoration:none;background:var(--card2);padding:6px 11px;border-radius:8px;font-size:.86rem}
 .nav a.on,.nav a:hover{background:var(--ac);color:#061018;font-weight:600}
-.top{display:grid;grid-template-columns:300px 1fr;gap:20px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:16px;align-items:start}
-@media(max-width:820px){.top{grid-template-columns:1fr}.art-box{max-width:320px;margin:0 auto}}
+.top{display:grid;grid-template-columns:280px 1fr;gap:18px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:16px;align-items:start}
+@media(max-width:820px){.top{grid-template-columns:1fr}.art-box{max-width:280px;margin:0 auto}}
 .art-box img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--bd)}
-.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
 label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:4px}
 select,input,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-family:inherit}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
-.dj-ta{min-height:115px;line-height:1.6;padding:12px}
-.press-ta{min-height:440px;line-height:1.65;padding:14px}
-.soc-ta{min-height:180px;line-height:1.55;padding:12px}
+.dj-ta{min-height:110px;line-height:1.6;padding:12px}
+.press-ta{min-height:420px;line-height:1.65;padding:14px}
+.soc-ta{min-height:175px;line-height:1.55;padding:12px}
 .soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .scard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -36,18 +36,17 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <div class="art-box"><img id="bigArt" alt="Track cover art"/></div>
 <div>
 <h1 id="songTitle" style="margin:0 0 4px">Loading catalog...</h1>
-<div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - ANTIPOP Dispatch</div>
+<div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - ANTIPOP</div>
 <div class="ctrl">
-<div><label for="songSel">Select Song</label><select id="songSel"></select></div>
+<div><label for="songSel">Song</label><select id="songSel"></select></div>
 <div><label for="voiceSel">Voice</label><select id="voiceSel"><option value="">Default System Voice</option></select></div>
-<div><label for="angleIn">Topic / Story Angle</label><input id="angleIn" placeholder="Song topic or story angle..."/></div>
-<div><label for="patIn">GitHub PAT (Required for Save &amp; Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+<div><label for="angleIn">Topic / Angle</label><input id="angleIn" placeholder="Song topic or angle..."/></div>
+<div><label for="patIn">GitHub PAT (Save &amp; Render)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
 </div>
 <div class="bar">
-<button id="loadBtn" class="pri" type="button">Load Live Dispatch</button>
-<button id="saveGhBtn" class="ok" type="button">Save Edits to GitHub</button>
-<button id="runActBtn" type="button">Generate New Dispatch</button>
-<button id="renderMp3Btn" type="button">Render MP3s in Selected Voice</button>
+<button id="loadBtn" class="pri" type="button">Load</button>
+<button id="saveGhBtn" class="ok" type="button">Save</button>
+<button id="runActBtn" type="button">Generate &amp; Render MP3</button>
 <button id="stopSpkBtn" type="button">Stop Speech</button>
 <span id="st" role="status" aria-live="polite">Ready</span>
 </div>
@@ -55,10 +54,10 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 </section>
 <section class="box" aria-label="DJ Intro">
 <div class="shead" style="margin-bottom:8px">
-<h2 style="margin:0;font-size:1.05rem">ANTIPOP DJ Intro (Veg Anna / ANNA)</h2>
+<h2 style="margin:0;font-size:1.05rem">ANTIPOP DJ Intro</h2>
 <div class="bar">
 <button id="spkDj" type="button">Speak</button>
-<button id="dlDj" type="button">Download Audio</button>
+<button id="dlDj" type="button">Download MP3</button>
 <button id="cpyDj" type="button">Copy</button>
 </div>
 </div>
@@ -70,18 +69,18 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <h2 style="margin:0;font-size:1.05rem">Single of the Day Press Release</h2>
 <div class="bar">
 <button id="spkPress" type="button">Speak</button>
-<button id="dlPress" type="button">Download Audio</button>
-<button id="dlPressTxt" type="button">Download .TXT</button>
+<button id="dlPress" type="button">Download MP3</button>
 <button id="cpyPress" type="button">Copy</button>
 </div>
 </div>
 <label for="pressBox">Press Release Text</label>
-<textarea id="pressBox" class="press-ta" placeholder="Full single of the day press release..."></textarea>
+<textarea id="pressBox" class="press-ta" placeholder="Single of the day press release..."></textarea>
 </section>
 <section id="socGrid" class="soc-grid" aria-label="Social Media Posts"></section>
 </div>
 <script>
-const $=idconst setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
+const $=id=>document.getElementById(id);
+const setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
 const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v||"");};
 const CH=[
   ["x","X",280,"https://x.com/intent/tweet?text="],
@@ -96,7 +95,7 @@ const APPLE_URL="https://music.apple.com/us/album/adhd-i-can-do-that-travillen-d
 const BUNDLE_URL="https://tinyurl.com/martinstrayd";
 const HUB_URL="https://strayd.com";
 const YT_URL="https://www.youtube.com/@martinstrayd";
-let SONGS=[],VOICES=[],META={date:"",track:"",artist:"",topic:""};
+let SONGS=[],VOICES=[],AUDIO_MAP={},META={date:"",track:"",artist:"",topic:""};
 
 const scrub=s=>String(s||"")
   .replace(/<think>[\s\S]*?<\/think>/gi,"")
@@ -139,11 +138,11 @@ function buildCards(){
     const bSpk=document.createElement("button");
     bSpk.type="button";bSpk.textContent="Speak";bSpk.onclick=()=>speakTxt(ta.value,false);
     const bDl=document.createElement("button");
-    bDl.type="button";bDl.textContent="Download Audio";bDl.onclick=()=>dlRepoMp3(id,id+"-antipop");
+    bDl.type="button";bDl.textContent="Download MP3";bDl.onclick=()=>dlMp3(id,id+"-antipop");
     const bCpy=document.createElement("button");
     bCpy.type="button";bCpy.textContent="Copy";bCpy.onclick=()=>cpyTxt(ta.value,lbl);
     const bPost=document.createElement("button");
-    bPost.type="button";bPost.className="pri";bPost.textContent="Post to "+lbl;
+    bPost.type="button";bPost.className="pri";bPost.textContent="Post";
     bPost.onclick=()=>{
       cpyTxt(ta.value,lbl);
       const u=(id==="x"||id==="facebook")?(postBase+encodeURIComponent(ta.value)):postBase;
@@ -193,7 +192,7 @@ async function fetchRepo(p){
 
 async function putRepo(p,content,msg){
   const pat=getPat();
-  if(!pat)throw new Error("Enter a GitHub PAT in the PAT box first");
+  if(!pat)throw new Error("Enter GitHub PAT first");
   const api="https://api.github.com/repos/agent-anna/home/contents/"+p;
   const g=await fetch(api+"?ref=main",{headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json"},cache:"no-store"});
   if(!g.ok)throw new Error("GitHub read HTTP "+g.status);
@@ -222,7 +221,7 @@ function syncSong(){
   const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"unstoppable creative overdrive and modern life");
   const u=artUrl(s,t);
   setTxt("songTitle",t);
-  setTxt("songMeta",a+" - "+SONGS.length+" songs - ANTIPOP Dispatch");
+  setTxt("songMeta",a+" - "+SONGS.length+" songs - ANTIPOP");
   if($("bigArt"))$("bigArt").src=u;
   document.querySelectorAll("img[data-th]").forEach(im=>{im.src=u;});
   META.track=t;META.artist=a;META.topic=topic;
@@ -263,6 +262,7 @@ function applyDispatch(data){
   const cur=syncSong();
   const fb=buildDefaults(cur.t,cur.a,cur.topic,(data&&data.date)||"");
   const d=(data&&typeof data.dispatch==="object"&&data.dispatch)?data.dispatch:{};
+  AUDIO_MAP=(data&&typeof data.audio==="object"&&data.audio)?data.audio:{};
   META.date=scrub((data&&data.date)||"");
   const out={
     djIntro:scrub(d.djIntro||fb.djIntro),
@@ -316,6 +316,7 @@ async function saveDispatch(){
     const payload={
       date:META.date||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}),
       track:cur.t,artist:cur.a,topic:cur.topic,api_status:"saved_from_dispatch_ui",
+      audio:AUDIO_MAP,
       dispatch:{
         djIntro:scrub($("djBox")&&$("djBox").value||""),
         press:scrub($("pressBox")&&$("pressBox").value||""),
@@ -328,7 +329,7 @@ async function saveDispatch(){
       }
     };
     const res=await putRepo("strayd/last-dahl-dispatch.json",JSON.stringify(payload,null,2),"edit(dispatch): save dispatch from dispatch.html");
-    setTxt("st","Saved to GitHub -> "+(res.commit&&res.commit.sha?res.commit.sha.slice(0,7):"ok"));
+    setTxt("st","Saved -> "+(res.commit&&res.commit.sha?res.commit.sha.slice(0,7):"ok"));
   }catch(e){setTxt("st","Save failed: "+e.message);}
 }
 
@@ -388,8 +389,8 @@ function cleanSpeech(t){
 }
 
 function speakTxt(t,announceOnly){
-  if(!("speechSynthesis"in window)){setTxt("st","Browser speechSynthesis not available");return;}
-  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2000);
+  if(!("speechSynthesis"in window)){setTxt("st","Browser speech not available");return;}
+  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2200);
   if(!sp){setTxt("st","Nothing to speak");return;}
   try{
     if(speechSynthesis.paused)speechSynthesis.resume();
@@ -397,55 +398,49 @@ function speakTxt(t,announceOnly){
   }catch{}
   const voice=getSelectedVoice();
   const u=new SpeechSynthesisUtterance(sp);
-  if(voice){
-    u.voice=voice;
-    if(voice.lang)u.lang=voice.lang;
-  }
+  if(voice){u.voice=voice;if(voice.lang)u.lang=voice.lang;}
   u.onstart=()=>setTxt("st","Speaking"+(voice?" ("+voice.name+")":"")+"...");
-  u.onend=()=>setTxt("st","Spoke text");
-  u.onerror=ev=>setTxt("st","Speech error: "+(ev&&ev.error?ev.error:"check system voice"));
+  u.onend=()=>setTxt("st","Done speaking");
+  u.onerror=ev=>setTxt("st","Speech error: "+(ev&&ev.error?ev.error:"check browser audio"));
   speechSynthesis.speak(u);
 }
 
-async function triggerAction(mode){
+async function triggerAction(){
   const pat=getPat();
-  if(!pat){setTxt("st","Paste a GitHub PAT with Actions permission first");return;}
+  if(!pat){setTxt("st","Paste GitHub PAT first to generate and render MP3s");return;}
   const{idx,topic}=syncSong();
   const edgeVoice=mapToEdgeVoice(getSelectedVoice());
-  const runMode=(mode==="render_mp3_only")?"render_mp3_only":"full";
   try{
     const r=await fetch("https://api.github.com/repos/agent-anna/home/actions/workflows/dahl-dispatch.yml/dispatches",{
       method:"POST",
       headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
-      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic),voice:edgeVoice,mode:runMode}})
+      body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic),voice:edgeVoice,mode:"full"}})
     });
-    if(!r.ok)throw new Error("GitHub Action HTTP "+r.status);
-    setTxt("st","Action queued ("+runMode+", "+edgeVoice+") - wait ~25s then click Load Live Dispatch");
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    setTxt("st","Queued MP3 render ("+edgeVoice+") - wait ~30s then click Load");
   }catch(e){setTxt("st","Action failed: "+e.message);}
 }
 
-async function dlRepoMp3(fieldKey,base){
-  const url="https://agent-anna.github.io/home/strayd/audio/"+encodeURIComponent(fieldKey)+".mp3?t="+Date.now();
-  setTxt("st","Downloading "+base+".mp3...");
+async function dlMp3(fieldKey,base){
+  const rel=(AUDIO_MAP&&AUDIO_MAP[fieldKey])?String(AUDIO_MAP[fieldKey]).replace(/^\/+/,""):("strayd/audio/"+fieldKey+".mp3");
+  const url="https://agent-anna.github.io/home/"+rel+"?t="+Date.now();
+  setTxt("st","Fetching "+base+".mp3...");
   try{
     const r=await fetch(url,{cache:"no-store"});
-    if(!r.ok)throw new Error("HTTP "+r.status);
+    if(!r.ok)throw new Error("MP3 not on GitHub yet (HTTP "+r.status+")");
     const b=await r.blob();
-    if(!b||b.size<500)throw new Error("Empty audio file");
-    const objUrl=URL.createObjectURL(b);
+    if(!b||b.size<1024||/text\/html/i.test(b.type||""))throw new Error("Invalid MP3 response");
+    const mp3Blob=new Blob([b],{type:"audio/mpeg"});
+    const objUrl=URL.createObjectURL(mp3Blob);
     const a=document.createElement("a");
-    a.href=objUrl;a.download=base+".mp3";
-    document.body.appendChild(a);a.click();a.remove();
+    a.href=objUrl;
+    a.download=base+".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     setTimeout(()=>URL.revokeObjectURL(objUrl),5000);
-    setTxt("st","Downloaded "+base+".mp3");
-  }catch(e){setTxt("st","MP3 download failed ("+e.message+") - click Render MP3s in Selected Voice first");}
-}
-
-function dlTxtFile(t,base){
-  const b=new Blob([String(t||"")],{type:"text/plain;charset=utf-8"});
-  const u=URL.createObjectURL(b);const a=document.createElement("a");
-  a.href=u;a.download=base+".txt";document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(u),4000);setTxt("st","Downloaded "+base+".txt");
+    setTxt("st","Downloaded "+base+".mp3 ("+Math.round(b.size/1024)+" KB)");
+  }catch(e){setTxt("st","Download failed: "+e.message);}
 }
 
 function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));setTxt("st","Copied "+lbl);}
@@ -466,17 +461,15 @@ if($("voiceSel"))$("voiceSel").onchange=()=>{
 if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
 if($("loadBtn"))$("loadBtn").onclick=loadLatest;
 if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
-if($("runActBtn"))$("runActBtn").onclick=()=>triggerAction("full");
-if($("renderMp3Btn"))$("renderMp3Btn").onclick=()=>triggerAction("render_mp3_only");
+if($("runActBtn"))$("runActBtn").onclick=triggerAction;
 if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
 if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
 if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")&&$("djBox").value||"",false);
-if($("dlDj"))$("dlDj").onclick=()=>dlRepoMp3("djIntro","dj-intro-antipop");
+if($("dlDj"))$("dlDj").onclick=()=>dlMp3("djIntro","dj-intro-antipop");
 if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ intro");
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
-if($("dlPress"))$("dlPress").onclick=()=>dlRepoMp3("press","press-release-antipop");
-if($("dlPressTxt"))$("dlPressTxt").onclick=()=>dlTxtFile($("pressBox")&&$("pressBox").value||"","press-release-martinstrayd");
+if($("dlPress"))$("dlPress").onclick=()=>dlMp3("press","press-release-antipop");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
 (async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
