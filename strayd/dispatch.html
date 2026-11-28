@@ -445,6 +445,7 @@ function populateVoices(){
 function getSelectedVoice(){
   if(!("speechSynthesis"in window))return null;
   const live=speechSynthesis.getVoices()||[];
+  if(!live.length)return null;
   const sel=$("voiceSel");
   const val=sel?sel.value:"";
   if(val&&val.startsWith("sys:")){
@@ -452,11 +453,35 @@ function getSelectedVoice(){
     if(Number.isInteger(idx)&&live[idx])return live[idx];
   }
   const opt=sel&&sel.options?sel.options[sel.selectedIndex]:null;
-  const targetLang=(opt&&opt.dataset&&opt.dataset.lang)?opt.dataset.lang.toLowerCase().slice(0,2):"en";
-  const byLang=live.find(v=>(v.lang||"").toLowerCase().startsWith(targetLang));
-  return byLang||live.find(v=>(v.lang||"").toLowerCase().startsWith("en"))||live[0]||null;
-}
+  const edgeId=(opt&&opt.dataset&&opt.dataset.edge)||"en-US-LunaNeural";
+  const targetLang=((opt&&opt.dataset&&opt.dataset.lang)||"en-US").toLowerCase();
+  const langPrefix=targetLang.slice(0,2);
+  const wantMale=/(guy|christopher|steffan|eric|ryan|thomas|william|liam|prabhat|connor|luke|chilemba)/i.test((opt&&opt.textContent)||"");
 
+  const femaleRe=/(luna|jenny|aria|michelle|ana\b|sonia|libby|maisie|natasha|clara|neerja|emily|leah|asilia|zira|samantha|victoria|hazel|susan|ava|zoe|aria|female|woman)/i;
+  const maleRe=/(guy|christopher|steffan|eric|ryan|thomas|william|liam|prabhat|connor|luke|chilemba|david|mark|george|daniel|james|arthur|oliver|male|\bman\b)/i;
+
+  let best=null, bestScore=-999;
+  for(const v of live){
+    const vn=((v.name||"")+" "+(v.voiceURI||"")).toLowerCase();
+    const vl=(v.lang||"").toLowerCase();
+    let score=0;
+    if(vl===targetLang)score+=40;
+    else if(vl.startsWith(langPrefix))score+=20;
+    else if(vl.startsWith("en"))score+=10;
+    else score-=30;
+
+    if(wantMale){
+      if(maleRe.test(vn))score+=35;
+      if(femaleRe.test(vn))score-=35;
+    }else{
+      if(femaleRe.test(vn))score+=35;
+      if(maleRe.test(vn))score-=35;
+    }
+    if(score>bestScore){bestScore=score;best=v;}
+  }
+  return best||live[0]||null;
+}
 function mapToEdgeVoice(v){
   const sel=$("voiceSel");
   const opt=sel&&sel.options?sel.options[sel.selectedIndex]:null;
@@ -587,7 +612,7 @@ if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
 if($("runActBtn"))$("runActBtn").onclick=triggerAction;
 if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
-if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
+if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));`nif($("voiceSel"))$("voiceSel").onchange=()=>{try{speechSynthesis.cancel();}catch{}const eo=mapToEdgeVoice(getSelectedVoice());setTxt("st","Voice: "+eo);};
 if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")&&$("djBox").value||"",false);
 if($("dlDj"))$("dlDj").onclick=()=>dlMp3("djIntro","dj-intro-antipop");
 if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ intro");
