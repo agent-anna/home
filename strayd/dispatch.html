@@ -379,36 +379,119 @@ async function saveDispatch(){
   }catch(e){setTxt("st","Save failed: "+e.message);}
 }
 
+const RADIO_VOICES=[
+  {label:"Luna (US - Female, Default)",edge:"en-US-LunaNeural",lang:"en-US",gender:"female"},
+  {label:"Jenny (US - Female)",edge:"en-US-JennyNeural",lang:"en-US",gender:"female"},
+  {label:"Aria (US - Female)",edge:"en-US-AriaNeural",lang:"en-US",gender:"female"},
+  {label:"Michelle (US - Female)",edge:"en-US-MichelleNeural",lang:"en-US",gender:"female"},
+  {label:"Ana (US - Young Female)",edge:"en-US-AnaNeural",lang:"en-US",gender:"female"},
+  {label:"Guy (US - Male)",edge:"en-US-GuyNeural",lang:"en-US",gender:"male"},
+  {label:"Christopher (US - Male)",edge:"en-US-ChristopherNeural",lang:"en-US",gender:"male"},
+  {label:"Eric (US - Male)",edge:"en-US-EricNeural",lang:"en-US",gender:"male"},
+  {label:"Steffan (US - Male)",edge:"en-US-SteffanNeural",lang:"en-US",gender:"male"},
+  {label:"Sonia (UK - Female)",edge:"en-GB-SoniaNeural",lang:"en-GB",gender:"female"},
+  {label:"Libby (UK - Female)",edge:"en-GB-LibbyNeural",lang:"en-GB",gender:"female"},
+  {label:"Maisie (UK - Female)",edge:"en-GB-MaisieNeural",lang:"en-GB",gender:"female"},
+  {label:"Ryan (UK - Male)",edge:"en-GB-RyanNeural",lang:"en-GB",gender:"male"},
+  {label:"Thomas (UK - Male)",edge:"en-GB-ThomasNeural",lang:"en-GB",gender:"male"},
+  {label:"Natasha (Australia - Female)",edge:"en-AU-NatashaNeural",lang:"en-AU",gender:"female"},
+  {label:"William (Australia - Male)",edge:"en-AU-WilliamNeural",lang:"en-AU",gender:"male"},
+  {label:"Clara (Canada - Female)",edge:"en-CA-ClaraNeural",lang:"en-CA",gender:"female"},
+  {label:"Liam (Canada - Male)",edge:"en-CA-LiamNeural",lang:"en-CA",gender:"male"},
+  {label:"Neerja (India - Female)",edge:"en-IN-NeerjaNeural",lang:"en-IN",gender:"female"},
+  {label:"Prabhat (India - Male)",edge:"en-IN-PrabhatNeural",lang:"en-IN",gender:"male"},
+  {label:"Emily (Ireland - Female)",edge:"en-IE-EmilyNeural",lang:"en-IE",gender:"female"},
+  {label:"Connor (Ireland - Male)",edge:"en-IE-ConnorNeural",lang:"en-IE",gender:"male"},
+  {label:"Asilia (Kenya - Female)",edge:"en-KE-AsiliaNeural",lang:"en-KE",gender:"female"},
+  {label:"Chilemba (Kenya - Male)",edge:"en-KE-ChilembaNeural",lang:"en-KE",gender:"male"},
+  {label:"Leah (South Africa - Female)",edge:"en-ZA-LeahNeural",lang:"en-ZA",gender:"female"},
+  {label:"Luke (South Africa - Male)",edge:"en-ZA-LukeNeural",lang:"en-ZA",gender:"male"}
+];
+
+function populateVoices(){
+  const sel=$("voiceSel");
+  if(!sel)return;
+  const prevVal=sel.value;
+  VOICES=("speechSynthesis"in window)?(speechSynthesis.getVoices()||[]):[];
+  sel.innerHTML="";
+  const defOpt=document.createElement("option");
+  defOpt.value="";
+  defOpt.dataset.edge="en-US-LunaNeural";
+  defOpt.textContent="Default: Luna (US - Female)";
+  sel.appendChild(defOpt);
+
+  RADIO_VOICES.forEach((rv,i)=>{
+    const o=document.createElement("option");
+    o.value="radio:"+i;
+    o.dataset.edge=rv.edge;
+    o.dataset.lang=rv.lang;
+    o.textContent=rv.label+" ["+rv.edge+"]";
+    sel.appendChild(o);
+  });
+
+  VOICES.forEach((v,idx)=>{
+    const o=document.createElement("option");
+    o.value="sys:"+idx;
+    o.dataset.vname=v.name||"";
+    o.dataset.edge=mapToEdgeVoice(v);
+    o.textContent="Browser: "+(v.name||"Voice")+(v.lang?" ("+v.lang+")":"");
+    sel.appendChild(o);
+  });
+
+  if(prevVal&&Array.from(sel.options).some(x=>x.value===prevVal))sel.value=prevVal;
+  else sel.value="";
+}
+
 function getSelectedVoice(){
   if(!("speechSynthesis"in window))return null;
   const live=speechSynthesis.getVoices()||[];
   const sel=$("voiceSel");
-  if(!sel||!sel.value)return live[0]||VOICES[0]||null;
-  const idx=Number(sel.value);
-  if(Number.isInteger(idx)&&live[idx])return live[idx];
-  const opt=sel.options[sel.selectedIndex];
-  const wn=opt?opt.dataset.vname:"";
-  if(wn){const found=live.find(v=>v.name===wn);if(found)return found;}
-  return live[0]||VOICES[0]||null;
+  const val=sel?sel.value:"";
+  if(val&&val.startsWith("sys:")){
+    const idx=Number(val.slice(4));
+    if(Number.isInteger(idx)&&live[idx])return live[idx];
+  }
+  const opt=sel&&sel.options?sel.options[sel.selectedIndex]:null;
+  const targetLang=(opt&&opt.dataset&&opt.dataset.lang)?opt.dataset.lang.toLowerCase().slice(0,2):"en";
+  const byLang=live.find(v=>(v.lang||"").toLowerCase().startsWith(targetLang));
+  return byLang||live.find(v=>(v.lang||"").toLowerCase().startsWith("en"))||live[0]||null;
 }
 
 function mapToEdgeVoice(v){
+  const sel=$("voiceSel");
+  const opt=sel&&sel.options?sel.options[sel.selectedIndex]:null;
+  if(opt&&opt.dataset&&opt.dataset.edge)return opt.dataset.edge;
+  if(!v)return"en-US-LunaNeural";
   const n=(((v&&v.name)||"")+" "+((v&&v.voiceURI)||"")).toLowerCase();
   const l=((v&&v.lang)||"").toLowerCase();
   if(/luna/.test(n))return"en-US-LunaNeural";
   if(/jenny/.test(n))return"en-US-JennyNeural";
-  if(/sonia/.test(n))return"en-GB-SoniaNeural";
-  if(/natasha/.test(n))return"en-AU-NatashaNeural";
   if(/aria/.test(n))return"en-US-AriaNeural";
+  if(/michelle/.test(n))return"en-US-MichelleNeural";
   if(/ana\b/.test(n))return"en-US-AnaNeural";
-  if(/zira|samantha|victoria|hazel|susan|libby|maisie|clara|ava|female|woman/.test(n))return l.startsWith("en-gb")?"en-GB-SoniaNeural":(l.startsWith("en-au")?"en-AU-NatashaNeural":"en-US-LunaNeural");
-  if(/guy/.test(n))return"en-US-LunaNeural";
+  if(/christopher/.test(n))return"en-US-ChristopherNeural";
+  if(/steffan/.test(n))return"en-US-SteffanNeural";
+  if(/eric/.test(n))return"en-US-EricNeural";
+  if(/guy/.test(n))return"en-US-GuyNeural";
+  if(/sonia/.test(n))return"en-GB-SoniaNeural";
+  if(/libby/.test(n))return"en-GB-LibbyNeural";
+  if(/maisie/.test(n))return"en-GB-MaisieNeural";
+  if(/thomas/.test(n))return"en-GB-ThomasNeural";
   if(/ryan/.test(n))return"en-GB-RyanNeural";
+  if(/natasha/.test(n))return"en-AU-NatashaNeural";
   if(/william/.test(n))return"en-AU-WilliamNeural";
-  if(/david|mark|george|daniel|james|male|man/.test(n))return l.startsWith("en-gb")?"en-GB-RyanNeural":(l.startsWith("en-au")?"en-AU-WilliamNeural":"en-US-LunaNeural");
+  if(/clara/.test(n))return"en-CA-ClaraNeural";
+  if(/liam/.test(n))return"en-CA-LiamNeural";
+  if(/neerja/.test(n))return"en-IN-NeerjaNeural";
+  if(/pratap|prabhat/.test(n))return"en-IN-PrabhatNeural";
+  if(/emily/.test(n))return"en-IE-EmilyNeural";
+  if(/connor/.test(n))return"en-IE-ConnorNeural";
+  if(/leah/.test(n))return"en-ZA-LeahNeural";
+  if(/luke/.test(n))return"en-ZA-LukeNeural";
+  if(/zira|samantha|victoria|hazel|susan|female|woman/.test(n))return l.startsWith("en-gb")?"en-GB-SoniaNeural":(l.startsWith("en-au")?"en-AU-NatashaNeural":"en-US-LunaNeural");
+  if(/david|mark|george|daniel|james|male|man/.test(n))return l.startsWith("en-gb")?"en-GB-RyanNeural":(l.startsWith("en-au")?"en-AU-WilliamNeural":"en-US-GuyNeural");
   return"en-US-LunaNeural";
 }
-
 function cleanSpeech(t){
   return scrub(String(t||""))
     .replace(/https?:\/\/\S+/g," ")
@@ -511,5 +594,5 @@ if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
 if($("dlPress"))$("dlPress").onclick=()=>dlMp3("press","press-release-antipop");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
-buildCards();(async()=>{await loadSongs();await loadLatest();})();
+populateVoices();if('speechSynthesis'in window){speechSynthesis.onvoiceschanged=populateVoices;}buildCards();(async()=>{await loadSongs();await loadLatest();})();
 </script></body></html>
