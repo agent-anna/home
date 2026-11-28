@@ -5,292 +5,272 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ANTIPOP Dispatch — Veg Anna &amp; DJ ANNA</title>
 <style>
-:root {
---bg: #0b0e13;
---panel: #121720;
---panel-2: #18202c;
---border: #263142;
---text: #e6edf7;
---muted: #8fa0b8;
---accent: #1d9bf0;
---accent-2: #22c55e;
-}
-* { box-sizing: border-box; }
-body {
-margin: 0;
-background: var(--bg);
-color: var(--text);
-font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-line-height: 1.5;
-padding: 20px;
-}
-.wrap { max-width: 1080px; margin: 0 auto; }
-.tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.tab-btn {
-background: var(--panel);
-color: var(--muted);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 8px 16px;
-cursor: pointer;
-font-weight: 600;
-}
-.tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.card {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 12px;
-padding: 18px;
-margin-bottom: 16px;
-}
-.top-grid {
-display: grid;
-grid-template-columns: 220px 1fr;
-gap: 18px;
-align-items: start;
-}
-@media (max-width: 720px) { .top-grid { grid-template-columns: 1fr; } }
-.art-box {
-width: 100%;
-aspect-ratio: 1 / 1;
-border-radius: 10px;
-overflow: hidden;
-background: var(--panel-2);
-border: 1px solid var(--border);
-display: flex;
-align-items: center;
-justify-content: center;
-color: var(--muted);
-font-size: 13px;
-}
-.art-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
-h1, h2, h3 { margin: 0 0 8px 0; font-weight: 700; }
-h1 { font-size: 24px; }
-h2 { font-size: 17px; }
-h3 { font-size: 15px; }
-.sub { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
-.field { margin-bottom: 12px; }
-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
-select, input[type="text"], input[type="password"], textarea {
-width: 100%;
-background: var(--panel-2);
-color: var(--text);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 10px 12px;
-font-size: 14px;
-font-family: inherit;
-}
-textarea[readonly] { opacity: 0.92; background: #10151d; }
-textarea { min-height: 110px; resize: vertical; }
-textarea.press-area { min-height: 220px; }
-.row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
-.btn {
-background: var(--panel-2);
-color: var(--text);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 7px 12px;
-font-size: 12px;
-font-weight: 600;
-cursor: pointer;
-}
-.btn:hover { border-color: var(--accent); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-save { background: var(--accent-2); border-color: var(--accent-2); color: #07130b; }
-.status { font-size: 13px; color: var(--accent-2); margin-left: 4px; }
-.card-head {
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 10px;
-flex-wrap: wrap;
-margin-bottom: 8px;
-}
-.mini-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-.social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
-.hidden { display: none !important; }
+  :root {
+    --bg: #0b0e13;
+    --panel: #121720;
+    --panel-2: #18202c;
+    --border: #263142;
+    --text: #e6edf7;
+    --muted: #8fa0b8;
+    --accent: #1d9bf0;
+    --accent-2: #22c55e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 20px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .bible-banner {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .top-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 720px) { .top-grid { grid-template-columns: 1fr; } }
+  .art-box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .art-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  h1, h2, h3 { margin: 0 0 8px 0; font-weight: 700; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 17px; }
+  h3 { font-size: 15px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+  select, input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  textarea[readonly] { opacity: 0.92; background: #10151d; }
+  textarea { min-height: 110px; resize: vertical; }
+  textarea.press-area { min-height: 220px; }
+  .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .btn {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-save { background: var(--accent-2); border-color: var(--accent-2); color: #07130b; }
+  .status { font-size: 13px; color: var(--accent-2); margin-left: 4px; }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .mini-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="tabs">
-<button class="tab-btn active" data-tab="dispatch">Dispatch</button>
-<button class="tab-btn" data-tab="studio">Studio</button>
-<button class="tab-btn" data-tab="press">Press</button>
-<button class="tab-btn" data-tab="social">Social</button>
-</div>
-
-<section id="view-dispatch">
-<div class="card">
-  <div class="top-grid">
-    <div class="art-box" id="coverWrap">
-      <span id="coverPlaceholder">Track cover art</span>
-      <img id="coverImg" alt="Track cover art" class="hidden" />
-    </div>
-    <div>
-      <h1 id="catalogStatus">Loading catalog...</h1>
-      <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; Dispatch</div>
-
-      <div class="field">
-        <label for="songSel">Song</label>
-        <select id="songSel"></select>
+  <div class="card">
+    <div class="bible-banner" id="bibleBanner">Bible source: loading bible/ from GitHub...</div>
+    <div class="top-grid">
+      <div class="art-box" id="coverWrap">
+        <span id="coverPlaceholder">Track cover art</span>
+        <img id="coverImg" alt="Track cover art" class="hidden" />
       </div>
+      <div>
+        <h1 id="catalogStatus">Loading catalog...</h1>
+        <div class="sub" id="stationLine">ANTIPOP Live Bible &amp; Dispatch</div>
 
-      <div class="field">
-        <label for="voiceSel">Voice</label>
-        <select id="voiceSel"></select>
-      </div>
+        <div class="field">
+          <label for="songSel">Song</label>
+          <select id="songSel"></select>
+        </div>
 
-      <div class="field">
-        <label for="topicInput">Topic / Angle</label>
-        <input id="topicInput" type="text" placeholder="Song topic or angle..." />
-      </div>
+        <div class="field">
+          <label for="voiceSel">Voice</label>
+          <select id="voiceSel"></select>
+        </div>
 
-      <div class="field">
-        <label for="patInput">GitHub PAT (Pull bible/ &amp; Dispatch)</label>
-        <input id="patInput" type="password" placeholder="ghp_..." autocomplete="off" />
-      </div>
+        <div class="field">
+          <label for="topicInput">Topic / Angle</label>
+          <input id="topicInput" type="text" placeholder="Song topic or angle..." />
+        </div>
 
-      <div class="row-actions">
-        <button class="btn btn-primary" id="loadBtn" type="button">Load</button>
-        <button class="btn btn-save" id="saveBtn" type="button">Save</button>
-        <button class="btn" id="renderBtn" type="button">Generate &amp; Render MP3</button>
-        <button class="btn" id="stopSpeechBtn" type="button">Stop Speech</button>
-        <span class="status" id="statusMsg">Ready</span>
+        <div class="field">
+          <label for="patInput">GitHub PAT (Pull bible/ &amp; Dispatch)</label>
+          <input id="patInput" type="password" placeholder="ghp_..." autocomplete="off" />
+        </div>
+
+        <div class="row-actions">
+          <button class="btn btn-primary" id="loadBtn" type="button">Load</button>
+          <button class="btn btn-save" id="saveBtn" type="button">Save</button>
+          <button class="btn" id="renderBtn" type="button">Generate &amp; DL MP3</button>
+          <button class="btn" id="stopSpeechBtn" type="button">Stop Speech</button>
+          <span class="status" id="statusMsg">Ready</span>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-head">
-    <h2>ANTIPOP DJ Intro</h2>
-    <div class="mini-actions">
-      <button class="btn" id="speakIntroBtn" type="button">Listen</button>
-      <button class="btn" id="dlIntroBtn" type="button">Download MP3</button>
-      <button class="btn" id="copyIntroBtn" type="button">Copy</button>
-    </div>
-  </div>
-  <label for="djIntroText">DJ Intro Text</label>
-  <textarea id="djIntroText" placeholder="Fresh DJ intro driven by bible/ &amp; track metadata..."></textarea>
-</div>
-
-<div class="card">
-  <div class="card-head">
-    <h2>Single of the Day Press Release</h2>
-    <div class="mini-actions">
-      <button class="btn" id="speakPressBtn" type="button">Listen</button>
-      <button class="btn" id="dlPressBtn" type="button">Download MP3</button>
-      <button class="btn" id="copyPressBtn" type="button">Copy</button>
-    </div>
-  </div>
-  <label for="pressText">Press Release Text</label>
-  <textarea id="pressText" class="press-area" placeholder="Fresh press release driven by bible/ &amp; track metadata..."></textarea>
-</div>
-
-<div class="social-grid" id="socialCardsGrid">
-  <div class="card" data-platform="X" data-target="xText">
+  <div class="card">
     <div class="card-head">
-      <h3>X</h3>
+      <h2>ANTIPOP On-Air FM DJ Intro</h2>
       <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+        <button class="btn" id="speakIntroBtn" type="button">Speak</button>
+        <button class="btn" id="dlIntroBtn" type="button">DL Audio</button>
+        <button class="btn" id="copyIntroBtn" type="button">Copy</button>
       </div>
     </div>
-    <textarea id="xText"></textarea>
+    <label for="djIntroText">On-Air FM DJ Script</label>
+    <textarea id="djIntroText" placeholder="Spoken FM DJ intro driven by bible/ &amp; single metadata..."></textarea>
   </div>
 
-  <div class="card" data-platform="TikTok" data-target="tiktokText">
+  <div class="card">
     <div class="card-head">
-      <h3>TikTok</h3>
+      <h2>Single of the Day Press Release</h2>
       <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+        <button class="btn" id="speakPressBtn" type="button">Speak</button>
+        <button class="btn" id="dlPressBtn" type="button">DL Audio</button>
+        <button class="btn" id="copyPressBtn" type="button">Copy</button>
       </div>
     </div>
-    <textarea id="tiktokText"></textarea>
+    <label for="pressText">Single of the Day Release Brief (Who / What / Why / 365-Day Drop / CTA)</label>
+    <textarea id="pressText" class="press-area" placeholder="Single of the day press release driven by bible/..."></textarea>
   </div>
 
-  <div class="card" data-platform="Instagram" data-target="igText">
-    <div class="card-head">
-      <h3>Instagram</h3>
-      <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+  <div class="social-grid" id="socialCardsGrid">
+    <div class="card" data-platform="X" data-target="xText" data-audio="strayd/audio/x.mp3">
+      <div class="card-head">
+        <h3>X</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
       </div>
+      <textarea id="xText"></textarea>
     </div>
-    <textarea id="igText"></textarea>
-  </div>
 
-  <div class="card" data-platform="Facebook" data-target="fbText">
-    <div class="card-head">
-      <h3>Facebook</h3>
-      <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+    <div class="card" data-platform="TikTok" data-target="tiktokText" data-audio="strayd/audio/tiktok.mp3">
+      <div class="card-head">
+        <h3>TikTok</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
       </div>
+      <textarea id="tiktokText"></textarea>
     </div>
-    <textarea id="fbText"></textarea>
-  </div>
 
-  <div class="card" data-platform="YouTube Title" data-target="ytTitleText">
-    <div class="card-head">
-      <h3>YouTube Title</h3>
-      <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+    <div class="card" data-platform="Instagram" data-target="igText" data-audio="strayd/audio/instagram.mp3">
+      <div class="card-head">
+        <h3>Instagram</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
       </div>
+      <textarea id="igText"></textarea>
     </div>
-    <textarea id="ytTitleText"></textarea>
-  </div>
 
-  <div class="card" data-platform="YouTube Description" data-target="ytDescText">
-    <div class="card-head">
-      <h3>YouTube Description</h3>
-      <div class="mini-actions">
-        <button class="btn" data-act="listen" type="button">Listen</button>
-        <button class="btn" data-act="edit" type="button">Edit</button>
-        <button class="btn" data-act="save" type="button">Save</button>
-        <button class="btn" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-primary" data-act="send" type="button">Send</button>
+    <div class="card" data-platform="Facebook" data-target="fbText" data-audio="strayd/audio/facebook.mp3">
+      <div class="card-head">
+        <h3>Facebook</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
       </div>
+      <textarea id="fbText"></textarea>
     </div>
-    <textarea id="ytDescText"></textarea>
+
+    <div class="card" data-platform="YouTube Title" data-target="ytTitleText" data-audio="strayd/audio/ytTitle.mp3">
+      <div class="card-head">
+        <h3>YouTube Title</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
+      </div>
+      <textarea id="ytTitleText"></textarea>
+    </div>
+
+    <div class="card" data-platform="YouTube Description" data-target="ytDescText" data-audio="strayd/audio/ytDesc.mp3">
+      <div class="card-head">
+        <h3>YouTube Description</h3>
+        <div class="mini-actions">
+          <button class="btn" data-act="speak" type="button">Speak</button>
+          <button class="btn" data-act="dlAudio" type="button">DL Audio</button>
+          <button class="btn" data-act="edit" type="button">Edit</button>
+          <button class="btn" data-act="save" type="button">Save</button>
+          <button class="btn" data-act="copy" type="button">Copy</button>
+          <button class="btn btn-primary" data-act="post" type="button">Post</button>
+        </div>
+      </div>
+      <textarea id="ytDescText"></textarea>
+    </div>
   </div>
-</div>
-</section>
-
-<section id="view-studio" class="card hidden">
-<h2>Bible Rules (bible/)</h2>
-<p class="sub" id="studioSummary">Loading live laws from bible/...</p>
-<div id="bibleRulesView" style="white-space:pre-line;"></div>
-</section>
-
-<section id="view-press" class="card hidden">
-<h2>Press Release Preview</h2>
-<div id="pressPreview" style="white-space:pre-line;"></div>
-</section>
-
-<section id="view-social" class="card hidden">
-<h2>Social Bundle Summary</h2>
-<div id="socialSummary" style="white-space:pre-line;"></div>
-</section>
 </div>
 
 <script>
@@ -299,37 +279,37 @@ const REPO_NAME = "home";
 const REPO_BRANCH = "main";
 
 const EDGE_VOICE_CATALOG = [
-["en-US-LunaNeural","Luna (en-US)"],["en-US-AriaNeural","Aria (en-US)"],["en-US-JennyNeural","Jenny (en-US)"],
-["en-US-MichelleNeural","Michelle (en-US)"],["en-US-MonicaNeural","Monica (en-US)"],["en-US-AnaNeural","Ana (en-US)"],
-["en-US-EmmaNeural","Emma (en-US)"],["en-US-AvaNeural","Ava (en-US)"],["en-US-SteffanNeural","Steffan (en-US)"],
-["en-US-RogerNeural","Roger (en-US)"],["en-GB-SoniaNeural","Sonia (en-GB)"],["en-GB-LibbyNeural","Libby (en-GB)"],
-["en-GB-MaisieNeural","Maisie (en-GB)"],["en-GB-RyanNeural","Ryan (en-GB)"],["en-GB-ThomasNeural","Thomas (en-GB)"],
-["en-AU-NatashaNeural","Natasha (en-AU)"],["en-AU-FreyaNeural","Freya (en-AU)"],["en-AU-ElsieNeural","Elsie (en-AU)"],
-["en-CA-ClaraNeural","Clara (en-CA)"],["en-CA-LiamNeural","Liam (en-CA)"],["en-IN-NeerjaNeural","Neerja (en-IN)"],
-["en-IN-AaravNeural","Aarav (en-IN)"],["en-IE-EmilyNeural","Emily (en-IE)"],["en-NZ-MollyNeural","Molly (en-NZ)"],
-["en-ZA-LeahNeural","Leah (en-ZA)"],["th-TH-PremwadeeNeural","Premwadee (th-TH)"],["th-TH-AcharaNeural","Achara (th-TH)"],
-["th-TH-NiwatNeural","Niwat (th-TH)"],["ja-JP-NanamiNeural","Nanami (ja-JP)"],["ja-JP-AoiNeural","Aoi (ja-JP)"],
-["ja-JP-MayuNeural","Mayu (ja-JP)"],["ja-JP-KeitaNeural","Keita (ja-JP)"],["ko-KR-SunHiNeural","SunHi (ko-KR)"],
-["ko-KR-JiMinNeural","JiMin (ko-KR)"],["ko-KR-InJoonNeural","InJoon (ko-KR)"],["zh-CN-XiaoxiaoNeural","Xiaoxiao (zh-CN)"],
-["zh-CN-XiaoyiNeural","Xiaoyi (zh-CN)"],["zh-CN-YunxiNeural","Yunxi (zh-CN)"],["zh-TW-HsiaoChenNeural","HsiaoChen (zh-TW)"],
-["zh-TW-YunJheNeural","YunJhe (zh-TW)"],["es-ES-ElviraNeural","Elvira (es-ES)"],["es-ES-AlvaroNeural","Alvaro (es-ES)"],
-["es-MX-DaliaNeural","Dalia (es-MX)"],["es-MX-JorgeNeural","Jorge (es-MX)"],["es-AR-ElenaNeural","Elena (es-AR)"],
-["es-CO-SalomeNeural","Salome (es-CO)"],["fr-FR-DeniseNeural","Denise (fr-FR)"],["fr-FR-EloiseNeural","Eloise (fr-FR)"],
-["fr-FR-HenriNeural","Henri (fr-FR)"],["fr-CA-SylvieNeural","Sylvie (fr-CA)"],["de-DE-KatjaNeural","Katja (de-DE)"],
-["de-DE-AmalaNeural","Amala (de-DE)"],["de-DE-ConradNeural","Conrad (de-DE)"],["it-IT-ElsaNeural","Elsa (it-IT)"],
-["it-IT-IsabellaNeural","Isabella (it-IT)"],["it-IT-DiegoNeural","Diego (it-IT)"],["pt-BR-FranciscaNeural","Francisca (pt-BR)"],
-["pt-BR-BrendaNeural","Brenda (pt-BR)"],["pt-PT-RaquelNeural","Raquel (pt-PT)"],["nl-NL-ColetteNeural","Colette (nl-NL)"],
-["nl-NL-FennaNeural","Fenna (nl-NL)"],["sv-SE-SofieNeural","Sofie (sv-SE)"],["da-DK-ChristelNeural","Christel (da-DK)"],
-["nb-NO-PernilleNeural","Pernille (nb-NO)"],["fi-FI-NooraNeural","Noora (fi-FI)"],["pl-PL-ZofiaNeural","Zofia (pl-PL)"],
-["ru-RU-SvetlanaNeural","Svetlana (ru-RU)"],["ru-RU-DariyaNeural","Dariya (ru-RU)"],["ar-EG-SalmaNeural","Salma (ar-EG)"],
-["ar-SA-ZariyahNeural","Zariyah (ar-SA)"],["hi-IN-SwaraNeural","Swara (hi-IN)"],["id-ID-GadisNeural","Gadis (id-ID)"],
-["ms-MY-YasminNeural","Yasmin (ms-MY)"],["vi-VN-HoaiMyNeural","HoaiMy (vi-VN)"],["fil-PH-BlessicaNeural","Blessica (fil-PH)"]
+  ["en-US-LunaNeural","Luna (en-US)"],["en-US-AriaNeural","Aria (en-US)"],["en-US-JennyNeural","Jenny (en-US)"],
+  ["en-US-MichelleNeural","Michelle (en-US)"],["en-US-MonicaNeural","Monica (en-US)"],["en-US-AnaNeural","Ana (en-US)"],
+  ["en-US-EmmaNeural","Emma (en-US)"],["en-US-AvaNeural","Ava (en-US)"],["en-US-SteffanNeural","Steffan (en-US)"],
+  ["en-US-RogerNeural","Roger (en-US)"],["en-GB-SoniaNeural","Sonia (en-GB)"],["en-GB-LibbyNeural","Libby (en-GB)"],
+  ["en-GB-MaisieNeural","Maisie (en-GB)"],["en-GB-RyanNeural","Ryan (en-GB)"],["en-GB-ThomasNeural","Thomas (en-GB)"],
+  ["en-AU-NatashaNeural","Natasha (en-AU)"],["en-AU-FreyaNeural","Freya (en-AU)"],["en-AU-ElsieNeural","Elsie (en-AU)"],
+  ["en-CA-ClaraNeural","Clara (en-CA)"],["en-CA-LiamNeural","Liam (en-CA)"],["en-IN-NeerjaNeural","Neerja (en-IN)"],
+  ["en-IN-AaravNeural","Aarav (en-IN)"],["en-IE-EmilyNeural","Emily (en-IE)"],["en-NZ-MollyNeural","Molly (en-NZ)"],
+  ["en-ZA-LeahNeural","Leah (en-ZA)"],["th-TH-PremwadeeNeural","Premwadee (th-TH)"],["th-TH-AcharaNeural","Achara (th-TH)"],
+  ["th-TH-NiwatNeural","Niwat (th-TH)"],["ja-JP-NanamiNeural","Nanami (ja-JP)"],["ja-JP-AoiNeural","Aoi (ja-JP)"],
+  ["ja-JP-MayuNeural","Mayu (ja-JP)"],["ja-JP-KeitaNeural","Keita (ja-JP)"],["ko-KR-SunHiNeural","SunHi (ko-KR)"],
+  ["ko-KR-JiMinNeural","JiMin (ko-KR)"],["ko-KR-InJoonNeural","InJoon (ko-KR)"],["zh-CN-XiaoxiaoNeural","Xiaoxiao (zh-CN)"],
+  ["zh-CN-XiaoyiNeural","Xiaoyi (zh-CN)"],["zh-CN-YunxiNeural","Yunxi (zh-CN)"],["zh-TW-HsiaoChenNeural","HsiaoChen (zh-TW)"],
+  ["zh-TW-YunJheNeural","YunJhe (zh-TW)"],["es-ES-ElviraNeural","Elvira (es-ES)"],["es-ES-AlvaroNeural","Alvaro (es-ES)"],
+  ["es-MX-DaliaNeural","Dalia (es-MX)"],["es-MX-JorgeNeural","Jorge (es-MX)"],["es-AR-ElenaNeural","Elena (es-AR)"],
+  ["es-CO-SalomeNeural","Salome (es-CO)"],["fr-FR-DeniseNeural","Denise (fr-FR)"],["fr-FR-EloiseNeural","Eloise (fr-FR)"],
+  ["fr-FR-HenriNeural","Henri (fr-FR)"],["fr-CA-SylvieNeural","Sylvie (fr-CA)"],["de-DE-KatjaNeural","Katja (de-DE)"],
+  ["de-DE-AmalaNeural","Amala (de-DE)"],["de-DE-ConradNeural","Conrad (de-DE)"],["it-IT-ElsaNeural","Elsa (it-IT)"],
+  ["it-IT-IsabellaNeural","Isabella (it-IT)"],["it-IT-DiegoNeural","Diego (it-IT)"],["pt-BR-FranciscaNeural","Francisca (pt-BR)"],
+  ["pt-BR-BrendaNeural","Brenda (pt-BR)"],["pt-PT-RaquelNeural","Raquel (pt-PT)"],["nl-NL-ColetteNeural","Colette (nl-NL)"],
+  ["nl-NL-FennaNeural","Fenna (nl-NL)"],["sv-SE-SofieNeural","Sofie (sv-SE)"],["da-DK-ChristelNeural","Christel (da-DK)"],
+  ["nb-NO-PernilleNeural","Pernille (nb-NO)"],["fi-FI-NooraNeural","Noora (fi-FI)"],["pl-PL-ZofiaNeural","Zofia (pl-PL)"],
+  ["ru-RU-SvetlanaNeural","Svetlana (ru-RU)"],["ru-RU-DariyaNeural","Dariya (ru-RU)"],["ar-EG-SalmaNeural","Salma (ar-EG)"],
+  ["ar-SA-ZariyahNeural","Zariyah (ar-SA)"],["hi-IN-SwaraNeural","Swara (hi-IN)"],["id-ID-GadisNeural","Gadis (id-ID)"],
+  ["ms-MY-YasminNeural","Yasmin (ms-MY)"],["vi-VN-HoaiMyNeural","HoaiMy (vi-VN)"],["fil-PH-BlessicaNeural","Blessica (fil-PH)"]
 ];
 
 const MALE_EDGE_NAMES = new Set([
-"SteffanNeural","RogerNeural","RyanNeural","ThomasNeural","LiamNeural","AaravNeural",
-"NiwatNeural","KeitaNeural","InJoonNeural","YunxiNeural","YunJheNeural","AlvaroNeural",
-"JorgeNeural","HenriNeural","ConradNeural","DiegoNeural"
+  "SteffanNeural","RogerNeural","RyanNeural","ThomasNeural","LiamNeural","AaravNeural",
+  "NiwatNeural","KeitaNeural","InJoonNeural","YunxiNeural","YunJheNeural","AlvaroNeural",
+  "JorgeNeural","HenriNeural","ConradNeural","DiegoNeural"
 ]);
 
 let SONGS = [];
@@ -339,611 +319,648 @@ let NONCE = 1;
 const META = { date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) };
 
 function setStatus(msg) {
-document.getElementById("statusMsg").textContent = msg;
+  document.getElementById("statusMsg").textContent = msg;
 }
 
 function getPat() {
-const el = document.getElementById("patInput");
-return ((el && el.value) || localStorage.getItem("antipop_gh_pat_v1") || "").trim();
+  const el = document.getElementById("patInput");
+  return ((el && el.value) || localStorage.getItem("antipop_gh_pat_v1") || "").trim();
 }
 
 function decodeBase64Utf8(b64) {
-const clean = String(b64 || "").replace(/\s+/g, "");
-if (!clean) return "";
-const bin = atob(clean);
-const bytes = new Uint8Array(bin.length);
-for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-return new TextDecoder("utf-8").decode(bytes);
+  const clean = String(b64 || "").replace(/\s+/g, "");
+  if (!clean) return "";
+  const bin = atob(clean);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder("utf-8").decode(bytes);
 }
 
 async function fetchRepoFile(repoPath) {
-const cleanPath = String(repoPath || "").replace(/^\/+/, "");
-if (!cleanPath.startsWith("bible/") && !cleanPath.startsWith("strayd/")) return "";
+  const cleanPath = String(repoPath || "").replace(/^\/+/, "");
+  if (!cleanPath.startsWith("bible/") && !cleanPath.startsWith("strayd/")) return "";
 
-const pat = getPat();
-if (pat) {
-try {
-  const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(cleanPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
-  const r = await fetch(apiUrl, {
-    headers: { Authorization: "Bearer " + pat, Accept: "application/vnd.github+json" },
-    cache: "no-store"
-  });
-  if (r.ok) {
-    const meta = await r.json();
-    if (meta && meta.content) return decodeBase64Utf8(meta.content);
-    if (meta && meta.download_url) {
-      const dr = await fetch(meta.download_url + (meta.download_url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
-      if (dr.ok) return await dr.text();
-    }
+  const pat = getPat();
+  if (pat) {
+    try {
+      const apiUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/contents/" + encodeURI(cleanPath) + "?ref=" + REPO_BRANCH + "&t=" + Date.now();
+      const r = await fetch(apiUrl, {
+        headers: { Authorization: "Bearer " + pat, Accept: "application/vnd.github+json" },
+        cache: "no-store"
+      });
+      if (r.ok) {
+        const meta = await r.json();
+        if (meta && meta.content) return decodeBase64Utf8(meta.content);
+        if (meta && meta.download_url) {
+          const dr = await fetch(meta.download_url + (meta.download_url.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+          if (dr.ok) return await dr.text();
+        }
+      }
+    } catch (_) {}
   }
-} catch (_) {}
-}
 
-const bases = [
-"https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/",
-"https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/"
-];
-for (const base of bases) {
-try {
-  const r = await fetch(base + encodeURI(cleanPath) + "?t=" + Date.now(), { cache: "no-store" });
-  if (r.ok) return await r.text();
-} catch (_) {}
-}
-return "";
+  const bases = [
+    "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/",
+    "https://" + REPO_OWNER + ".github.io/" + REPO_NAME + "/"
+  ];
+  for (const base of bases) {
+    try {
+      const r = await fetch(base + encodeURI(cleanPath) + "?t=" + Date.now(), { cache: "no-store" });
+      if (r.ok) return await r.text();
+    } catch (_) {}
+  }
+  return "";
 }
 
 async function loadBibleCorpus() {
-const indexText = await fetchRepoFile("bible/00-bible-index.md");
-const docNames = ["00-bible-index.md"];
-const matches = indexText.match(/bible\/[A-Za-z0-9_.-]+\.md/g) || [];
-matches.forEach(m => {
-const base = m.split("/").pop();
-if (base && !docNames.includes(base)) docNames.push(base);
-});
-["dispatch-essentials.md", "04-voice-and-broadcast-law.md", "06-dj-anna-persona.md", "07-platform-cadence-and-hashtags.md"].forEach(base => {
-if (!docNames.includes(base)) docNames.push(base);
-});
+  const indexText = await fetchRepoFile("bible/00-bible-index.md");
+  const docNames = ["00-bible-index.md"];
+  const matches = indexText.match(/bible\/[A-Za-z0-9_.-]+\.md/g) || [];
+  matches.forEach(m => {
+    const base = m.split("/").pop();
+    if (base && !docNames.includes(base)) docNames.push(base);
+  });
+  ["dispatch-essentials.md", "04-voice-and-broadcast-law.md", "06-dj-anna-persona.md", "07-platform-cadence-and-hashtags.md"].forEach(base => {
+    if (!docNames.includes(base)) docNames.push(base);
+  });
 
-const entries = await Promise.all(docNames.slice(0, 12).map(async name => {
-const txt = await fetchRepoFile("bible/" + name);
-return [name, (txt || "").trim()];
-}));
+  const entries = await Promise.all(docNames.slice(0, 12).map(async name => {
+    const txt = await fetchRepoFile("bible/" + name);
+    return [name, (txt || "").trim()];
+  }));
 
-BIBLE_DOCS = {};
-entries.forEach(([k, v]) => {
-if (v && v.length > 2) BIBLE_DOCS[k] = v;
-});
+  BIBLE_DOCS = {};
+  entries.forEach(([k, v]) => {
+    if (v && v.length > 2) BIBLE_DOCS[k] = v;
+  });
 
-const brainRaw = await fetchRepoFile("strayd/record-brain.json");
-if (brainRaw) {
-try { RECORD_BRAIN = JSON.parse(brainRaw.replace(/^\uFEFF/, "")); } catch (_) {}
+  const brainRaw = await fetchRepoFile("strayd/record-brain.json");
+  if (brainRaw) {
+    try { RECORD_BRAIN = JSON.parse(brainRaw.replace(/^\uFEFF/, "")); } catch (_) {}
+  }
+
+  const loadedKeys = Object.keys(BIBLE_DOCS);
+  document.getElementById("bibleBanner").textContent = loadedKeys.length
+    ? ("Bible loaded from bible/ (" + loadedKeys.length + " files): " + loadedKeys.join(", "))
+    : "Bible source: no bible/ files loaded yet (add GitHub PAT and click Load).";
 }
 
-const loadedKeys = Object.keys(BIBLE_DOCS);
-document.getElementById("bibleRulesView").textContent = loadedKeys.length
-? loadedKeys.map(k => "=== bible/" + k + " ===\n" + BIBLE_DOCS[k]).join("\n\n")
-: "No bible/ markdown files loaded yet.";
+function scrubSpoken(str) {
+  return String(str || "")
+    .replace(/https?:\/\/\S+/gi, "")
+    .replace(/[=*_~#]{2,}/g, " ")
+    .replace(/[\u2013\u2014]/g, ", ")
+    .replace(/\bDJ\s+Bananna\b/gi, "Veg Anna")
+    .replace(/\bDJ\s+Veg\s+Anna\b/gi, "Veg Anna")
+    .replace(/([!?.])\1{2,}/g, "$1")
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
-function scrub(str) {
-return String(str || "")
-.replace(/[\u2013\u2014]/g, ", ")
-.replace(/\bDJ\s+Bananna\b/gi, "Veg Anna")
-.replace(/\bDJ\s+Veg\s+Anna\b/gi, "Veg Anna")
-.replace(/([!?.])\1{2,}/g, "$1")
-.replace(/[ \t]+/g, " ")
-.trim();
+function scrubCopy(str) {
+  return String(str || "")
+    .replace(/https?:\/\/music\.apple\.com\/\S+/gi, "")
+    .replace(/https?:\/\/tinyurl\.com\/\S+/gi, "")
+    .replace(/\bDJ\s+Bananna\b/gi, "Veg Anna")
+    .replace(/\bDJ\s+Veg\s+Anna\b/gi, "Veg Anna")
+    .replace(/[\u2013\u2014]/g, " - ")
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
 function smartTrimStr(str, maxLen) {
-const s = scrub(str);
-if (s.length <= maxLen) return s;
-const cut = s.slice(0, maxLen - 1);
-const sp = cut.lastIndexOf(" ");
-return (sp > 20 ? cut.slice(0, sp) : cut).trim();
+  const s = scrubCopy(str);
+  if (s.length <= maxLen) return s;
+  const cut = s.slice(0, maxLen - 1);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > 20 ? cut.slice(0, sp) : cut).trim();
 }
 
-function extractBibleHighlights() {
-const combined = Object.values(BIBLE_DOCS).join("\n");
-const lines = combined
-.split(/\r?\n/)
-.map(l => l.replace(/^[-*#\s]+/, "").trim())
-.filter(l => l.length > 24 && l.length < 180 && !/^===/.test(l));
-if (!lines.length) return [];
-const start = (NONCE - 1) % lines.length;
-return [
-lines[start],
-lines[(start + 3) % lines.length],
-lines[(start + 7) % lines.length]
-].filter(Boolean);
+function extractBibleSignals() {
+  const combined = Object.values(BIBLE_DOCS).join("\n");
+  const lines = combined
+    .split(/\r?\n/)
+    .map(l => l.replace(/^[-*#\s]+/, "").trim())
+    .filter(l => l.length > 20 && l.length < 190 && !/^===/.test(l) && !/https?:\/\//i.test(l));
+  if (!lines.length) return [];
+  const baseIdx = (NONCE - 1) % lines.length;
+  return [
+    lines[baseIdx],
+    lines[(baseIdx + 2) % lines.length],
+    lines[(baseIdx + 5) % lines.length],
+    lines[(baseIdx + 9) % lines.length]
+  ].filter(Boolean);
 }
 
 function getSelectedSong() {
-if (!SONGS.length) {
-return {
-  idx: 0,
-  id: "",
-  title: "",
-  artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
-  topic: scrub((document.getElementById("topicInput").value || "").trim()),
-  cover: "",
-  portalUrl: "",
-  appleUrl: "",
-  genre: "",
-  status: ""
-};
-}
-const sel = document.getElementById("songSel");
-const idx = sel ? parseInt(sel.value || "0", 10) : 0;
-const s = SONGS[idx] || SONGS[0];
-const am = (s && s.platforms && s.platforms.appleMusic) || {};
-const customTopic = (document.getElementById("topicInput").value || "").trim();
-const autoTopic = [am.genre, s.promoStatus, s.id].filter(Boolean).join(" | ");
-return {
-idx: isNaN(idx) ? 0 : idx,
-id: s.id || "",
-title: scrub(s.title || s.name || ""),
-artist: scrub(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
-topic: scrub(customTopic || s.topic || s.theme || s.mood || autoTopic || ""),
-cover: am.artworkUrlHighRes || s.artUrl || s.cover || s.artwork || s.art || "",
-portalUrl: s.portalUrl || (RECORD_BRAIN && RECORD_BRAIN.salesPortal) || "",
-appleUrl: am.url || "",
-genre: am.genre || "",
-status: s.promoStatus || ""
-};
-}
+  if (!SONGS.length) {
+    return {
+      idx: 0,
+      id: "",
+      title: "",
+      artist: (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd",
+      topic: scrubCopy((document.getElementById("topicInput").value || "").trim()),
+      cover: "",
+      cleanLink: "",
+      genre: ""
+    };
+  }
+  const sel = document.getElementById("songSel");
+  const idx = sel ? parseInt(sel.value || "0", 10) : 0;
+  const s = SONGS[idx] || SONGS[0];
+  const am = (s && s.platforms && s.platforms.appleMusic) || {};
+  const customTopic = (document.getElementById("topicInput").value || "").trim();
+  const autoTopic = [am.genre, s.promoStatus, s.id].filter(Boolean).join(" | ");
+  const rawPortal = String(s.portalUrl || (RECORD_BRAIN && RECORD_BRAIN.salesPortal) || "").trim();
+  const cleanLink = rawPortal && !/music\.apple\.com|tinyurl\.com|strayd\.com/i.test(rawPortal) ? rawPortal : "";
 
-function refreshSocialSummary() {
-document.getElementById("pressPreview").textContent = document.getElementById("pressText").value;
-document.getElementById("socialSummary").textContent =
-"X:\n" + document.getElementById("xText").value +
-"\n\nTikTok:\n" + document.getElementById("tiktokText").value +
-"\n\nInstagram:\n" + document.getElementById("igText").value +
-"\n\nFacebook:\n" + document.getElementById("fbText").value +
-"\n\nYouTube:\n" + document.getElementById("ytTitleText").value + "\n" + document.getElementById("ytDescText").value;
+  return {
+    idx: isNaN(idx) ? 0 : idx,
+    id: s.id || "",
+    title: scrubCopy(s.title || s.name || ""),
+    artist: scrubCopy(s.artist || (RECORD_BRAIN && RECORD_BRAIN.artist) || "Martin Strayd"),
+    topic: scrubCopy(customTopic || s.topic || s.theme || s.mood || autoTopic || ""),
+    cover: am.artworkUrlHighRes || s.artUrl || s.cover || s.artwork || s.art || "",
+    cleanLink,
+    genre: am.genre || ""
+  };
 }
 
 function syncSong() {
-const cur = getSelectedSong();
-const img = document.getElementById("coverImg");
-const ph = document.getElementById("coverPlaceholder");
-if (cur.cover) {
-img.src = cur.cover;
-img.classList.remove("hidden");
-ph.classList.add("hidden");
-} else {
-img.removeAttribute("src");
-img.classList.add("hidden");
-ph.classList.remove("hidden");
-}
-const bibleCount = Object.keys(BIBLE_DOCS).length;
-document.getElementById("studioSummary").textContent = cur.title
-? ("Track " + (cur.idx + 1) + "/" + SONGS.length + ": " + cur.title + " (" + cur.artist + ") | bible/ docs: " + bibleCount + " | Run #" + NONCE)
-: ("bible/ docs: " + bibleCount + " | Run #" + NONCE);
-return cur;
+  const cur = getSelectedSong();
+  const img = document.getElementById("coverImg");
+  const ph = document.getElementById("coverPlaceholder");
+  if (cur.cover) {
+    img.src = cur.cover;
+    img.classList.remove("hidden");
+    ph.classList.add("hidden");
+  } else {
+    img.removeAttribute("src");
+    img.classList.add("hidden");
+    ph.classList.remove("hidden");
+  }
+  return cur;
 }
 
 function writeDispatchFields(out) {
-document.getElementById("djIntroText").value = scrub(out.djIntro || "");
-document.getElementById("pressText").value = scrub(out.press || "");
-document.getElementById("xText").value = smartTrimStr(out.x || "", 275);
-document.getElementById("tiktokText").value = smartTrimStr(out.tiktok || "", 2200);
-document.getElementById("igText").value = smartTrimStr(out.instagram || "", 2200);
-document.getElementById("fbText").value = smartTrimStr(out.facebook || "", 63206);
-document.getElementById("ytTitleText").value = smartTrimStr(out.ytTitle || "", 95);
-document.getElementById("ytDescText").value = smartTrimStr(out.ytDesc || "", 5000);
-refreshSocialSummary();
+  document.getElementById("djIntroText").value = scrubCopy(out.djIntro || "");
+  document.getElementById("pressText").value = scrubCopy(out.press || "");
+  document.getElementById("xText").value = smartTrimStr(out.x || "", 275);
+  document.getElementById("tiktokText").value = smartTrimStr(out.tiktok || "", 2200);
+  document.getElementById("igText").value = smartTrimStr(out.instagram || "", 2200);
+  document.getElementById("fbText").value = smartTrimStr(out.facebook || "", 63206);
+  document.getElementById("ytTitleText").value = smartTrimStr(out.ytTitle || "", 95);
+  document.getElementById("ytDescText").value = smartTrimStr(out.ytDesc || "", 5000);
 }
 
-async function generateFreshDispatchFromBible(cur, existingData) {
-if (!cur.title) {
-writeDispatchFields({ djIntro: "", press: "", x: "", tiktok: "", instagram: "", facebook: "", ytTitle: "", ytDesc: "" });
-return;
-}
+async function generateFreshDispatchFromBible(cur) {
+  if (!cur.title) {
+    writeDispatchFields({ djIntro: "", press: "", x: "", tiktok: "", instagram: "", facebook: "", ytTitle: "", ytDesc: "" });
+    return;
+  }
 
-const pat = getPat();
-if (pat) {
-try {
-  await fetch("https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/actions/workflows/dahl-dispatch.yml/dispatches", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + pat,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      ref: REPO_BRANCH,
-      inputs: {
-        track: cur.title,
-        artist: cur.artist,
-        topic: cur.topic || "fresh single focus",
-        nonce: String(NONCE)
-      }
-    })
-  });
-} catch (_) {}
-}
+  const pat = getPat();
+  if (pat) {
+    try {
+      await fetch("https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/actions/workflows/dahl-dispatch.yml/dispatches", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + pat,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ref: REPO_BRANCH,
+          inputs: {
+            track: cur.title,
+            artist: cur.artist,
+            topic: cur.topic || "daily single release",
+            nonce: String(NONCE)
+          }
+        })
+      });
+    } catch (_) {}
+  }
 
-if (existingData && existingData.dispatch && typeof existingData.dispatch === "object" && existingData.track === cur.title) {
-const d = existingData.dispatch;
-if (d.press && String(d.press).trim().length > 120) {
+  const sig = extractBibleSignals();
+  const s0 = sig[0] || "";
+  const s1 = sig[1] || "";
+  const s2 = sig[2] || "";
+  const s3 = sig[3] || "";
+  const angle = cur.topic || (cur.genre ? (cur.genre + " daily single drop") : "365-day daily release drop");
+  const ctaLink = cur.cleanLink ? (" " + cur.cleanLink) : "";
+
+  const djIntro =
+    "You are tuned in with DJ ANNA on ANTIPOP for today's single drop: " + cur.title + " by " + cur.artist + ". " +
+    angle + ". " +
+    (s0 ? (s0 + ". ") : "") +
+    "Lock in to the 365-day single rollout and stay with the signal.";
+
+  const press =
+    "SINGLE OF THE DAY RELEASE | " + META.date + "\n" +
+    "Track: " + cur.title + "\n" +
+    "Artist: " + cur.artist + "\n" +
+    "Rollout: 365-Day Daily Single Drop\n\n" +
+    "WHO & WHAT: " + cur.artist + " unveils the daily single \"" + cur.title + "\" on ANTIPOP, hosted live by DJ ANNA with angle focus: " + angle + ".\n\n" +
+    "WHY IT MATTERS: " + (s0 || angle) + (s1 ? (" " + s1) : "") + "\n\n" +
+    "CONTEXT & MOMENTUM: " + (s2 || "Daily single cadence built for consistent listener discovery.") + (s3 ? (" " + s3) : "") + "\n\n" +
+    "CALL TO ACTION: Stream, share, and explore the artist release directly" + (ctaLink ? (":" + ctaLink) : ".");
+
+  const xPost =
+    "SINGLE OF THE DAY: " + cur.title + " - " + cur.artist + ". " +
+    angle + ". " +
+    (s0 ? smartTrimStr(s0, 95) + " " : "") +
+    (cur.cleanLink || "");
+
+  const tiktokPost =
+    "Hook: Today's single drop is \"" + cur.title + "\" by " + cur.artist + " on the 365-day daily release run.\n" +
+    "Why listen now: " + (s0 || angle) + "\n" +
+    "CTA: Tap in and catch the daily drop" + (ctaLink ? (":" + ctaLink) : ".");
+
+  const igPost =
+    cur.title + " - " + cur.artist + " | Single of the Day (365-Day Daily Drop)\n\n" +
+    angle + "\n" +
+    (s0 ? (s0 + "\n") : "") +
+    (s1 ? (s1 + "\n") : "") +
+    "CTA: Check today's release" + (ctaLink ? (":" + ctaLink) : ".");
+
+  const fbPost =
+    "SINGLE OF THE DAY: " + cur.title + " by " + cur.artist + "\n" +
+    "Daily Release Focus: " + angle + "\n\n" +
+    (s0 ? (s0 + "\n") : "") +
+    (s1 ? (s1 + "\n") : "") +
+    (s2 ? (s2 + "\n") : "") +
+    "\nCTA: Hear today's single and follow the 365-day daily release" + (ctaLink ? (":" + ctaLink) : ".");
+
+  const ytTitle = cur.title + " - " + cur.artist + " | Single of the Day";
+  const ytDesc =
+    "Single of the Day: " + cur.title + " by " + cur.artist + "\n" +
+    "365-Day Daily Release Drop | Angle: " + angle + "\n\n" +
+    (s0 ? (s0 + "\n") : "") +
+    (s2 ? (s2 + "\n") : "") +
+    (cur.cleanLink ? ("\nMore: " + cur.cleanLink) : "");
+
   writeDispatchFields({
-    djIntro: d.djIntro || "",
-    press: d.press || "",
-    x: d.x || "",
-    tiktok: d.tiktok || "",
-    instagram: d.instagram || "",
-    facebook: d.facebook || "",
-    ytTitle: d.ytTitle || "",
-    ytDesc: d.ytDesc || ""
+    djIntro,
+    press,
+    x: xPost,
+    tiktok: tiktokPost,
+    instagram: igPost,
+    facebook: fbPost,
+    ytTitle,
+    ytDesc
   });
-  return;
-}
-}
-
-const highlights = extractBibleHighlights();
-const b1 = highlights[0] || "";
-const b2 = highlights[1] || "";
-const linksLine = [cur.portalUrl, cur.appleUrl].filter(Boolean).join(" | ");
-const focusLine = cur.topic ? ("Angle: " + cur.topic + ".") : ("ID: " + (cur.id || (cur.idx + 1)) + ".");
-const genreTag = cur.genre ? ("[" + cur.genre + "] ") : "";
-
-writeDispatchFields({
-djIntro: genreTag + cur.title + " by " + cur.artist + ". " + focusLine + (b1 ? (" " + b1) : ""),
-press: META.date + "\n" + cur.title + " — " + cur.artist + "\n" + focusLine + (b1 ? ("\n" + b1) : "") + (b2 ? ("\n" + b2) : "") + (linksLine ? ("\n" + linksLine) : ""),
-x: genreTag + cur.title + " — " + cur.artist + ". " + focusLine + (cur.portalUrl ? (" " + cur.portalUrl) : ""),
-tiktok: cur.title + " (" + cur.artist + ") — " + focusLine + (b1 ? (" " + b1) : ""),
-instagram: cur.title + " by " + cur.artist + "\n" + focusLine + (b1 ? ("\n" + b1) : "") + (linksLine ? ("\n" + linksLine) : ""),
-facebook: cur.title + " by " + cur.artist + "\n" + focusLine + (b1 ? ("\n" + b1) : "") + (b2 ? ("\n" + b2) : "") + (linksLine ? ("\n" + linksLine) : ""),
-ytTitle: cur.title + " — " + cur.artist + (cur.id ? (" (" + cur.id + ")") : ""),
-ytDesc: cur.title + " by " + cur.artist + "\n" + focusLine + (b1 ? ("\n" + b1) : "") + (linksLine ? ("\n" + linksLine) : "")
-});
 }
 
 function cleanVoiceDisplayLabel(rawLabel) {
-return String(rawLabel || "")
-.replace(/\s*\[[^\]]+\]\s*$/g, "")
-.replace(/^(?:sys|edge):/i, "")
-.trim();
+  return String(rawLabel || "")
+    .replace(/\s*\[[^\]]+\]\s*$/g, "")
+    .replace(/^(?:sys|edge):/i, "")
+    .trim();
 }
 
 function populateVoices() {
-const sel = document.getElementById("voiceSel");
-const savedVal = localStorage.getItem("antipop_voice_v1") || "";
-const savedLbl = localStorage.getItem("antipop_voice_label_v1") || "";
-const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
-const seen = new Set();
-const options = [];
+  const sel = document.getElementById("voiceSel");
+  const savedVal = localStorage.getItem("antipop_voice_v1") || "";
+  const savedLbl = localStorage.getItem("antipop_voice_label_v1") || "";
+  const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
+  const seen = new Set();
+  const options = [];
 
-sysVoices.forEach(v => {
-const key = "sys:" + v.name + "|" + v.lang;
-if (!seen.has(key)) {
-  seen.add(key);
-  options.push({ value: "sys:" + v.name, label: v.name + " (" + v.lang + ")" });
-}
-});
-EDGE_VOICE_CATALOG.forEach(([edgeName, label]) => {
-const key = "edge:" + edgeName;
-if (!seen.has(key)) {
-  seen.add(key);
-  options.push({ value: "edge:" + edgeName, label: label + " [" + edgeName + "]" });
-}
-});
+  sysVoices.forEach(v => {
+    const key = "sys:" + v.name + "|" + v.lang;
+    if (!seen.has(key)) {
+      seen.add(key);
+      options.push({ value: "sys:" + v.name, label: v.name + " (" + v.lang + ")" });
+    }
+  });
+  EDGE_VOICE_CATALOG.forEach(([edgeName, label]) => {
+    const key = "edge:" + edgeName;
+    if (!seen.has(key)) {
+      seen.add(key);
+      options.push({ value: "edge:" + edgeName, label: label + " [" + edgeName + "]" });
+    }
+  });
 
-sel.innerHTML = "";
-options.forEach(o => {
-const opt = document.createElement("option");
-opt.value = o.value;
-opt.textContent = o.label;
-sel.appendChild(opt);
-});
+  sel.innerHTML = "";
+  options.forEach(o => {
+    const opt = document.createElement("option");
+    opt.value = o.value;
+    opt.textContent = o.label;
+    sel.appendChild(opt);
+  });
 
-if (savedVal && Array.from(sel.options).some(o => o.value === savedVal)) {
-sel.value = savedVal;
-} else if (savedLbl) {
-const matchByLabel = Array.from(sel.options).find(o => cleanVoiceDisplayLabel(o.textContent) === savedLbl);
-if (matchByLabel) sel.value = matchByLabel.value;
-else if (sel.options.length > 0) sel.selectedIndex = 0;
-} else if (sel.options.length > 0) {
-sel.selectedIndex = 0;
-}
+  if (savedVal && Array.from(sel.options).some(o => o.value === savedVal)) {
+    sel.value = savedVal;
+  } else if (savedLbl) {
+    const matchByLabel = Array.from(sel.options).find(o => cleanVoiceDisplayLabel(o.textContent) === savedLbl);
+    if (matchByLabel) sel.value = matchByLabel.value;
+    else if (sel.options.length > 0) sel.selectedIndex = 0;
+  } else if (sel.options.length > 0) {
+    sel.selectedIndex = 0;
+  }
 }
 
 function persistSelectedVoice(showMsg) {
-const voiceEl = document.getElementById("voiceSel");
-if (!voiceEl) return;
-const chosenOpt = voiceEl.options[voiceEl.selectedIndex];
-const cleanName = cleanVoiceDisplayLabel(chosenOpt ? chosenOpt.textContent : voiceEl.value);
-localStorage.setItem("antipop_voice_v1", voiceEl.value);
-localStorage.setItem("antipop_voice_label_v1", cleanName);
-if (showMsg) setStatus("Voice saved: " + cleanName);
+  const voiceEl = document.getElementById("voiceSel");
+  if (!voiceEl) return;
+  const chosenOpt = voiceEl.options[voiceEl.selectedIndex];
+  const cleanName = cleanVoiceDisplayLabel(chosenOpt ? chosenOpt.textContent : voiceEl.value);
+  localStorage.setItem("antipop_voice_v1", voiceEl.value);
+  localStorage.setItem("antipop_voice_label_v1", cleanName);
+  if (showMsg) setStatus("Voice saved: " + cleanName);
 }
 
 function resolveSpeechProfile(selVal, sysVoices) {
-if (selVal.startsWith("sys:")) {
-const targetName = selVal.slice(4);
-const voice = sysVoices.find(v => v.name === targetName) || null;
-const isMale = /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i.test(targetName);
-return {
-  voice,
-  edgeVoiceName: "",
-  lang: (voice && voice.lang) || "en-US",
-  pitch: isMale ? 0.88 : 1.06,
-  rate: isMale ? 0.96 : 1.0,
-  label: voice ? voice.name : targetName
-};
-}
+  if (selVal.startsWith("sys:")) {
+    const targetName = selVal.slice(4);
+    const voice = sysVoices.find(v => v.name === targetName) || null;
+    const isMale = /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i.test(targetName);
+    return {
+      voice,
+      edgeVoiceName: "",
+      lang: (voice && voice.lang) || "en-US",
+      pitch: isMale ? 0.88 : 1.06,
+      rate: isMale ? 0.96 : 1.0,
+      label: voice ? voice.name : targetName
+    };
+  }
 
-if (selVal.startsWith("edge:")) {
-const edgeName = selVal.slice(5);
-const catalogEntry = EDGE_VOICE_CATALOG.find(([id]) => id === edgeName);
-const labelText = catalogEntry ? catalogEntry[1] : edgeName;
-const localeMatch = labelText.match(/\(([^)]+)\)/) || edgeName.match(/^([a-z]{2,3}-[A-Z]{2})/);
-const targetLang = localeMatch ? localeMatch[1] : "en-US";
-const langPrefix = targetLang.split("-")[0].toLowerCase();
-const shortName = labelText.split(" ")[0].toLowerCase();
-const isMale = MALE_EDGE_NAMES.has(edgeName);
+  if (selVal.startsWith("edge:")) {
+    const edgeName = selVal.slice(5);
+    const catalogEntry = EDGE_VOICE_CATALOG.find(([id]) => id === edgeName);
+    const labelText = catalogEntry ? catalogEntry[1] : edgeName;
+    const localeMatch = labelText.match(/\(([^)]+)\)/) || edgeName.match(/^([a-z]{2,3}-[A-Z]{2})/);
+    const targetLang = localeMatch ? localeMatch[1] : "en-US";
+    const langPrefix = targetLang.split("-")[0].toLowerCase();
+    const shortName = labelText.split(" ")[0].toLowerCase();
+    const isMale = MALE_EDGE_NAMES.has(edgeName);
 
-const exactLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase() === targetLang.toLowerCase());
-const prefixLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase().startsWith(langPrefix + "-"));
-const pool = exactLangVoices.length ? exactLangVoices : prefixLangVoices;
+    const exactLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase() === targetLang.toLowerCase());
+    const prefixLangVoices = sysVoices.filter(v => String(v.lang || "").toLowerCase().startsWith(langPrefix + "-"));
+    const pool = exactLangVoices.length ? exactLangVoices : prefixLangVoices;
 
-const byName = pool.find(v => String(v.name || "").toLowerCase().includes(shortName));
-const genderRx = isMale
-  ? /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i
-  : /\b(female|woman|aria|luna|jenny|michelle|sonia|natasha|clara|samantha|victoria|zira|premwadee|nanami|sunhi|elvira|denise|katja|isabella|francisca|salma)\b/i;
+    const byName = pool.find(v => String(v.name || "").toLowerCase().includes(shortName));
+    const genderRx = isMale
+      ? /\b(male|man|david|mark|daniel|arthur|george|ryan|steffan|roger|liam|aarav|niwat|keita|henri|conrad|diego)\b/i
+      : /\b(female|woman|aria|luna|jenny|michelle|sonia|natasha|clara|samantha|victoria|zira|premwadee|nanami|sunhi|elvira|denise|katja|isabella|francisca|salma)\b/i;
 
-const voice =
-  byName ||
-  pool.find(v => genderRx.test(v.name || "")) ||
-  pool[0] ||
-  sysVoices.find(v => /^en/i.test(v.lang || "")) ||
-  sysVoices[0] ||
-  null;
+    const voice =
+      byName ||
+      pool.find(v => genderRx.test(v.name || "")) ||
+      pool[0] ||
+      sysVoices.find(v => /^en/i.test(v.lang || "")) ||
+      sysVoices[0] ||
+      null;
 
-return {
-  voice,
-  edgeVoiceName: edgeName,
-  lang: targetLang,
-  pitch: isMale ? 0.86 : 1.05,
-  rate: isMale ? 0.96 : 1.0,
-  label: labelText
-};
-}
+    return {
+      voice,
+      edgeVoiceName: edgeName,
+      lang: targetLang,
+      pitch: isMale ? 0.86 : 1.05,
+      rate: isMale ? 0.96 : 1.0,
+      label: labelText
+    };
+  }
 
-const fallbackVoice = sysVoices.find(v => /^en/i.test(v.lang || "")) || sysVoices[0] || null;
-return {
-voice: fallbackVoice,
-edgeVoiceName: "",
-lang: (fallbackVoice && fallbackVoice.lang) || "en-US",
-pitch: 1.02,
-rate: 0.98,
-label: fallbackVoice ? fallbackVoice.name : "Default"
-};
+  const fallbackVoice = sysVoices.find(v => /^en/i.test(v.lang || "")) || sysVoices[0] || null;
+  return {
+    voice: fallbackVoice,
+    edgeVoiceName: "",
+    lang: (fallbackVoice && fallbackVoice.lang) || "en-US",
+    pitch: 1.02,
+    rate: 0.98,
+    label: fallbackVoice ? fallbackVoice.name : "Default"
+  };
 }
 
 function speakText(text) {
-const clean = scrub(text);
-if (!clean) {
-setStatus("Nothing to speak");
-return;
-}
-const selVal = document.getElementById("voiceSel").value || "";
-const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
-const profile = resolveSpeechProfile(selVal, sysVoices);
+  const clean = scrubSpoken(text);
+  if (!clean) {
+    setStatus("Nothing to speak");
+    return;
+  }
+  if (!("speechSynthesis" in window)) {
+    setStatus("Speech synthesis unavailable in browser");
+    return;
+  }
+  const selVal = document.getElementById("voiceSel").value || "";
+  const sysVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const profile = resolveSpeechProfile(selVal, sysVoices);
 
-if (!("speechSynthesis" in window)) {
-setStatus("Speech synthesis unavailable in browser");
-return;
+  window.speechSynthesis.cancel();
+  const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
+  chunks.forEach(ch => {
+    const part = ch.trim();
+    if (!part) return;
+    const u = new SpeechSynthesisUtterance(part);
+    if (profile.voice) u.voice = profile.voice;
+    u.lang = profile.lang;
+    u.rate = profile.rate;
+    u.pitch = profile.pitch;
+    u.onend = () => setStatus("Finished speaking (" + profile.label + ")");
+    window.speechSynthesis.speak(u);
+  });
+  setStatus("Speaking (" + profile.label + ")...");
 }
 
-window.speechSynthesis.cancel();
-const chunks = clean.match(/[^.!?]+[.!?]*\s*/g) || [clean];
-chunks.forEach(ch => {
-const part = ch.trim();
-if (!part) return;
-const u = new SpeechSynthesisUtterance(part);
-if (profile.voice) u.voice = profile.voice;
-u.lang = profile.lang;
-u.rate = profile.rate;
-u.pitch = profile.pitch;
-u.onend = () => setStatus("Finished speaking (" + profile.label + ")");
-window.speechSynthesis.speak(u);
-});
-setStatus("Speaking (" + profile.label + ")...");
-}
+async function downloadMp3File(text, baseName, repoAudioPath) {
+  const clean = scrubSpoken(text).slice(0, 450);
+  const selVal = document.getElementById("voiceSel").value || "";
+  const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
+  const profile = resolveSpeechProfile(selVal, sysVoices);
+  const voiceKey = profile.edgeVoiceName
+    ? profile.edgeVoiceName.replace(/Neural$/i, "")
+    : (profile.voice && profile.voice.name ? profile.voice.name : "Aria");
 
-async function downloadMp3File(text, baseName) {
-const clean = scrub(text).slice(0, 450);
-if (!clean) {
-setStatus("No text to render MP3");
-return;
-}
-const selVal = document.getElementById("voiceSel").value || "";
-const sysVoices = (window.speechSynthesis && window.speechSynthesis.getVoices) ? window.speechSynthesis.getVoices() : [];
-const profile = resolveSpeechProfile(selVal, sysVoices);
-const voiceKey = profile.edgeVoiceName
-? profile.edgeVoiceName.replace(/Neural$/i, "")
-: (profile.voice && profile.voice.name ? profile.voice.name : "Aria");
-
-setStatus("Rendering MP3 (" + profile.label + ")...");
-try {
-const resp = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(voiceKey) + "&text=" + encodeURIComponent(clean));
-if (!resp.ok) throw new Error("HTTP " + resp.status);
-const blob = await resp.blob();
-if (!blob || blob.size < 100) throw new Error("Empty MP3 response");
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = baseName + ".mp3";
-document.body.appendChild(a);
-a.click();
-a.remove();
-setTimeout(() => URL.revokeObjectURL(url), 4000);
-setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
-} catch (err) {
-setStatus("MP3 synthesis unavailable (" + (err && err.message ? err.message : "network error") + ")");
-}
+  setStatus("Fetching MP3 (" + profile.label + ")...");
+  try {
+    if (clean) {
+      const resp = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=" + encodeURIComponent(voiceKey) + "&text=" + encodeURIComponent(clean));
+      if (resp.ok) {
+        const blob = await resp.blob();
+        if (blob && blob.size > 200 && /audio|octet-stream/i.test(blob.type || "audio/mpeg")) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = baseName + ".mp3";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+          setStatus("Downloaded " + baseName + ".mp3 (" + profile.label + ")");
+          return;
+        }
+      }
+    }
+    if (repoAudioPath) {
+      const mp3Url = "https://raw.githubusercontent.com/" + REPO_OWNER + "/" + REPO_NAME + "/" + REPO_BRANCH + "/" + repoAudioPath + "?t=" + Date.now();
+      const mr = await fetch(mp3Url);
+      if (mr.ok) {
+        const mblob = await mr.blob();
+        if (mblob && mblob.size > 200) {
+          const url = URL.createObjectURL(mblob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = baseName + ".mp3";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+          setStatus("Downloaded " + baseName + ".mp3 from " + repoAudioPath);
+          return;
+        }
+      }
+    }
+    throw new Error("No MP3 stream available");
+  } catch (err) {
+    setStatus("MP3 unavailable (" + (err && err.message ? err.message : "check GitHub/TTS") + ") — speaking aloud");
+    speakText(clean);
+  }
 }
 
 function copyVal(id, label) {
-const el = document.getElementById(id);
-if (!el) return;
-navigator.clipboard.writeText(el.value || "").then(() => setStatus("Copied " + (label || id)));
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.value || "").then(() => setStatus("Copied " + (label || id)));
 }
 
-function sendSocialPost(platform, id) {
-const el = document.getElementById(id);
-if (!el) return;
-const text = scrub(el.value || "");
-if (!text) {
-setStatus("Nothing to send for " + platform);
-return;
-}
-if (navigator.share) {
-navigator.share({ text }).then(() => setStatus("Shared " + platform)).catch(() => {
-  navigator.clipboard.writeText(text).catch(() => {});
-  setStatus("Copied " + platform + " post ready to paste");
-});
-} else {
-navigator.clipboard.writeText(text).catch(() => {});
-setStatus("Copied " + platform + " post ready to send");
-}
+function postSocialCard(platform, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = scrubCopy(el.value || "");
+  if (!text) {
+    setStatus("Nothing to post for " + platform);
+    return;
+  }
+  if (navigator.share) {
+    navigator.share({ text }).then(() => setStatus("Posted via share sheet: " + platform)).catch(() => {
+      navigator.clipboard.writeText(text).catch(() => {});
+      setStatus("Copied " + platform + " post");
+    });
+  } else {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setStatus("Copied " + platform + " post");
+  }
 }
 
 async function loadCatalogAndDispatch() {
-setStatus("Loading bible/ & catalog...");
-await loadBibleCorpus();
+  setStatus("Loading bible/ & catalog...");
+  await loadBibleCorpus();
 
-try {
-const rawCatalog = await fetchRepoFile("strayd/songs-db.json");
-if (rawCatalog) {
-  const parsed = JSON.parse(rawCatalog.replace(/^\uFEFF/, ""));
-  SONGS = Array.isArray(parsed) ? parsed : (parsed.songs || parsed.tracks || []);
-}
-} catch (_) {}
+  try {
+    const rawCatalog = await fetchRepoFile("strayd/songs-db.json");
+    if (rawCatalog) {
+      const parsed = JSON.parse(rawCatalog.replace(/^\uFEFF/, ""));
+      SONGS = Array.isArray(parsed) ? parsed : (parsed.songs || parsed.tracks || []);
+    }
+  } catch (_) {}
 
-const sel = document.getElementById("songSel");
-sel.innerHTML = "";
-if (SONGS.length > 0) {
-SONGS.forEach((s, i) => {
-  const opt = document.createElement("option");
-  opt.value = String(i);
-  opt.textContent = (i + 1) + ". " + scrub(s.title || s.name || ("Track " + (i + 1)));
-  sel.appendChild(opt);
-});
-sel.value = "0";
-document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Dispatch (" + SONGS.length + " songs)";
-} else {
-document.getElementById("catalogStatus").textContent = "Catalog unavailable (songs-db.json)";
-}
+  const sel = document.getElementById("songSel");
+  sel.innerHTML = "";
+  if (SONGS.length > 0) {
+    SONGS.forEach((s, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = (i + 1) + ". " + scrubCopy(s.title || s.name || ("Track " + (i + 1)));
+      sel.appendChild(opt);
+    });
+    sel.value = "0";
+    document.getElementById("catalogStatus").textContent = "ANTIPOP Daily Dispatch (" + SONGS.length + " songs)";
+  } else {
+    document.getElementById("catalogStatus").textContent = "Catalog unavailable (songs-db.json)";
+  }
 
-let latestData = null;
-try {
-const lr = await fetchRepoFile("strayd/last-dahl-dispatch.json");
-if (lr) latestData = JSON.parse(lr.replace(/^\uFEFF/, ""));
-} catch (_) {}
-
-const cur = syncSong();
-await generateFreshDispatchFromBible(cur, latestData);
-setStatus("Ready");
+  const cur = syncSong();
+  await generateFreshDispatchFromBible(cur);
+  setStatus("Ready");
 }
 
 function wireSocialCards() {
-document.querySelectorAll("#socialCardsGrid .card").forEach(card => {
-const platform = card.dataset.platform || "Post";
-const targetId = card.dataset.target;
-const ta = document.getElementById(targetId);
-if (!ta) return;
+  document.querySelectorAll("#socialCardsGrid .card").forEach(card => {
+    const platform = card.dataset.platform || "Post";
+    const targetId = card.dataset.target;
+    const audioPath = card.dataset.audio || "";
+    const ta = document.getElementById(targetId);
+    if (!ta) return;
 
-card.addEventListener("click", e => {
-  const btn = e.target.closest("button[data-act]");
-  if (!btn) return;
-  const act = btn.dataset.act;
-  if (act === "listen") {
-    speakText(ta.value);
-  } else if (act === "edit") {
-    ta.readOnly = false;
-    ta.focus();
-    setStatus("Editing " + platform);
-  } else if (act === "save") {
-    ta.readOnly = true;
-    ta.value = scrub(ta.value);
-    refreshSocialSummary();
-    setStatus("Saved " + platform);
-  } else if (act === "copy") {
-    copyVal(targetId, platform);
-  } else if (act === "send") {
-    sendSocialPost(platform, targetId);
-  }
-});
-});
+    card.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === "speak") {
+        speakText(ta.value);
+      } else if (act === "dlAudio") {
+        downloadMp3File(ta.value, "antipop-" + platform.toLowerCase().replace(/[^a-z0-9]+/g, "-"), audioPath);
+      } else if (act === "edit") {
+        ta.readOnly = false;
+        ta.focus();
+        setStatus("Editing " + platform);
+      } else if (act === "save") {
+        ta.readOnly = true;
+        ta.value = scrubCopy(ta.value);
+        setStatus("Saved " + platform);
+      } else if (act === "copy") {
+        copyVal(targetId, platform);
+      } else if (act === "post") {
+        postSocialCard(platform, targetId);
+      }
+    });
+  });
 }
 
 function wireUI() {
-const patEl = document.getElementById("patInput");
-patEl.value = localStorage.getItem("antipop_gh_pat_v1") || "";
-patEl.addEventListener("change", () => localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim()));
+  const patEl = document.getElementById("patInput");
+  patEl.value = localStorage.getItem("antipop_gh_pat_v1") || "";
+  patEl.addEventListener("change", () => localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim()));
 
-const voiceEl = document.getElementById("voiceSel");
-voiceEl.addEventListener("change", () => persistSelectedVoice(true));
+  const voiceEl = document.getElementById("voiceSel");
+  voiceEl.addEventListener("change", () => persistSelectedVoice(true));
 
-document.querySelectorAll(".tab-btn").forEach(btn => {
-btn.addEventListener("click", () => {
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  const t = btn.dataset.tab;
-  ["dispatch", "studio", "press", "social"].forEach(name => {
-    document.getElementById("view-" + name).classList.toggle("hidden", name !== t);
+  document.getElementById("songSel").addEventListener("change", async () => {
+    NONCE++;
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur);
   });
-});
-});
+  document.getElementById("topicInput").addEventListener("input", async () => {
+    NONCE++;
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur);
+  });
+  document.getElementById("loadBtn").addEventListener("click", () => {
+    NONCE++;
+    loadCatalogAndDispatch();
+  });
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    persistSelectedVoice(false);
+    if (patEl.value.trim()) localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim());
+    setStatus("Saved voice & settings");
+  });
+  document.getElementById("renderBtn").addEventListener("click", async () => {
+    NONCE++;
+    setStatus("Pulling bible/ & generating fresh dispatch...");
+    await loadBibleCorpus();
+    const cur = syncSong();
+    await generateFreshDispatchFromBible(cur);
+    await downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro", "strayd/audio/djIntro.mp3");
+  });
+  document.getElementById("stopSpeechBtn").addEventListener("click", () => {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setStatus("Speech stopped");
+  });
 
-document.getElementById("songSel").addEventListener("change", async () => {
-NONCE++;
-const cur = syncSong();
-await generateFreshDispatchFromBible(cur, null);
-});
-document.getElementById("topicInput").addEventListener("input", async () => {
-NONCE++;
-const cur = syncSong();
-await generateFreshDispatchFromBible(cur, null);
-});
-document.getElementById("loadBtn").addEventListener("click", () => {
-NONCE++;
-loadCatalogAndDispatch();
-});
-document.getElementById("saveBtn").addEventListener("click", () => {
-persistSelectedVoice(false);
-if (patEl.value.trim()) localStorage.setItem("antipop_gh_pat_v1", patEl.value.trim());
-refreshSocialSummary();
-setStatus("Saved voice & settings");
-});
-document.getElementById("renderBtn").addEventListener("click", async () => {
-NONCE++;
-setStatus("Pulling bible/ & generating fresh dispatch...");
-await loadBibleCorpus();
-const cur = syncSong();
-await generateFreshDispatchFromBible(cur, null);
-await downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro");
-});
-document.getElementById("stopSpeechBtn").addEventListener("click", () => {
-if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-setStatus("Speech stopped");
-});
+  document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
+  document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
+  document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro", "strayd/audio/djIntro.mp3"));
+  document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-press-release", "strayd/audio/press.mp3"));
+  document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ Intro"));
+  document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Press Release"));
 
-document.getElementById("speakIntroBtn").addEventListener("click", () => speakText(document.getElementById("djIntroText").value));
-document.getElementById("speakPressBtn").addEventListener("click", () => speakText(document.getElementById("pressText").value));
-document.getElementById("dlIntroBtn").addEventListener("click", () => downloadMp3File(document.getElementById("djIntroText").value, "antipop-dj-intro"));
-document.getElementById("dlPressBtn").addEventListener("click", () => downloadMp3File(document.getElementById("pressText").value, "antipop-press-release"));
-document.getElementById("copyIntroBtn").addEventListener("click", () => copyVal("djIntroText", "DJ Intro"));
-document.getElementById("copyPressBtn").addEventListener("click", () => copyVal("pressText", "Press Release"));
-
-wireSocialCards();
+  wireSocialCards();
 }
 
 if ("speechSynthesis" in window) {
-window.speechSynthesis.onvoiceschanged = populateVoices;
+  window.speechSynthesis.onvoiceschanged = populateVoices;
 }
 populateVoices();
 wireUI();
