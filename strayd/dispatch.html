@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veg Anna Radio - Dispatch Console</title><style>
+<title>ANTIPOP - Dispatch Console</title><style>
 :root{--bg:#0b0f17;--card:#131a26;--card2:#192232;--tx:#eef3fb;--mu:#9fb0c8;--ac:#38bdf8;--ok:#4ade80;--bd:rgba(255,255,255,.14)}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:16px}
 .wrap{max-width:1200px;margin:0 auto}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
@@ -13,15 +13,15 @@ label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:4px}
 select,input,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-family:inherit}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
 .dj-ta{min-height:115px;line-height:1.6;padding:12px}
-.press-ta{min-height:460px;line-height:1.65;padding:14px}
-.soc-ta{min-height:185px;line-height:1.55;padding:12px}
+.press-ta{min-height:440px;line-height:1.65;padding:14px}
+.soc-ta{min-height:180px;line-height:1.55;padding:12px}
 .soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .scard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .sleft{display:flex;align-items:center;gap:10px;font-weight:600}
 .sleft img{width:42px;height:42px;border-radius:8px;object-fit:cover}
 .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-button,a.btn{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer;text-decoration:none;display:inline-block}
+button{background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer}
 button.pri{background:var(--ac);color:#061018;border:none;font-weight:600;padding:8px 14px}
 button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding:8px 14px}
 #st{color:var(--ac);font-size:.85rem}</style></head>
@@ -36,17 +36,18 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <div class="art-box"><img id="bigArt" alt="Track cover art"/></div>
 <div>
 <h1 id="songTitle" style="margin:0 0 4px">Loading catalog...</h1>
-<div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - Veg Anna Radio Dispatch</div>
+<div id="songMeta" style="color:var(--mu);font-size:.9rem">Martin Strayd - ANTIPOP Dispatch</div>
 <div class="ctrl">
 <div><label for="songSel">Select Song</label><select id="songSel"></select></div>
-<div><label for="voiceSel">Voice</label><select id="voiceSel"></select></div>
+<div><label for="voiceSel">Voice</label><select id="voiceSel"><option value="">Default System Voice</option></select></div>
 <div><label for="angleIn">Topic / Story Angle</label><input id="angleIn" placeholder="Song topic or story angle..."/></div>
-<div><label for="patIn">GitHub PAT (For Save &amp; Dahl Run)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
+<div><label for="patIn">GitHub PAT (Required for Save &amp; Action)</label><input id="patIn" type="password" placeholder="ghp_..."/></div>
 </div>
 <div class="bar">
 <button id="loadBtn" class="pri" type="button">Load Live Dispatch</button>
 <button id="saveGhBtn" class="ok" type="button">Save Edits to GitHub</button>
-<button id="runActBtn" type="button">Generate New Dispatch</button><button id="renderMp3Btn" type="button">Render MP3s in Selected Voice</button>
+<button id="runActBtn" type="button">Generate New Dispatch</button>
+<button id="renderMp3Btn" type="button">Render MP3s in Selected Voice</button>
 <button id="stopSpkBtn" type="button">Stop Speech</button>
 <span id="st" role="status" aria-live="polite">Ready</span>
 </div>
@@ -54,7 +55,7 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 </section>
 <section class="box" aria-label="DJ Intro">
 <div class="shead" style="margin-bottom:8px">
-<h2 style="margin:0;font-size:1.05rem">Veg Anna Radio DJ Intro</h2>
+<h2 style="margin:0;font-size:1.05rem">ANTIPOP DJ Intro (Veg Anna / ANNA)</h2>
 <div class="bar">
 <button id="spkDj" type="button">Speak</button>
 <button id="dlDj" type="button">Download Audio</button>
@@ -62,11 +63,11 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 </div>
 </div>
 <label for="djBox">DJ Intro Text</label>
-<textarea id="djBox" class="dj-ta" placeholder="ANNA live radio intro..."></textarea>
+<textarea id="djBox" class="dj-ta" placeholder="DJ intro..."></textarea>
 </section>
 <section class="box" aria-label="Press Release">
 <div class="shead" style="margin-bottom:8px">
-<h2 style="margin:0;font-size:1.05rem">Single of the Day Press Release (3/4-Page Media Release)</h2>
+<h2 style="margin:0;font-size:1.05rem">Single of the Day Press Release</h2>
 <div class="bar">
 <button id="spkPress" type="button">Speak</button>
 <button id="dlPress" type="button">Download Audio</button>
@@ -80,8 +81,7 @@ button.ok{background:var(--ok);color:#05140b;border:none;font-weight:600;padding
 <section id="socGrid" class="soc-grid" aria-label="Social Media Posts"></section>
 </div>
 <script>
-const $=id=>document.getElementById(id);
-const setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
+const $=idconst setVal=(id,v)=>{const el=$(id);if(el)el.value=String(v||"");};
 const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v||"");};
 const CH=[
   ["x","X",280,"https://x.com/intent/tweet?text="],
@@ -96,7 +96,7 @@ const APPLE_URL="https://music.apple.com/us/album/adhd-i-can-do-that-travillen-d
 const BUNDLE_URL="https://tinyurl.com/martinstrayd";
 const HUB_URL="https://strayd.com";
 const YT_URL="https://www.youtube.com/@martinstrayd";
-let SONGS=[],VOICES=[],BIBLE_RULES="",META={date:"",track:"",artist:"",topic:""};
+let SONGS=[],VOICES=[],META={date:"",track:"",artist:"",topic:""};
 
 const scrub=s=>String(s||"")
   .replace(/<think>[\s\S]*?<\/think>/gi,"")
@@ -139,7 +139,7 @@ function buildCards(){
     const bSpk=document.createElement("button");
     bSpk.type="button";bSpk.textContent="Speak";bSpk.onclick=()=>speakTxt(ta.value,false);
     const bDl=document.createElement("button");
-    bDl.type="button";bDl.textContent="Download Audio";bDl.onclick=()=>dlAudio(ta.value,id+"-anna");
+    bDl.type="button";bDl.textContent="Download Audio";bDl.onclick=()=>dlRepoMp3(id,id+"-antipop");
     const bCpy=document.createElement("button");
     bCpy.type="button";bCpy.textContent="Copy";bCpy.onclick=()=>cpyTxt(ta.value,lbl);
     const bPost=document.createElement("button");
@@ -193,17 +193,17 @@ async function fetchRepo(p){
 
 async function putRepo(p,content,msg){
   const pat=getPat();
-  if(!pat)throw new Error("Enter GitHub PAT first");
+  if(!pat)throw new Error("Enter a GitHub PAT in the PAT box first");
   const api="https://api.github.com/repos/agent-anna/home/contents/"+p;
   const g=await fetch(api+"?ref=main",{headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json"},cache:"no-store"});
-  if(!g.ok)throw new Error("GET HTTP "+g.status);
+  if(!g.ok)throw new Error("GitHub read HTTP "+g.status);
   const gj=await g.json();
   const put=await fetch(api,{
     method:"PUT",
     headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
     body:JSON.stringify({message:msg,content:utf8ToB64(content),sha:gj.sha,branch:"main"})
   });
-  if(!put.ok)throw new Error("PUT HTTP "+put.status);
+  if(!put.ok)throw new Error("GitHub write HTTP "+put.status);
   return await put.json();
 }
 
@@ -222,7 +222,7 @@ function syncSong(){
   const topic=scrub(($("angleIn")&&$("angleIn").value)||s.topic||s.theme||s.genre||"unstoppable creative overdrive and modern life");
   const u=artUrl(s,t);
   setTxt("songTitle",t);
-  setTxt("songMeta",a+" - "+SONGS.length+" songs - Veg Anna Radio Dispatch");
+  setTxt("songMeta",a+" - "+SONGS.length+" songs - ANTIPOP Dispatch");
   if($("bigArt"))$("bigArt").src=u;
   document.querySelectorAll("img[data-th]").forEach(im=>{im.src=u;});
   META.track=t;META.artist=a;META.topic=topic;
@@ -233,33 +233,29 @@ function buildDefaults(t,a,topic,dt){
   const dStr=dt||new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   const press=[
     "FOR IMMEDIATE RELEASE - "+dStr,
-    "VEG ANNA RADIO LAUNCHES '"+t+"' BY "+a.toUpperCase()+" AS TODAY'S SINGLE OF THE DAY",
+    "ANTIPOP PREMIERES '"+t+"' BY "+a.toUpperCase()+" AS TODAY'S SINGLE OF THE DAY",
     "",
-    "GLOBAL DAILY SINGLES LAUNCH CAMPAIGN: Independent media network and broadcaster Veg Anna Radio today officially premieres '"+t+"' by "+a+" as its featured Single of the Day. The release anchors an ongoing daily singles launch campaign built around one artist, one new song per day, and continuous global discovery across an expanding catalog of more than 100 original studio recordings and licensed tracks.",
+    "GLOBAL DAILY SINGLES LAUNCH CAMPAIGN: Broadcast by ANNA and hosted by Veg Anna, station ANTIPOP today officially premieres '"+t+"' by "+a+" as its featured Single of the Day across a 100+ song catalog.",
     "",
-    "ABOUT THE SINGLE AND SONG STORY: Centered on "+topic+", '"+t+"' blends story-driven songwriting, sharp observation, and radio-ready production. Rather than treating music as a disposable one-day upload, Veg Anna Radio pairs each daily single with dedicated radio intros, cover artwork, and searchable catalog documentation so listeners and music programmers worldwide can explore the narrative behind every release.",
+    "SONG STORY: Centered on "+topic+", '"+t+"' highlights "+a+"'s songwriting and daily release momentum on ANTIPOP.",
     "",
-    "WORLD RADIO BROADCAST FOOTPRINT: "+a+"'s catalog enjoys active world radio airplay reaching audiences across 10 countries: "+COUNTRIES+". Through continuous radio rotation and daily single premieres, international listeners experience each new release as part of a connected, living broadcast schedule.",
+    "WORLD RADIO COUNTRIES: "+a+"'s music reaches world radio listeners across "+COUNTRIES+".",
     "",
-    "ABOUT "+a.toUpperCase()+": "+a+" is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock legends including Steve Jones of the Sex Pistols and Doug Fieger of The Knack before channeling his personal experiences into his own recording career. Operating independently without traditional major-label gatekeepers, his sprawling catalog spans radio rock, anti-pop, reggae, blues, and electronic dance floor remixes exploring modern life, freedom, rebellion, and love.",
+    "ABOUT "+a.toUpperCase()+": "+a+" is an Australian lyricist, songwriter, and composer, and a former Hollywood celebrity guitar technician who worked backstage for rock acts including Steve Jones of the Sex Pistols and Doug Fieger of The Knack.",
     "",
-    "DIRECT FAN OWNERSHIP AND NON-COMMERCIAL SHARING MODEL: Under the self-built artist-under-one-roof business model, listeners who purchase MP3 and cover art bundles own their files directly and are explicitly authorized to copy and share them freely with friends for non-commercial listening. Commercial resale, redistribution for profit, or unauthorized monetization of the audio files or artwork is strictly prohibited.",
+    "OWNERSHIP AND SHARING: Buyers who get MP3 and cover art bundles own them directly and may share them freely with friends for non-commercial listening; commercial resale is prohibited.",
     "",
-    "MEDIA AND LISTENER CALL TO ACTION: Tune in to Veg Anna Radio to hear '"+t+"' in rotation, explore the 100+ song catalog, and support independent artist-owned music directly through the official links below:",
-    "Official Artist Portfolio and Hub: "+HUB_URL,
-    "Direct MP3 and Cover Art Bundle: "+BUNDLE_URL,
-    "Stream on Apple Music: "+APPLE_URL,
-    "Official YouTube Channel: "+YT_URL
+    "CALL TO ACTION: Hub: "+HUB_URL+" | Bundle: "+BUNDLE_URL+" | Apple Music: "+APPLE_URL+" | YouTube: "+YT_URL
   ].join("\n");
   return{
-    djIntro:scrub("Good evening, music lovers! Somewhere on Earth right now, someone is turning up their speakers and hearing '"+t+"' by "+a+" for the very first time. Built around "+topic+", this is today's brand-new daily single premiere on Veg Anna Radio. Let's spin it!"),
+    djIntro:scrub("You are locked into ANTIPOP, broadcast by ANNA with host Veg Anna, spinning '"+t+"' by "+a+" on "+topic+"."),
     press:scrub(press),
-    x:scrub("Major labels release once a quarter. "+a+" drops a new single every single day. Hear today's shockwave '"+t+"' ("+topic+"): "+APPLE_URL+" #martinstrayd").slice(0,275),
-    tiktok:scrub("POV: You found the one song that sounds like "+topic+" running at 200 mph. '"+t+"' by "+a+" is today's daily single drop on Veg Anna Radio, built for late-night drives and creator edits. Full audio and art bundle: "+BUNDLE_URL+" #martinstrayd #newmusic #dailysingle #fyp #songrecommendation").slice(0,2200),
-    instagram:scrub("Some songs feel like a midnight confession you did not know you needed. With '"+t+"', "+a+" turns "+topic+" into a vivid, unfiltered chapter of his 100+ song independent catalog on Veg Anna Radio. Listeners who collect the direct MP3 and cover art bundle at "+BUNDLE_URL+" own it outright and can share it freely with friends for non-commercial listening. #martinstrayd #veganaradio #storytelling #independentartist #dailysingle").slice(0,2200),
-    facebook:scrub("Listeners tuning in from "+COUNTRIES+" are discovering today's Single of the Day on Veg Anna Radio: '"+t+"' by "+a+". What started as a bold song-a-day experiment has grown into a 100+ track independent catalog connecting radio audiences across ten nations. Explore the full catalog, stories, and direct artist hub at "+HUB_URL+" #martinstrayd #veganaradio #worldradio #independentmusic #dailysingle").slice(0,63206),
-    ytTitle:scrub("Inside '"+t+"' by "+a+" | Story, Sound & Veg Anna Radio Daily Single").slice(0,95),
-    ytDesc:scrub(t+" by "+a+" | Featured Single of the Day on Veg Anna Radio.\nTheme & Story: "+topic+". Discover "+a+", Australian lyricist, songwriter, composer, and former Hollywood celebrity guitar technician (Steve Jones of the Sex Pistols, Doug Fieger of The Knack), building a 100+ song independent daily singles catalog heard across "+COUNTRIES+".\nStream on Apple Music: "+APPLE_URL+"\nDirect MP3 & Cover Art Bundle (Own your copy and share freely with friends for non-commercial listening; commercial resale prohibited): "+BUNDLE_URL+"\nOfficial Artist Hub: "+HUB_URL+"\n#martinstrayd #veganaradio #dailysingle #independentmusic #newmusic").slice(0,5000)
+    x:scrub("Major labels release once a quarter. "+a+" drops a new single every single day on ANTIPOP. Hear '"+t+"' ("+topic+"): "+APPLE_URL+" #martinstrayd").slice(0,275),
+    tiktok:scrub("POV: You found the one song that sounds like "+topic+" running at 200 mph. '"+t+"' by "+a+" is today's daily single drop on ANTIPOP. Bundle: "+BUNDLE_URL+" #martinstrayd #antipop #dailysingle").slice(0,2200),
+    instagram:scrub("With '"+t+"', "+a+" turns "+topic+" into today's story on ANTIPOP. Direct MP3 and cover art bundle at "+BUNDLE_URL+" with free non-commercial friend sharing (no resale). #martinstrayd #antipop #newmusic").slice(0,2200),
+    facebook:scrub("Listeners across "+COUNTRIES+" are tuning into '"+t+"' by "+a+" on ANTIPOP around "+topic+". Explore the catalog hub at "+HUB_URL+" #martinstrayd #antipop #worldradio").slice(0,63206),
+    ytTitle:scrub("Inside '"+t+"' by "+a+" | ANTIPOP Daily Single").slice(0,95),
+    ytDesc:scrub(t+" by "+a+" on ANTIPOP ("+topic+"). Apple Music: "+APPLE_URL+" | Bundle (free non-commercial sharing with friends, no resale): "+BUNDLE_URL+" | Hub: "+HUB_URL+" #martinstrayd #antipop").slice(0,5000)
   };
 }
 
@@ -268,10 +264,9 @@ function applyDispatch(data){
   const fb=buildDefaults(cur.t,cur.a,cur.topic,(data&&data.date)||"");
   const d=(data&&typeof data.dispatch==="object"&&data.dispatch)?data.dispatch:{};
   META.date=scrub((data&&data.date)||"");
-  const pressRaw=scrub(d.press||"");
   const out={
     djIntro:scrub(d.djIntro||fb.djIntro),
-    press:pressRaw.length>=1200?pressRaw:fb.press,
+    press:scrub(d.press||fb.press),
     x:scrub(d.x||fb.x).slice(0,280),
     tiktok:scrub(d.tiktok||fb.tiktok).slice(0,2200),
     instagram:scrub(d.instagram||fb.instagram).slice(0,2200),
@@ -288,11 +283,22 @@ function applyDispatch(data){
   });
 }
 
+async function loadSongs(){
+  const raw=await fetchRepo("strayd/songs-db.json");
+  try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
+  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"unstoppable creative overdrive and modern life"}];
+  const sel=$("songSel");
+  if(sel){
+    sel.innerHTML="";
+    SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});
+  }
+  syncSong();
+}
+
 async function loadLatest(){
-  setTxt("st","Syncing bible rules and live dispatch...");
-  BIBLE_RULES=await fetchRepo("bible/000-bible.md");
+  setTxt("st","Loading dispatch...");
   const raw=await fetchRepo("strayd/last-dahl-dispatch.json");
-  if(!raw){applyDispatch({});setTxt("st","Ready with grounded dispatch");return;}
+  if(!raw){applyDispatch({});setTxt("st","Loaded default dispatch");return;}
   try{
     const j=JSON.parse(raw);
     if(j&&j.track&&$("songSel")){
@@ -300,8 +306,8 @@ async function loadLatest(){
       if(i>=0)$("songSel").value=String(i);
     }
     applyDispatch(j);
-    setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(j&&j.voice?" | MP3 voice: "+j.voice:"")+(BIBLE_RULES?" (Bible synced)":""));
-  }catch(e){applyDispatch({});setTxt("st","Recovered: "+e.message);}
+    setTxt("st","Loaded "+((j&&j.track)||"dispatch")+(j&&j.voice?" | MP3 voice: "+j.voice:""));
+  }catch(e){applyDispatch({});setTxt("st","Load fallback: "+e.message);}
 }
 
 async function saveDispatch(){
@@ -326,21 +332,84 @@ async function saveDispatch(){
   }catch(e){setTxt("st","Save failed: "+e.message);}
 }
 
-async function loadSongs(){
-  const raw=await fetchRepo("strayd/songs-db.json");
-  try{const d=JSON.parse(raw);SONGS=Array.isArray(d)?d:(d.songs||d.tracks||[]);}catch{}
-  if(!SONGS.length)SONGS=[{title:"Adhd I Can Do That (Travillen Disorder)",artist:"Martin Strayd",topic:"unstoppable creative overdrive and modern life"}];
-  const sel=$("songSel");
-  if(sel){
-    sel.innerHTML="";
-    SONGS.forEach((x,i)=>{const o=document.createElement("option");o.value=i;o.textContent=(i+1)+" - "+(x.title||x.name||"Track");sel.appendChild(o);});
+function getSelectedVoice(){
+  if(!("speechSynthesis"in window))return null;
+  const live=speechSynthesis.getVoices()||[];
+  const sel=$("voiceSel");
+  if(!sel||!sel.value)return live[0]||VOICES[0]||null;
+  const idx=Number(sel.value);
+  if(Number.isInteger(idx)&&live[idx])return live[idx];
+  const opt=sel.options[sel.selectedIndex];
+  const wn=opt?opt.dataset.vname:"";
+  if(wn){const found=live.find(v=>v.name===wn);if(found)return found;}
+  return live[0]||VOICES[0]||null;
+}
+
+function mapToEdgeVoice(v){
+  const n=((v&&v.name)||"").toLowerCase();
+  const l=((v&&v.lang)||"").toLowerCase();
+  if(/jenny/.test(n))return"en-US-JennyNeural";
+  if(/aria/.test(n))return"en-US-AriaNeural";
+  if(/sonia/.test(n))return"en-GB-SoniaNeural";
+  if(/natasha/.test(n))return"en-AU-NatashaNeural";
+  if(/guy/.test(n))return"en-US-GuyNeural";
+  if(/ryan/.test(n))return"en-GB-RyanNeural";
+  if(/william/.test(n))return"en-AU-WilliamNeural";
+  if(/zira|samantha|victoria|hazel|susan|female|woman/.test(n))return l.startsWith("en-gb")?"en-GB-SoniaNeural":(l.startsWith("en-au")?"en-AU-NatashaNeural":"en-US-JennyNeural");
+  if(/david|mark|george|daniel|james|male|man/.test(n))return l.startsWith("en-gb")?"en-GB-RyanNeural":(l.startsWith("en-au")?"en-AU-WilliamNeural":"en-US-GuyNeural");
+  return"en-US-JennyNeural";
+}
+
+function popV(){
+  if(!("speechSynthesis"in window))return;
+  const list=speechSynthesis.getVoices()||[];
+  if(!list.length)return;
+  VOICES=list.slice();
+  const sel=$("voiceSel");
+  if(!sel)return;
+  const prevIdx=sel.value;
+  sel.innerHTML="";
+  VOICES.forEach((v,i)=>{
+    const o=document.createElement("option");
+    o.value=String(i);
+    o.dataset.vname=v.name;
+    o.textContent=v.name+" ("+v.lang+")";
+    sel.appendChild(o);
+  });
+  if(prevIdx!==""&&Number(prevIdx)<VOICES.length)sel.value=prevIdx;
+}
+
+function cleanSpeech(t){
+  return scrub(String(t||""))
+    .replace(/https?:\/\/\S+/g," ")
+    .replace(/#[A-Za-z0-9_]+/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function speakTxt(t,announceOnly){
+  if(!("speechSynthesis"in window)){setTxt("st","Browser speechSynthesis not available");return;}
+  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2000);
+  if(!sp){setTxt("st","Nothing to speak");return;}
+  try{
+    if(speechSynthesis.paused)speechSynthesis.resume();
+    speechSynthesis.cancel();
+  }catch{}
+  const voice=getSelectedVoice();
+  const u=new SpeechSynthesisUtterance(sp);
+  if(voice){
+    u.voice=voice;
+    if(voice.lang)u.lang=voice.lang;
   }
-  syncSong();
+  u.onstart=()=>setTxt("st","Speaking"+(voice?" ("+voice.name+")":"")+"...");
+  u.onend=()=>setTxt("st","Spoke text");
+  u.onerror=ev=>setTxt("st","Speech error: "+(ev&&ev.error?ev.error:"check system voice"));
+  speechSynthesis.speak(u);
 }
 
 async function triggerAction(mode){
   const pat=getPat();
-  if(!pat){setTxt("st","Paste GitHub PAT first to run GitHub Action");return;}
+  if(!pat){setTxt("st","Paste a GitHub PAT with Actions permission first");return;}
   const{idx,topic}=syncSong();
   const edgeVoice=mapToEdgeVoice(getSelectedVoice());
   const runMode=(mode==="render_mp3_only")?"render_mp3_only":"full";
@@ -350,116 +419,26 @@ async function triggerAction(mode){
       headers:{Authorization:"Bearer "+pat,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},
       body:JSON.stringify({ref:"main",inputs:{song_index:String(idx),angle:(($("angleIn")&&$("angleIn").value.trim())||topic),voice:edgeVoice,mode:runMode}})
     });
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    setTxt("st","GitHub Action started ("+runMode+", voice="+edgeVoice+") - wait ~25s then click Load Live Dispatch");
+    if(!r.ok)throw new Error("GitHub Action HTTP "+r.status);
+    setTxt("st","Action queued ("+runMode+", "+edgeVoice+") - wait ~25s then click Load Live Dispatch");
   }catch(e){setTxt("st","Action failed: "+e.message);}
 }
 
-function mapToEdgeVoice(v){
-  const n=((v&&v.name)||"").toLowerCase();
-  const l=((v&&v.lang)||"").toLowerCase();
-  if(/jenny/.test(n))return"en-US-JennyNeural";
-  if(/aria/.test(n))return"en-US-AriaNeural";
-  if(/sonia/.test(n))return"en-GB-SoniaNeural";
-  if(/libby/.test(n))return"en-GB-LibbyNeural";
-  if(/natasha/.test(n))return"en-AU-NatashaNeural";
-  if(/clara/.test(n))return"en-CA-ClaraNeural";
-  if(/guy/.test(n))return"en-US-GuyNeural";
-  if(/ryan/.test(n))return"en-GB-RyanNeural";
-  if(/william/.test(n))return"en-AU-WilliamNeural";
-  if(/zira|samantha|victoria|hazel|susan|heera|female|woman/.test(n)){
-    if(l.startsWith("en-gb"))return"en-GB-SoniaNeural";
-    if(l.startsWith("en-au"))return"en-AU-NatashaNeural";
-    return"en-US-JennyNeural";
-  }
-  if(/david|mark|george|daniel|james|male|man/.test(n)){
-    if(l.startsWith("en-gb"))return"en-GB-RyanNeural";
-    if(l.startsWith("en-au"))return"en-AU-WilliamNeural";
-    return"en-US-GuyNeural";
-  }
-  if(l.startsWith("en-gb"))return"en-GB-SoniaNeural";
-  if(l.startsWith("en-au"))return"en-AU-NatashaNeural";
-  return"en-US-JennyNeural";
-}
-
-function getSelectedVoice(){
-  const sel=$("voiceSel");
-  const list=("speechSynthesis"in window)?(speechSynthesis.getVoices()||[]):[];
-  if(!sel)return list[0]||VOICES[0]||null;
-  const opt=sel.options[sel.selectedIndex];
-  const wn=opt?opt.dataset.vname:"";const wl=opt?opt.dataset.vlang:"";
-  if(wn){const m=list.find(v=>v.name===wn&&(!wl||v.lang===wl));if(m)return m;}
-  return list[Number(sel.value||0)]||VOICES[Number(sel.value||0)]||list[0]||null;
-}
-
-function popV(){
-  if(!("speechSynthesis"in window))return;
-  const list=speechSynthesis.getVoices()||[];
-  if(!list.length)return;
-  const prev=getSelectedVoice();
-  VOICES=list.slice();
-  const sel=$("voiceSel");
-  if(!sel)return;
-  sel.innerHTML="";
-  VOICES.forEach((v,i)=>{
-    const o=document.createElement("option");
-    o.value=String(i);o.dataset.vname=v.name;o.dataset.vlang=v.lang;
-    o.textContent=v.name+" ("+v.lang+")";
-    if(prev&&v.name===prev.name&&v.lang===prev.lang)o.selected=true;
-    sel.appendChild(o);
-  });
-}
-
-function cleanSpeech(t){return scrub(String(t||"")).replace(/https?:\/\/\S+/g," ").replace(/#[A-Za-z0-9_]+/g," ").replace(/\s+/g," ").trim();}
-
-function speakTxt(t,announceOnly){
-  if(!("speechSynthesis"in window))return;
-  const sp=announceOnly?String(t||"").trim():cleanSpeech(t).slice(0,2400);
-  if(!sp)return;
-  if(!VOICES.length)popV();
-  try{speechSynthesis.cancel();}catch{}
-  const voice=getSelectedVoice();
-  const parts=announceOnly?[sp]:(sp.match(/[^.!?]+[.!?]?/g)||[sp]).slice(0,18);
-  parts.forEach(pt=>{
-    const c=pt.trim();if(!c)return;
-    const u=new SpeechSynthesisUtterance(c);
-    if(voice){u.voice=voice;if(voice.lang)u.lang=voice.lang;}
-    speechSynthesis.speak(u);
-  });
-}
-
-function makeWav(text){
-  const sr=16000,dur=Math.min(10,Math.max(1.5,cleanSpeech(text).split(/\s+/).length/6)),n=Math.floor(sr*dur);
-  const buf=new ArrayBuffer(44+n*2),view=new DataView(buf);
-  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,"RIFF");view.setUint32(4,36+n*2,true);ws(8,"WAVE");ws(12,"fmt ");view.setUint32(16,16,true);
-  view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,sr,true);view.setUint32(28,sr*2,true);
-  view.setUint16(32,2,true);view.setUint16(34,16,true);ws(36,"data");view.setUint32(40,n*2,true);
-  for(let i=0;i<n;i++){
-    const env=Math.min(1,i/(sr*0.05))*Math.min(1,(n-i)/(sr*0.05));
-    const s16=Math.max(-32768,Math.min(32767,Math.floor(Math.sin(2*Math.PI*220*(i/sr))*0.06*env*32767)));
-    view.setInt16(44+i*2,s16,true);
-  }
-  return new Blob([buf],{type:"audio/wav"});
-}
-
-async function dlAudio(t,base){
-  const sp=cleanSpeech(t).slice(0,400);
-  if(!sp){setTxt("st","Nothing to save");return;}
-  speakTxt(sp,false);
-  const v=getSelectedVoice();
-  const vn=v&&/amy|emma|aria|jenny|sonia|samantha|victoria|zira/i.test(v.name)?v.name.split(" ")[0]:"Amy";
+async function dlRepoMp3(fieldKey,base){
+  const url="https://agent-anna.github.io/home/strayd/audio/"+encodeURIComponent(fieldKey)+".mp3?t="+Date.now();
+  setTxt("st","Downloading "+base+".mp3...");
   try{
-    const r=await fetch("https://api.streamelements.com/kappa/v2/speech?voice="+encodeURIComponent(vn)+"&text="+encodeURIComponent(sp));
+    const r=await fetch(url,{cache:"no-store"});
     if(!r.ok)throw new Error("HTTP "+r.status);
-    const b=await r.blob();const u=URL.createObjectURL(b);const a=document.createElement("a");
-    a.href=u;a.download=base+".mp3";document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(u),4000);setTxt("st","Downloaded "+base+".mp3");
-  }catch{
-    const w=makeWav(sp);const u=URL.createObjectURL(w);const a=document.createElement("a");
-    a.href=u;a.download=base+".wav";document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(u),4000);setTxt("st","Saved "+base+".wav");
-  }
+    const b=await r.blob();
+    if(!b||b.size<500)throw new Error("Empty audio file");
+    const objUrl=URL.createObjectURL(b);
+    const a=document.createElement("a");
+    a.href=objUrl;a.download=base+".mp3";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(objUrl),5000);
+    setTxt("st","Downloaded "+base+".mp3");
+  }catch(e){setTxt("st","MP3 download failed ("+e.message+") - click Render MP3s in Selected Voice first");}
 }
 
 function dlTxtFile(t,base){
@@ -472,20 +451,31 @@ function dlTxtFile(t,base){
 function cpyTxt(t,lbl){navigator.clipboard?.writeText(String(t||""));setTxt("st","Copied "+lbl);}
 
 buildCards();
-if("speechSynthesis"in window){popV();speechSynthesis.onvoiceschanged=popV;setTimeout(popV,250);}
-if($("voiceSel"))$("voiceSel").onchange=()=>{const v=getSelectedVoice();const m=v?("Voice: "+v.name):"Voice updated";setTxt("st",m);speakTxt(m,true);};
+if("speechSynthesis"in window){
+  popV();
+  speechSynthesis.onvoiceschanged=popV;
+  setTimeout(popV,300);
+  setTimeout(popV,1000);
+}
+if($("voiceSel"))$("voiceSel").onchange=()=>{
+  const v=getSelectedVoice();
+  const m=v?("Voice: "+v.name+" -> "+mapToEdgeVoice(v)):"Default System Voice";
+  setTxt("st",m);
+  speakTxt(m,true);
+};
 if(localStorage.getItem("anna_dispatch_pat")&&$("patIn"))$("patIn").value=localStorage.getItem("anna_dispatch_pat");
 if($("loadBtn"))$("loadBtn").onclick=loadLatest;
 if($("saveGhBtn"))$("saveGhBtn").onclick=saveDispatch;
-if($("runActBtn"))$("runActBtn").onclick=()=>triggerAction("full");if($("renderMp3Btn"))$("renderMp3Btn").onclick=()=>triggerAction("render_mp3_only");
+if($("runActBtn"))$("runActBtn").onclick=()=>triggerAction("full");
+if($("renderMp3Btn"))$("renderMp3Btn").onclick=()=>triggerAction("render_mp3_only");
 if($("stopSpkBtn"))$("stopSpkBtn").onclick=()=>{try{speechSynthesis.cancel();}catch{}setTxt("st","Speech stopped");};
 if($("songSel"))$("songSel").onchange=()=>applyDispatch({});
 if($("angleIn"))$("angleIn").addEventListener("change",()=>applyDispatch({}));
 if($("spkDj"))$("spkDj").onclick=()=>speakTxt($("djBox")&&$("djBox").value||"",false);
-if($("dlDj"))$("dlDj").onclick=()=>dlAudio($("djBox")&&$("djBox").value||"","dj-intro-anna");
+if($("dlDj"))$("dlDj").onclick=()=>dlRepoMp3("djIntro","dj-intro-antipop");
 if($("cpyDj"))$("cpyDj").onclick=()=>cpyTxt($("djBox")&&$("djBox").value||"","DJ intro");
 if($("spkPress"))$("spkPress").onclick=()=>speakTxt($("pressBox")&&$("pressBox").value||"",false);
-if($("dlPress"))$("dlPress").onclick=()=>dlAudio($("pressBox")&&$("pressBox").value||"","press-release-anna");
+if($("dlPress"))$("dlPress").onclick=()=>dlRepoMp3("press","press-release-antipop");
 if($("dlPressTxt"))$("dlPressTxt").onclick=()=>dlTxtFile($("pressBox")&&$("pressBox").value||"","press-release-martinstrayd");
 if($("cpyPress"))$("cpyPress").onclick=()=>cpyTxt($("pressBox")&&$("pressBox").value||"","press release");
 (async()=>{await loadSongs();await loadLatest();})();
