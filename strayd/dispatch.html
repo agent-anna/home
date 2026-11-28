@@ -276,6 +276,24 @@ function scrub(str) {
     .trim();
 }
 
+function scrubDom(root) {
+  if (typeof document !== "undefined" && document.title) {
+    const cleanTitle = scrub(document.title);
+    if (cleanTitle !== document.title) document.title = cleanTitle;
+  }
+  const startNode = root || (typeof document !== "undefined" ? document.body : null);
+  if (!startNode || typeof NodeFilter === "undefined") return;
+  const walker = document.createTreeWalker(startNode, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    const parentTag = node.parentElement && node.parentElement.tagName;
+    if (parentTag === "SCRIPT" || parentTag === "STYLE" || parentTag === "TEXTAREA") continue;
+    if (/[\u2013\u2014]/.test(node.nodeValue)) {
+      node.nodeValue = scrub(node.nodeValue);
+    }
+  }
+}
+
 function smartTrimStr(str, maxLen) {
   const s = scrub(str);
   if (s.length <= maxLen) return s;
@@ -334,6 +352,7 @@ function syncSong() {
   document.getElementById("studioSummary").textContent = cur.title
     ? ("Active single: " + cur.title + " by " + cur.artist + " | Host: Veg Anna | Broadcaster: DJ ANNA.")
     : "No track loaded from songs-db.json.";
+  scrubDom();
   return cur;
 }
 
@@ -362,7 +381,7 @@ function buildDefaults(title, artist, topic, dateStr) {
     900
   );
 
-  const p1 = dLabel + " — ANTIPOP, broadcast by DJ ANNA and hosted by Veg Anna, spotlights \"" + title + "\" by " + artist + " as today's featured single. Focused on " + angleText + ", the release anchors a daily singles campaign built to keep fresh music in rotation every day of the year.";
+  const p1 = dLabel + ", ANTIPOP, broadcast by DJ ANNA and hosted by Veg Anna, spotlights \"" + title + "\" by " + artist + " as today's featured single. Focused on " + angleText + ", the release anchors a daily singles campaign built to keep fresh music in rotation every day of the year.";
   const p2 = "Across the broader catalog of more than one hundred songs, Martin Strayd shapes tracks grounded in lived experience, melody, and direct listener connection rather than factory formulas. Each daily single gives listeners a clear entry point into a wider body of work that grows one release at a time.";
   const p3 = "ANTIPOP reaches audiences across ten world radio markets, connecting independent listeners from Southeast Asia and North America to Europe and Oceania under a single broadcast voice. Veg Anna guides each feature on air while DJ ANNA keeps the daily rotation moving without interruption.";
   const p4 = "Martin Strayd's history spans independent songwriting, studio experimentation, and hands-on release building outside traditional label gatekeepers. Instead of locking songs behind fleeting streams alone, each release is presented as a lasting work meant to stay in the listener's hands.";
@@ -384,7 +403,7 @@ function buildDefaults(title, artist, topic, dateStr) {
   );
 
   const instagram = smartTrimStr(
-    "ANTIPOP Daily Single — Hosted by Veg Anna, broadcast by DJ ANNA.\n" +
+    "ANTIPOP Daily Single, Hosted by Veg Anna, broadcast by DJ ANNA.\n" +
     "Track: " + title + " (" + artist + ")\n" +
     "Angle: " + angleText + "\n" +
     "Direct MP3 + artwork bundles include free non-commercial sharing with friends. Commercial resale is prohibited.",
@@ -398,7 +417,7 @@ function buildDefaults(title, artist, topic, dateStr) {
     63206
   );
 
-  const ytTitle = smartTrimStr(title + " — " + artist + " | ANTIPOP (Veg Anna & DJ ANNA)", 95);
+  const ytTitle = smartTrimStr(title + ", " + artist + " | ANTIPOP (Veg Anna & DJ ANNA)", 95);
   const ytDesc = smartTrimStr(
     "ANTIPOP daily single broadcast by DJ ANNA and hosted by Veg Anna: \"" + title + "\" by " + artist + " (" + angleText + "). " +
     "Direct MP3 and artwork bundles include free non-commercial sharing with friends; commercial resale is prohibited.",
